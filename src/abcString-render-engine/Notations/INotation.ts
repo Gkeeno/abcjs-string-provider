@@ -1,0 +1,3 @@
+interface INotation{
+    toString(): string;
+}
