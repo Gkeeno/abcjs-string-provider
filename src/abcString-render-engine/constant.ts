@@ -1,4 +1,4 @@
-import { NoteKey } from "./Enums/NoteKey.enum"
+import { NoteKey } from "./Enums/NoteKey"
 
 
 export const SequenceNoteKey: NoteKey[] = [
@@ -31,6 +31,3 @@ export const SequenceNoteKey: NoteKey[] = [
 	NoteKey.A4,
 	NoteKey.B4
 ];
-
-
-console.log()

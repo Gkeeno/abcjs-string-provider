@@ -36,34 +36,30 @@ import abcjs from "abcjs/midi";
 export default class HelloWorld extends Vue {
 	@Prop() private msg!: string;
 
-	// 	tunebookString: string = `X:1
-	// T: Cooley's
-	// M: 4/4
-	// L: 1/8
-	// R: reel
-	// K: Emin
-	// D2|:"Em"EB{c}BA B2 EB|~B2 AB dBAG|"D"FDAD BDAD|FDAD dAFD|
-	// "Em"EBBA B2 EB|B2 AB defg|"D"afe^c dBAF|1"Em"DEFD E2 D2:|2"Em"DEFD E2 gf||
-	// |:"Em"eB B2 efge|eB B2 gedB|"D"A2 FA DAFA|A2 FA defg|
-	// "Em"eB B2 eBgB|eB B2 defg|"D"afe^c dBAF|1"Em"DEFD E2 gf:|2"Em"DEFD E4|]
-	// `;
-	tunebookString: string = `X:1
-M:4/4
-L:1/16
-%%stretchlast .7
-Q:1/4=100
-T:Piano
-%%staves {(PianoRightHand) (PianoLeftHand)}
-V:PianoRightHand clef=treble
-V:PianoLeftHand clef=bass
-K:C
-[V: PianoRightHand] !mp!e2f2 e2d2 c2B2 A4|!>(!B2d2 g4 c6 !>)!e2|!p![G4e4] z4 A4 G4|c12 z4|[A12f12] [g4d4]|z4 !<(!B4 !<)![A8c8]|
-!mf!A4 z4 d8|B8 [G4c4] z4|f2A2 c4 f4 g4|[f12d12] e4|!<(!A4 A4 c2e2 !<)!g4|!f!e8 z8|
-[A4d4] z4 A8|BcBA G4 c4 G2B2|A2G2 A2B2 c4 B2G2|c12 z4|]
-[V: PianoLeftHand] [E,12C,12] F,4|[G,8D,8] [C,8E,8]|G,4 C,4 C,4 B,,A,,C,B,,|A,,12 z4|A,,4 B,,4 C,2D,2 B,,C,D,E,|C,2E,2 G,4 E,2F,2 G,4|
-F,4 A,4 [A,8F,8]|G,2F,2 E,2D,2 [C,4E,4] z4|[F,8A,8] [D,4A,4] z4|F,2G,2 A,2F,2 D,2F,2 C,2B,,2|C,4 F,A,D,F, E,4 z4|C,8 z8|
-F,4 E,4 F,4 A,4|[D,8G,8] E,4 z4|C,4 [C,4F,4] z4 G,4|C,12 z4|]
+tunebookString: string = `X:1
+T: Cooley's
+M: 4/8
+R: reel
+K: Emin
+|F/2 D1A2D3 BDAD|FDAD dAFDs|
 `;
+// 	tunebookString: string = `X:1
+// M:4/4
+// L:1/4
+// %%stretchlast .7
+// Q:1/4=100
+// T:Piano
+// %%staves {(PianoRightHand) (PianoLeftHand)}
+// V:PianoRightHand clef=treble
+// V:PianoLeftHand clef=bass
+// K:C
+// [V: PianoRightHand] !mp!e2f2 e2d2 c2B2 A4|!>(!B2d2 g4 c6 !>)!e2|!p![G4e4] z4 A4 G4|c12 z4|[A12f12] [g4d4]|z4 !<(!B4 !<)![A8c8]|
+// !mf!A4 z4 d8|B8 [G4c4] z4|f2A2 c4 f4 g4|[f12d12] e4|!<(!A4 A4 c2e2 !<)!g4|!f!e8 z8|
+// [A4d4] z4 A8|BcBA G4 c4 G2B2|A2G2 A2B2 c4 B2G2|c12 z4|]
+// [V: PianoLeftHand] [E,12C,12] F,4|[G,8D,8] [C,8E,8]|G,4 C,4 C,4 B,,A,,C,B,,|A,,12 z4|A,,4 B,,4 C,2D,2 B,,C,D,E,|C,2E,2 G,4 E,2F,2 G,4|
+// F,4 A,4 [A,8F,8]|G,2F,2 E,2D,2 [C,4E,4] z4|[F,8A,8] [D,4A,4] z4|F,2G,2 A,2F,2 D,2F,2 C,2B,,2|C,4 F,A,D,F, E,4 z4|C,8 z8|
+// F,4 E,4 F,4 A,4|[D,8G,8] E,4 z4|C,4 [C,4F,4] z4 G,4|C,12 z4|]
+// `;
 	tuneObjectArray: any;
 	animateIsPlaying: boolean = false;
 
@@ -93,10 +89,10 @@ F,4 E,4 F,4 A,4|[D,8G,8] E,4 z4|C,4 [C,4F,4] z4 G,4|C,12 z4|]
 		// midi
 		abcjs.midi.startPlaying(document.querySelector(".abcjs-inline-midi"));
 		// animate (会和声音不同步，用 midi 回调替代)
-		// var tunes = this.tuneObjectArray;
-		// var elem_paper = document.querySelectorAll("#paper1")[0];
-		// abcjs.startAnimation(elem_paper, tunes[0], { showCursor: true });
-		// this.animateIsPlaying = true;
+		var tunes = this.tuneObjectArray;
+		var elem_paper = document.querySelectorAll("#paper1")[0];
+		abcjs.startAnimation(elem_paper, tunes[0], { showCursor: true });
+		this.animateIsPlaying = true;
 	}
 	stopPlaying() {
 		abcjs.midi.stopPlaying();
