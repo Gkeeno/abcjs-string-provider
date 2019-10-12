@@ -33,8 +33,8 @@
             <input type="text" id="abc_speed" v-model="speed" />
           </div>
         </div>
-        <div class="svg_box">
-          <div id="paper1" class="sheet-music"></div>
+        <div class="svg_box" ref="paper">
+          <div id="paper1" class="sheet-music" @keydown="keypressHandle"></div>
         </div>
         <div class="funBtn">
           <button @click="delNote">删除</button>
@@ -60,13 +60,34 @@ import {
 	NoteKey,
 	NoteDuration,
 	NotaionType,
-
 	SequenceNoteKey
 } from '../abcString-render-engine';
 import _ from 'lodash';
+import { NoteDurationNameMap } from '../abcString-render-engine/constant';
 
+enum KeyName {
+	Delete,
+	Insert,
+	ArrowUp,
+	ArrowDown,
+	ArrowLeft,
+	ArrowRight
+}
 @Component
 export default class About extends Vue {
+	/**
+	 *
+	 */
+	constructor() {
+		super();
+		console.log('page event bing');
+
+		window.document.onkeydown = e => this.keypressHandle(e);
+		// document.addEventListener('keypress', e => {
+		// 	console.log('rise event',e);
+		// });
+	}
+
 	public get tunebookString(): string {
 		return this.abcstring;
 	}
@@ -80,10 +101,12 @@ T: Cooley's
 M: 4/8
 R: reel
 K: Emin
-|F/2 D1A2D3 BDAD|FDAD dAFDs|
+|D1A2D3 BDAD|
 `;
-	public selectCharStart:number;
-	public selectCharEnd:number;
+	public selectCharStart: number;
+	public selectCharEnd: number;
+	public selectCharPitch: number;
+	public selectDuration: number;
 
 	@Provide() public clefArr = [
 		{ data: 'Whole', img: require('../assets/image/clef1.png') },
@@ -98,38 +121,42 @@ K: Emin
 		{ data: 'note9', img: require('../assets/image/clef9.png') },
 		{ data: 'note10', img: require('../assets/image/clef10.png') },
 		{ data: 'note11', img: require('../assets/image/clef11.png') },
-		{ data: 'barline', img: require('../assets/image/clef11.png') }
+		{ data: 'barline', img: require('../assets/image/barline.png') }
 	];
 	@Provide() public symbolArr = [
 		{ data: 'symbol1', img: require('../assets/image/attribute1.png') },
 		{ data: 'symbol2', img: require('../assets/image/attribute2.png') },
 		{ data: 'symbol3', img: require('../assets/image/attribute3.png') },
 		{ data: 'symbol4', img: require('../assets/image/attribute4.png') },
-		{ data: 'symbol5', img: require('../assets/image/attribute5.png') },
+		{ data: 'symbol5', img: require('../assets/image/attribute5.png') }
 		// { data: 'symbol6', img: require('../assets/image/attribute6.png') }
 	];
 	@Provide() public abcTitle = '';
 	@Provide() public author = '';
 	@Provide() public timeSignature = '';
 	@Provide() public speed = '';
+
+	public mounted() {
+		this.renderAbc();
+	}
+
 	public renderAbc() {
 		const that = this;
 		const tuneObjectArray = abcjs.renderAbc('paper1', this.abcstring, {
 			add_classes: true,
-			clickListener: function(abcElem, tuneNumber, classes) { 
-				// console.log(abcElem, tuneNumber, classes); 
-				that.selectCharStart = abcElem.startChar
-				that.selectCharEnd = abcElem.endChar
-			},
+			clickListener: function(abcElem, tuneNumber, classes) {
+				// console.log(abcElem, tuneNumber, classes);
+				that.selectCharStart = abcElem.startChar;
+				that.selectCharEnd = abcElem.endChar;
+				that.selectDuration = abcElem.pitches && abcElem.duration;
+				that.selectCharPitch =
+					abcElem.pitches && abcElem.pitches[0].pitch; // 现在每个音符默认就一个音
+			}
 		});
 	}
-	public resetSelectChars(){
+	public resetSelectChars() {
 		this.selectCharStart = 0;
 		this.selectCharEnd = 0;
-	}
-
-	public mounted() {
-		this.renderAbc();
 	}
 
 	public addNote(duration: NoteDuration) {
@@ -139,104 +166,161 @@ K: Emin
 	}
 
 	public delNote() {
-		if(this.selectCharEnd === 0) return;
+		if (this.selectCharEnd === 0) return;
 		// 删除所选字符串
-		var forward =  this.tunebookString.substring(0,this.selectCharStart);
+		var forward = this.tunebookString.substring(0, this.selectCharStart);
 		var backward = this.tunebookString.substring(this.selectCharEnd);
 		this.tunebookString = forward.concat(backward);
-		console.log(forward,backward);
-		
+
 		this.resetSelectChars();
+	}
+
+	public adjustNotePitch(keysignal: KeyName) {
+		if (
+			this.selectCharEnd === 0 ||
+			isNaN(this.selectCharPitch) ||
+			isNaN(this.selectDuration)
+		){
+			return;
+		}
+
+		// a.在所选字符串中插入新字符串
+		var forward = this.tunebookString.substring(0, this.selectCharStart);
+		var backward = this.tunebookString.substring(this.selectCharEnd);
+		var iInSequence = this.selectCharPitch + 7; // 选中索引和构造的音符序列 需要索引对齐
+
+		var key = SequenceNoteKey[iInSequence];
+		if (!key) return;
+		const duration: NoteDuration = NoteDurationNameMap[this.selectDuration.toString()];
+		if (duration == undefined) return;
+		
+		const note = new Note(key,duration);
+
+		const flag_pitchupSuccess =
+			keysignal === KeyName.ArrowUp
+				? note.pitchUp()
+				: keysignal === KeyName.ArrowDown
+				? note.pitchDown()
+				: false;
+		const str_update = note.toAbcString();
+
+		if (!flag_pitchupSuccess) return;
+
+		// b.升调成功 同步 选中索引
+		// 重新选中调整的字符串 （可能会有变化）
+		this.selectCharPitch =
+			keysignal === KeyName.ArrowUp
+				? this.selectCharPitch + 1
+				: keysignal === KeyName.ArrowDown
+				? this.selectCharPitch - 1
+				: this.selectCharPitch;
+		if (this.selectCharEnd - this.selectCharStart !== str_update.length) {
+			this.selectCharEnd = this.selectCharStart + str_update.length;
+		}
+
+		this.tunebookString = forward.concat(str_update).concat(backward);
+	}
+	public keypressHandle(e: KeyboardEvent) {
+		if (e.key === KeyName[KeyName.Delete]) {
+			//删除
+			this.delNote();
+		} else if (e.key === KeyName[KeyName.ArrowUp]) {
+			// 升高音符在音阶的一个音
+			this.adjustNotePitch(KeyName.ArrowUp);
+		} else if (e.key === KeyName[KeyName.ArrowDown]) {
+			// 降低音符在音阶的一个音
+			this.adjustNotePitch(KeyName.ArrowDown);
+		}
 	}
 }
 </script>
 
 <style lang="less" scoped>
 .about {
-  min-height: 100vh;
-  .btn_groups {
-    display: flex;
-    height: 40px;
-    padding-left: 20px;
-    .btn {
-      border: none;
-      margin-right: 20px;
-      background: transparent;
-      width: 100px;
-    }
-  }
-  &_box {
-    display: flex;
-    flex-direction: row;
-  }
-  .btn_group {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    margin-top: 20px;
-  }
-  .headline {
-    background: #eee;
-    color: #000;
-    font-size: 18px;
-  }
-  .clef_box {
-    flex: 0.25;
-    height: 100%;
-    border-right: 1px solid #595959;
-    min-height: 80vh;
-    padding: 0 10px;
-    .img_box {
-      width: 100px;
-      height: 100px;
-      margin: 0 20px 20px 0;
-      img {
-        width: 100px;
-        height: 100px;
-        cursor: pointer;
-      }
-    }
-  }
-  .attribute_box {
-    flex: 0.3;
-    height: 100%;
-    border-left: 1px solid #595959;
-    min-height: 80vh;
-    padding: 0 10px;
-    .img_box {
-      width: 116px;
-      height: 116px;
-      margin: 0 0 20px 20px;
-      img {
-        width: 116px;
-        height: 116px;
-      }
-    }
-  }
-  .vex_box {
-    flex: 0.7;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 80vh;
-    .input_box {
-      display: flex;
-    }
-    .input_item {
-      margin-left: 20px;
-      label {
-        margin-right: 10px;
-      }
-    }
-    .input_item:first-child {
-      margin-left: 0;
-    }
-    .svg_box {
-      margin-top: 20px;
-      width: 700px;
-      height: 700px;
-      border: 1px solid #595959;
-    }
-  }
+	min-height: 100vh;
+	.btn_groups {
+		display: flex;
+		height: 40px;
+		padding-left: 20px;
+		.btn {
+			border: none;
+			margin-right: 20px;
+			background: transparent;
+			width: 100px;
+		}
+	}
+	&_box {
+		display: flex;
+		flex-direction: row;
+	}
+	.btn_group {
+		display: flex;
+		flex-wrap: wrap;
+		align-content: flex-start;
+		margin-top: 20px;
+	}
+	.headline {
+		background: #eee;
+		color: #000;
+		font-size: 18px;
+	}
+	.clef_box {
+		flex: 0.25;
+		height: 100%;
+		border-right: 1px solid #595959;
+		min-height: 80vh;
+		padding: 0 10px;
+		.img_box {
+			width: 100px;
+			height: 100px;
+			margin: 0 20px 20px 0;
+			img {
+				width: 100px;
+				height: 100px;
+				cursor: pointer;
+			}
+		}
+	}
+	.attribute_box {
+		flex: 0.3;
+		height: 100%;
+		border-left: 1px solid #595959;
+		min-height: 80vh;
+		padding: 0 10px;
+		.img_box {
+			width: 116px;
+			height: 116px;
+			margin: 0 0 20px 20px;
+			img {
+				width: 116px;
+				height: 116px;
+			}
+		}
+	}
+	.vex_box {
+		flex: 0.7;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-height: 80vh;
+		.input_box {
+			display: flex;
+		}
+		.input_item {
+			margin-left: 20px;
+			label {
+				margin-right: 10px;
+			}
+		}
+		.input_item:first-child {
+			margin-left: 0;
+		}
+		.svg_box {
+			margin-top: 20px;
+			width: 700px;
+			height: 700px;
+			border: 1px solid #595959;
+		}
+	}
 }
 </style>

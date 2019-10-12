@@ -20,30 +20,40 @@ export class Note implements INotation {
    *
    */
   constructor(
-    private key: NoteKey = NoteKey.C1,
-    private duration: NoteDuration = NoteDuration.Quarter,
-    private accidental: NoteAccidental = NoteAccidental.None
+    public key: NoteKey = NoteKey.C1,
+    public duration: NoteDuration = NoteDuration.Quarter,
+    public accidental: NoteAccidental = NoteAccidental.None
   ) {
     
   }
 
   public pitchUp() {
-    var iorg = SequenceNoteKey.indexOf(this.key);
-    if (iorg === SequenceNoteKey.length - 1) return;
     
-    this.key = SequenceNoteKey[iorg++];
+    var iorg = SequenceNoteKey.indexOf(this.key);
+    if (iorg === SequenceNoteKey.length - 1) false;
+    
+    var tempkey = SequenceNoteKey[++iorg];
+    if (!tempkey) return false;
+    this.key = tempkey;
+    
+    return true;
   }
   public pitchDown() {
     var iorg = SequenceNoteKey.indexOf(this.key);
-    if (iorg === 0) return;
+    if (iorg === 0) false;
     
-    this.key = SequenceNoteKey[iorg--];
+    var tempkey = SequenceNoteKey[--iorg];
+    if (!tempkey) return false;
+    this.key = tempkey;
+    
+    return true;
   }
   /**
    * 添加符号：升降，重升/降，自然
    */
   public addAccidential(accidentalType:NoteAccidental) {
     this.accidental = accidentalType;
+    return this;
   }
 
   /**

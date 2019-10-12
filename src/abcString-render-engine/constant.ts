@@ -1,4 +1,5 @@
 import { NoteKey } from "./Enums/NoteKey"
+import { NoteDuration } from './Enums/NoteDuration';
 
 
 export const SequenceNoteKey: NoteKey[] = [
@@ -9,7 +10,7 @@ export const SequenceNoteKey: NoteKey[] = [
 	NoteKey.G1,
 	NoteKey.A1,
 	NoteKey.B1,
-	NoteKey.C2,
+	NoteKey.C2, // abcElem.pitches[0].pitch == 0
 	NoteKey.D2,
 	NoteKey.E2,
 	NoteKey.F2,
@@ -31,3 +32,12 @@ export const SequenceNoteKey: NoteKey[] = [
 	NoteKey.A4,
 	NoteKey.B4
 ];
+
+
+export const NoteDurationNameMap = {
+	0.0625: NoteDuration.Sixteenth, // 1/16
+	0.125: NoteDuration.Eighth,
+	0.25: NoteDuration.Quarter,
+	0.5: NoteDuration.Half,
+	1: NoteDuration.Whole,
+}
