@@ -93,10 +93,11 @@ T: ${this.abcTitle}
 C: ${this.author}
 Q: 1/4=${this.speed}
 M: ${this.timeSignature}
+L: 1/16
 R: 
 K: Emin
 `];
-		let abcstringBody = this.tunebookString.split(newline).splice(7);
+		let abcstringBody = this.tunebookString.split(newline).splice(8);
 console.log('before',this.tunebookString,abcstringBody)
 		this.tunebookString = abcstringHead.concat(abcstringBody).join('');
 		console.log('after',this.tunebookString)
@@ -147,6 +148,7 @@ T: ${this.abcTitle}
 C: ${this.author}
 Q: 1/4=${this.speed}
 M: ${this.timeSignature}
+L: 1/16
 R: 
 K: Emin
 |D1A2D3 BDAD|
@@ -160,6 +162,7 @@ K: Emin
 		const that = this;
 		const tuneObjectArray = abcjs.renderAbc('paper1', this.abcstring, {
 			add_classes: true,
+			staffwidth: 500,
 			clickListener: function(abcElem, tuneNumber, classes) {
 				// console.log(abcElem, tuneNumber, classes);
 				that.selectCharStart = abcElem.startChar;
@@ -208,6 +211,7 @@ K: Emin
 		if (!key) return;
 		const duration: NoteDuration = NoteDurationNameMap[this.selectDuration.toString()];
 		if (duration == undefined) return;
+		console.log(duration);
 		
 		const note = new Note(key,duration);
 

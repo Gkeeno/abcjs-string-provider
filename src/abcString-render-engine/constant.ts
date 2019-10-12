@@ -37,7 +37,9 @@ export const SequenceNoteKey: NoteKey[] = [
 export const NoteDurationNameMap = {
 	0.0625: NoteDuration.Sixteenth, // 1/16
 	0.125: NoteDuration.Eighth,
+	0.1875: NoteDuration.Eighth_dot1,
 	0.25: NoteDuration.Quarter,
+	0.375: NoteDuration.Quarter_dot1,
 	0.5: NoteDuration.Half,
 	1: NoteDuration.Whole,
 }
