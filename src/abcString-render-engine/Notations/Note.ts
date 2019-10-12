@@ -28,7 +28,6 @@ export class Note implements INotation {
   }
 
   public pitchUp() {
-    
     var iorg = SequenceNoteKey.indexOf(this.key);
     if (iorg === SequenceNoteKey.length - 1) false;
     

@@ -1,5 +1,6 @@
 import { NoteKey } from "./Enums/NoteKey"
 import { NoteDuration } from './Enums/NoteDuration';
+import { NoteAccidental } from './Enums/NoteAccidental';
 
 
 export const SequenceNoteKey: NoteKey[] = [
@@ -42,4 +43,12 @@ export const NoteDurationNameMap = {
 	0.375: NoteDuration.Quarter_dot1,
 	0.5: NoteDuration.Half,
 	1: NoteDuration.Whole,
+}
+
+export const NoteAccidentalNameMap = {
+	sharp: NoteAccidental.Sharp,
+	dblsharp: NoteAccidental.DoubleSharp,
+	natural: NoteAccidental.Natural,
+	flat:NoteAccidental.Flat,
+	dblflat:NoteAccidental.DoubleFlat,
 }
