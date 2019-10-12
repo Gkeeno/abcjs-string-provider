@@ -1,4 +1,4 @@
-# abcjs-demo
+# musicnewabc
 
 ## Project setup
 ```

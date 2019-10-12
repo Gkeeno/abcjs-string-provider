@@ -1,6 +1,7 @@
 <template>
   <div class="home">
-    <HelloWorld msg="abcjs start"/>
+    <img alt="Vue logo" src="../assets/logo.png" />
+    <HelloWorld msg="Welcome to Your project" />
   </div>
 </template>
 
@@ -10,8 +11,8 @@ import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
 @Component({
   components: {
-    HelloWorld,
-  },
+    HelloWorld
+  }
 })
 export default class Home extends Vue {}
 </script>
