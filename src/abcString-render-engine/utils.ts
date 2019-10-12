@@ -1,4 +1,5 @@
-const NewLine = '\r\n';
+const NewLine = `
+`;
 
 
 export default {

@@ -10,7 +10,7 @@
         <p class="headline">音符</p>
         <div class="btn_group">
           <div class="img_box" v-for="(item, index) in clefArr" :key="index">
-            <img :src="item.img" alt @click="addNote(item.data)" />
+            <img :src="item.img" alt @click="addNote(item.data)"/>
           </div>
         </div>
       </div>
@@ -18,23 +18,25 @@
         <div class="input_box">
           <div class="title input_item">
             <label for="abctitle">谱名</label>
-            <input type="text" id="abctitle" v-model="abcTitle" />
+            <input type="text" id="abctitle" v-model="abcTitle" @input="updateStaveInfo"/>
           </div>
           <div class="author input_item">
             <label for="author_name">作者</label>
-            <input type="text" id="author_name" v-model="author" />
+            <input type="text" id="author_name" v-model="author" @input="updateStaveInfo"/>
           </div>
           <div class="timeSignature input_item">
             <label for="time_signature">拍号</label>
-            <input type="text" id="time_signature" v-model="timeSignature" />
+			<select id="time_signature" v-model="timeSignature" @input="updateStaveInfo">
+				<option>4/4</option>
+			</select>
           </div>
           <div class="speed_input input_item">
             <label for="abc_speed">速率</label>
-            <input type="text" id="abc_speed" v-model="speed" />
+            <input type="text" id="abc_speed" v-model="speed" @input="updateStaveInfo"/>
           </div>
         </div>
         <div class="svg_box" ref="paper">
-          <div id="paper1" class="sheet-music" @keydown="keypressHandle"></div>
+          <div id="paper1" class="sheet-music"></div>
         </div>
         <div class="funBtn">
           <button @click="delNote">删除</button>
@@ -73,6 +75,9 @@ enum KeyName {
 	ArrowLeft,
 	ArrowRight
 }
+const newline = `
+`;
+
 @Component
 export default class About extends Vue {
 	/**
@@ -80,34 +85,31 @@ export default class About extends Vue {
 	 */
 	constructor() {
 		super();
-		console.log('page event bing');
-
 		window.document.onkeydown = e => this.keypressHandle(e);
-		// document.addEventListener('keypress', e => {
-		// 	console.log('rise event',e);
-		// });
 	}
-
-	public get tunebookString(): string {
-		return this.abcstring;
-	}
-
-	public set tunebookString(v: string) {
-		this.abcstring = v;
-		this.renderAbc();
-	}
-	public abcstring: string = `X:1
-T: Cooley's
-M: 4/8
-R: reel
+	updateStaveInfo(){
+		let abcstringHead =[`X:1
+T: ${this.abcTitle}
+C: ${this.author}
+Q: 1/4=${this.speed}
+M: ${this.timeSignature}
+R: 
 K: Emin
-|D1A2D3 BDAD|
-`;
+`];
+		let abcstringBody = this.tunebookString.split(newline).splice(7);
+console.log('before',this.tunebookString,abcstringBody)
+		this.tunebookString = abcstringHead.concat(abcstringBody).join('');
+		console.log('after',this.tunebookString)
+	}
 	public selectCharStart: number;
 	public selectCharEnd: number;
 	public selectCharPitch: number;
 	public selectDuration: number;
 
+	@Provide() public abcTitle = 'untitled';
+	@Provide() public author = 'none';
+	@Provide() public timeSignature = '4/4';
+	@Provide() public speed = '60';
 	@Provide() public clefArr = [
 		{ data: 'Whole', img: require('../assets/image/clef1.png') },
 		{ data: 'Half', img: require('../assets/image/clef2.png') },
@@ -131,10 +133,24 @@ K: Emin
 		{ data: 'symbol5', img: require('../assets/image/attribute5.png') }
 		// { data: 'symbol6', img: require('../assets/image/attribute6.png') }
 	];
-	@Provide() public abcTitle = '';
-	@Provide() public author = '';
-	@Provide() public timeSignature = '';
-	@Provide() public speed = '';
+	public get tunebookString(): string {
+		return this.abcstring;
+	}
+
+	public set tunebookString(v: string) {
+		this.abcstring = v;
+		this.renderAbc();
+	}
+	
+	public abcstring: string = `X:1
+T: ${this.abcTitle}
+C: ${this.author}
+Q: 1/4=${this.speed}
+M: ${this.timeSignature}
+R: 
+K: Emin
+|D1A2D3 BDAD|
+`;
 
 	public mounted() {
 		this.renderAbc();
@@ -162,7 +178,6 @@ K: Emin
 	public addNote(duration: NoteDuration) {
 		const note = new Note(NoteKey.C2);
 		this.tunebookString += note.toAbcString();
-		console.log('after add ', this.tunebookString);
 	}
 
 	public delNote() {
@@ -222,12 +237,15 @@ K: Emin
 	}
 	public keypressHandle(e: KeyboardEvent) {
 		if (e.key === KeyName[KeyName.Delete]) {
+			e.preventDefault();
 			//删除
 			this.delNote();
 		} else if (e.key === KeyName[KeyName.ArrowUp]) {
+			e.preventDefault();
 			// 升高音符在音阶的一个音
 			this.adjustNotePitch(KeyName.ArrowUp);
 		} else if (e.key === KeyName[KeyName.ArrowDown]) {
+			e.preventDefault();
 			// 降低音符在音阶的一个音
 			this.adjustNotePitch(KeyName.ArrowDown);
 		}
