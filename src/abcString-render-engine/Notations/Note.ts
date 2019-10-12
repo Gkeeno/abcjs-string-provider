@@ -32,4 +32,7 @@ export class Note implements INotation {
     insertToStave(after: INotation, stave: Stave): string {
         throw new Error("Method not implemented.");
     }
+    toAbcString() {
+        return 'note'
+    }
 }
