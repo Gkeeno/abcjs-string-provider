@@ -7,6 +7,9 @@ export enum NoteKey {
 	A1 = "A,",
 	B1 = "B,",
 
+	/**
+	 * middle-C
+	 */
 	C2 = "C",
 	D2 = "D",
 	E2 = "E",

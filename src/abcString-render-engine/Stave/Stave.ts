@@ -23,8 +23,9 @@ export class Stave {
 	 */
 	public meter: string = "4/4"
 	/**
-	 * L:unit note length
-	 * @description
+	 * L:unit note length 
+	 * @description  
+	 * 目前不涉及复杂制谱的标准都用 1/8
 	 * 每个音符时长的步进单位 例:  C - C/2 = L; C3 - C2 =L
 	 */
 	public unitNoteLength: string = "1/8"
