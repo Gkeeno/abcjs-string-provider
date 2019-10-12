@@ -1,8 +1,10 @@
 <template>
   <div class="about">
     <div class="btn_groups">
-      <button class="btn">试听乐谱</button>
+      <button class="btn" @click="playMidi">试听乐谱</button>
     </div>
+    <div id="ctrl_midi"></div>
+
     <div class="about_box">
       <div class="clef_box">
         <p class="headline">音符</p>
@@ -50,7 +52,7 @@
           <div id="paper1" class="sheet-music"></div>
         </div>
         <div class="funBtn">
-          <!-- <button @click="newline">换下一行</button> -->
+          <button @click="delNote">删除音符</button>
         </div>
       </div>
       <div class="attribute_box">
@@ -143,7 +145,7 @@ K: ${this.timeSignature}
         { data: 'Whole', img: require('../assets/image/clef1.png') },
         { data: 'Half', img: require('../assets/image/clef2.png') },
         { data: 'Quarter', img: require('../assets/image/clef3.png') },
-        { data: 'Quarter_dot', img: require('../assets/image/clef3_dot.png') },
+        { data: 'Quarter_dot1', img: require('../assets/image/clef3_dot.png') },
         { data: 'Eighth', img: require('../assets/image/clef4.png') },
         { data: 'Sixteenth', img: require('../assets/image/clef5.png') }
     ];
@@ -178,9 +180,10 @@ K: ${this.timeSignature}
         this.renderAbc();
     }
 
+    public tuneObjectArray: [object];
     public renderAbc() {
         const that = this;
-        const tuneObjectArray = abcjs.renderAbc('paper1', this.abcstring, {
+        this.tuneObjectArray = abcjs.renderAbc('paper1', this.abcstring, {
             add_classes: true,
             staffwidth: 500,
             clickListener: function(abcElem, tuneNumber, classes) {
@@ -197,7 +200,7 @@ K: ${this.timeSignature}
     }
     public resetSelectChars() {
         this.selectCharStart = 0;
-        this.selectCharEnd = 0;
+		this.selectCharEnd = 0;
     }
 
     public addNote(duration: NoteDuration) {
@@ -253,13 +256,12 @@ K: ${this.timeSignature}
         if (!key) return;
 
         const duration: NoteDuration =
-            NoteDurationNameMap[this.selectDuration.toString()];
+            NoteDurationNameMap[this.selectDuration || ''];
         if (duration == undefined) return;
 
         const accidental: NoteAccidental =
-            NoteAccidentalNameMap[this.selectAccidental.toString()];
-		if (accidental == undefined) return;
-		
+            NoteAccidentalNameMap[this.selectAccidental || ''] || NoteAccidental.None;
+
         const note = new Note(key, duration, accidental);
 
         const flag_pitchupSuccess =
@@ -304,9 +306,10 @@ K: ${this.timeSignature}
 
         const duration: NoteDuration =
             NoteDurationNameMap[this.selectDuration.toString()];
-		if (duration == undefined) return;
+        if (duration == undefined) return;
 
-		const accidental = NoteAccidental[accidentalName] || NoteAccidental.None;
+        const accidental =
+            NoteAccidental[accidentalName] || NoteAccidental.None;
         const note = new Note(key, duration, accidental);
         const str_update = note.toAbcString();
 
@@ -334,6 +337,29 @@ K: ${this.timeSignature}
     }
     public newline() {
         this.tunebookString += newline + '|';
+    }
+    public playMidi() {
+		// var elem_paper = document.querySelectorAll("#paper1")[0];
+		// abcjs.startAnimation(elem_paper, this.tuneObjectArray[0], {
+        //     showCursor: true
+		// });
+		// abcjs.midi.startPlaying(document.querySelector('.abcjs-inline-midi'));
+		console.log('playmidi',this.tuneObjectArray[0]);
+		
+		abcjs.midi.setSoundFont('./');
+        abcjs.renderMidi('ctrl_midi', this.tunebookString, {
+            animate: {
+                listener: function(abcjsElement, currentEvent, context) {
+					// console.log( abcjsElement.elements[0].getAttribute('fill'),  abcjsElement.elements[0].getAttribute('fill'));
+					// abcjsElement && abcjsElement.elements[0].setAttribute("fill","#000000")
+					// currentEvent && currentEvent.elements[0].setAttribute("fill","#000FFF")
+                },
+                target: this.tuneObjectArray[0],
+                qpm: this.speed
+            },
+            // voicesOff: false,
+            inlineControls: { hide: true }
+		});
     }
 }
 </script>
