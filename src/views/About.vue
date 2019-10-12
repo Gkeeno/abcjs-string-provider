@@ -1,44 +1,51 @@
 <template>
   <div class="about">
-    <div class="clef_box">
-      <p class="headline">音符</p>
-      <div class="btn_group">
-        <div class="img_box" v-for="(item, index) in clefArr" :key="index">
-          <img :src="item.img" alt @click="addNote(item.data)" />
-        </div>
-      </div>
+    <div class="btn_groups">
+      <button class="btn">暂存</button>
+      <button class="btn">测试乐谱</button>
+      <button class="btn">生成乐谱</button>
     </div>
-    <div class="vex_box">
-      <div class="input_box">
-        <div class="title input_item">
-          <label for="abctitle">谱名</label>
-          <input type="text" id="abctitle" v-model="abcTitle" />
-        </div>
-        <div class="author input_item">
-          <label for="author_name">作者</label>
-          <input type="text" id="author_name" v-model="author" />
-        </div>
-        <div class="timeSignature input_item">
-          <label for="time_signature">拍号</label>
-          <input type="text" id="time_signature" v-model="timeSignature" />
-        </div>
-        <div class="speed_input input_item">
-          <label for="abc_speed">速率</label>
-          <input type="text" id="abc_speed" v-model="speed" />
+    <div class="about_box">
+      <div class="clef_box">
+        <p class="headline">音符</p>
+        <div class="btn_group">
+          <div class="img_box" v-for="(item, index) in clefArr" :key="index">
+            <img :src="item.img" alt @click="addNote(item.data)" />
+          </div>
         </div>
       </div>
-      <div class="svg_box">
-        <div id="paper1" class="sheet-music"></div>
+      <div class="vex_box">
+        <div class="input_box">
+          <div class="title input_item">
+            <label for="abctitle">谱名</label>
+            <input type="text" id="abctitle" v-model="abcTitle" />
+          </div>
+          <div class="author input_item">
+            <label for="author_name">作者</label>
+            <input type="text" id="author_name" v-model="author" />
+          </div>
+          <div class="timeSignature input_item">
+            <label for="time_signature">拍号</label>
+            <input type="text" id="time_signature" v-model="timeSignature" />
+          </div>
+          <div class="speed_input input_item">
+            <label for="abc_speed">速率</label>
+            <input type="text" id="abc_speed" v-model="speed" />
+          </div>
+        </div>
+        <div class="svg_box">
+          <div id="paper1" class="sheet-music"></div>
+        </div>
+        <div class="funBtn">
+          <button @click="delNote">删除</button>
+        </div>
       </div>
-      <div class="funBtn">
-        <button @click="delNote">删除</button>
-      </div>
-    </div>
-    <div class="attribute_box">
-      <p class="headline">音符属性</p>
-      <div class="btn_group">
-        <div class="img_box" v-for="(item, index) in symbolArr" :key="index">
-          <img :src="item.img" alt />
+      <div class="attribute_box">
+        <p class="headline">音符属性</p>
+        <div class="btn_group">
+          <div class="img_box" v-for="(item, index) in symbolArr" :key="index">
+            <img :src="item.img" alt />
+          </div>
         </div>
       </div>
     </div>
@@ -128,9 +135,22 @@ K: Emin
 
 <style lang="less" scoped>
 .about {
-  display: flex;
-  flex-direction: row;
   min-height: 100vh;
+  .btn_groups {
+    display: flex;
+    height: 40px;
+    padding-left: 20px;
+    .btn {
+      border: none;
+      margin-right: 20px;
+      background: transparent;
+      width: 100px;
+    }
+  }
+  &_box {
+    display: flex;
+    flex-direction: row;
+  }
   .btn_group {
     display: flex;
     flex-wrap: wrap;
@@ -155,6 +175,7 @@ K: Emin
       img {
         width: 100px;
         height: 100px;
+        cursor: pointer;
       }
     }
   }
