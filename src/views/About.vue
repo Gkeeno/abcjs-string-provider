@@ -200,7 +200,7 @@ K: ${this.timeSignature}
     }
     public resetSelectChars() {
         this.selectCharStart = 0;
-		this.selectCharEnd = 0;
+        this.selectCharEnd = 0;
     }
 
     public addNote(duration: NoteDuration) {
@@ -260,7 +260,8 @@ K: ${this.timeSignature}
         if (duration == undefined) return;
 
         const accidental: NoteAccidental =
-            NoteAccidentalNameMap[this.selectAccidental || ''] || NoteAccidental.None;
+            NoteAccidentalNameMap[this.selectAccidental || ''] ||
+            NoteAccidental.None;
 
         const note = new Note(key, duration, accidental);
 
@@ -339,27 +340,41 @@ K: ${this.timeSignature}
         this.tunebookString += newline + '|';
     }
     public playMidi() {
-		// var elem_paper = document.querySelectorAll("#paper1")[0];
-		// abcjs.startAnimation(elem_paper, this.tuneObjectArray[0], {
+        // var elem_paper = document.querySelectorAll("#paper1")[0];
+        // abcjs.startAnimation(elem_paper, this.tuneObjectArray[0], {
         //     showCursor: true
-		// });
-		// abcjs.midi.startPlaying(document.querySelector('.abcjs-inline-midi'));
-		console.log('playmidi',this.tuneObjectArray[0]);
-		
-		abcjs.midi.setSoundFont('./');
+        // });
+        // abcjs.midi.startPlaying(document.querySelector('.abcjs-inline-midi'));
+
+        let resumeBeforeColor = function() {};
+        abcjs.midi.setSoundFont('./');
         abcjs.renderMidi('ctrl_midi', this.tunebookString, {
             animate: {
                 listener: function(abcjsElement, currentEvent, context) {
-					// console.log( abcjsElement.elements[0].getAttribute('fill'),  abcjsElement.elements[0].getAttribute('fill'));
-					// abcjsElement && abcjsElement.elements[0].setAttribute("fill","#000000")
-					// currentEvent && currentEvent.elements[0].setAttribute("fill","#000FFF")
+                    console.log(abcjsElement, currentEvent, context);
+
+                    resumeBeforeColor();
+                    currentEvent &&
+                        currentEvent.elements[0][0].setAttribute(
+                            'fill',
+                            '#000FFF'
+                        );
+                    resumeBeforeColor = (function(event) {
+                        return function() {
+                            event.elements[0][0].setAttribute(
+                                'fill',
+                                '#000000'
+                            );
+                        };
+                    })(currentEvent);
                 },
                 target: this.tuneObjectArray[0],
                 qpm: this.speed
             },
             // voicesOff: false,
             inlineControls: { hide: true }
-		});
+        });
+        abcjs.midi.startPlaying(document.querySelector('.abcjs-inline-midi'));
     }
 }
 </script>
