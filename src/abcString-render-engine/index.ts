@@ -3,7 +3,6 @@ import { NotationType } from './Enums/NotationType';
 import { NoteDuration } from './Enums/NoteDuration';
 import { NoteKey } from './Enums/NoteKey';
 import { SequenceNoteKey } from './constant';
-import { rundemo } from './Stave/Stave';
 
 export {
     Note,
@@ -11,5 +10,4 @@ export {
     NotationType,
     NoteDuration,
     SequenceNoteKey,
-    rundemo
 } 
