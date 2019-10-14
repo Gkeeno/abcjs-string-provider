@@ -2,7 +2,6 @@ import { NoteKey } from "./Enums/NoteKey"
 import { NoteDuration } from './Enums/NoteDuration';
 import { NoteAccidental } from './Enums/NoteAccidental';
 
-
 export const SequenceNoteKey: NoteKey[] = [
 	NoteKey.C1,
 	NoteKey.D1,
@@ -33,7 +32,6 @@ export const SequenceNoteKey: NoteKey[] = [
 	NoteKey.A4,
 	NoteKey.B4
 ];
-
 
 export const NoteDurationNameMap = {
 	0.0625: NoteDuration.Sixteenth, // 1/16

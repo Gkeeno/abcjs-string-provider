@@ -75,7 +75,7 @@ import {
     Note,
     NoteKey,
     NoteDuration,
-    NotaionType,
+    NotationType,
     SequenceNoteKey
 } from '../abcString-render-engine';
 import _ from 'lodash';
