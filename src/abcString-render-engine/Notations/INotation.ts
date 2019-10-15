@@ -1,4 +1,5 @@
 import { Stave } from '../Stave/Stave';
+import { StaveCommand } from '../types_defined';
 
 export interface INotation {
   /**
@@ -13,8 +14,19 @@ export interface INotation {
    */
   readonly iend: number;
 
-  addToStave(stave: Stave);
-  insertToStave(before: INotation, stave: Stave);
+  /**
+   * 
+  
+   */
+  
+  /**
+   * 将"符号"写入"谱子"
+   * 订阅"谱子"相关的变化，自己的变化也将通知到"谱子"
+   * @param stave 
+   * @param command 更新到`stave`的命令对象，所有对`stave`的交互都是通过该对象
+   */
+  addToStave(command: StaveCommand);
+  insertToStave(before: INotation,command: StaveCommand);
   updateInStave();
 	removeInStave();
 }

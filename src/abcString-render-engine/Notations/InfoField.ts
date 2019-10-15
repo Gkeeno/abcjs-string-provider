@@ -1,21 +1,20 @@
 import { INotation } from './INotation';
-import { NoteKey } from '../Enums/NoteKey';
-import { NoteDuration } from '..';
-import { SequenceNoteKey } from '../constant';
-import { NoteAccidental } from '../Enums/NoteAccidental';
 import {
-  stringsIndexChangeHandle,
   StaveCommand,
-  updateAbcStringHandle
+  updateAbcStringHandle,
+  stringsIndexChangeHandle
 } from '../types_defined';
+import { InfoFiledType } from '../Enums/InfoFieldType';
+import { NewLine } from '../utils';
 
-export class Note implements INotation {
+export class InfoField implements INotation {
   get ibegin() {
     return this._ibegin;
   }
   get iend() {
     return this._iend;
   }
+
   private _ibegin: number = 0;
   private _iend: number = 0;
   private _command: StaveCommand;
@@ -23,49 +22,13 @@ export class Note implements INotation {
   /**
    *
    */
-  constructor(
-    public key: NoteKey = NoteKey.C1,
-    public duration: NoteDuration = NoteDuration.Quarter,
-    public accidental: NoteAccidental = NoteAccidental.None
-  ) {}
+  constructor(private fieldType: InfoFiledType, private content: string = '') {}
 
-  public pitchUp() {
-    let iorg = SequenceNoteKey.indexOf(this.key);
-    if (iorg === SequenceNoteKey.length - 1) {
-      return;
-    }
-
-    const tempkey = SequenceNoteKey[++iorg];
-    if (!tempkey) {
-      return;
-    }
-    this.key = tempkey;
-
+  public setContent(setHandle:(string) => string) {
+    this.content = setHandle(this.content);
     this.updateInStave();
   }
-  public pitchDown() {
-    let iorg = SequenceNoteKey.indexOf(this.key);
-    if (iorg === 0) {
-      return false;
-    }
-
-    const tempkey = SequenceNoteKey[--iorg];
-    if (!tempkey) {
-      return false;
-    }
-    this.key = tempkey;
-
-    this.updateInStave();
-  }
-
-  /**
-   * 添加符号：升降，重升/降，自然
-   */
-  public setAccidential(accidentalType: NoteAccidental) {
-    this.accidental = accidentalType;
-    this.updateInStave();
-  }
-
+  
   public addToStave(command: StaveCommand) {
     this._command = command;
     this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle);
@@ -80,13 +43,12 @@ export class Note implements INotation {
     this._command.updateAbcString(this.createUpdateAbcStringHandle());
   }
   public removeInStave() {
-    this.toAbcString = () => ''; // 删除即更新为空字符串，空字符串在下次操作会异常
-    this._command.updateAbcString(this.createUpdateAbcStringHandle());
+    this._ibegin = this._iend = 0;
     this._command.unsubscribeAbcStringIndexChange();
   }
 
   public toAbcString() {
-    return this.accidental + this.key + this.duration;
+    return this.fieldType + this.content + NewLine;
   }
 
   private stringIndexChangeHandle: stringsIndexChangeHandle = (ie, org_ie) => {
@@ -105,11 +67,11 @@ export class Note implements INotation {
   ): updateAbcStringHandle {
     const notationStr = this.toAbcString();
     if (this._iend === 0) {
-      // 尚未添加到 stave
+      // 添加 尚未加入字符串到 stave
       if (!before) {
         // 附加到最后
         return abcstr => {
-          this._ibegin = abcstr.length;
+          this._ibegin = abcstr.length ? abcstr.length : 0;
           this._iend = this._ibegin + notationStr.length - 1;
           return {
             newStaveAbcString: abcstr + notationStr
@@ -125,7 +87,7 @@ export class Note implements INotation {
           const org_iend = before.iend;
           this._ibegin = before.iend + 1;
           this._iend = this._ibegin + notationStr.length - 1;
-          
+
           return {
             newStaveAbcString: forward.concat(notationStr).concat(backend),
             changesInfo: { org_iend, iend: this.iend }
@@ -133,11 +95,11 @@ export class Note implements INotation {
         };
       }
     } else {
-      // 已添加到 stave, 直接更新
+      // 更新 已添加到 stave, 直接从stave中替换字符串
       return abcstr => {
         // a.拆分出前后字符串
-        const forward = abcstr.substring(0, this._ibegin);
-        const backend = abcstr.substring(this._iend + 1);
+        const forward = abcstr.substring(0, before.ibegin);
+        const backend = abcstr.substring(before.iend + 1);
         // b.处理相关记录的索引
         const org_iend = this._iend;
         this._ibegin = this._ibegin;

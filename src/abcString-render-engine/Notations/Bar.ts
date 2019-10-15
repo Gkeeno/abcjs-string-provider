@@ -1,7 +1,15 @@
 import { INotation } from './INotation';
-import { Stave } from '../Stave/Stave';
+import { StaveCommand } from '../types_defined';
+import { NewLine } from '../utils';
+
 
 export class BarLine implements INotation {
+  addToStave(command:StaveCommand) {
+    throw new Error("Method not implemented.");
+  }
+  insertToStave(before: INotation, command: StaveCommand) {
+    throw new Error("Method not implemented.");
+  }
   private _ibegin: number = 0;
   get ibegin() {
     return this._ibegin;
@@ -16,12 +24,6 @@ export class BarLine implements INotation {
    */
   constructor() {}
 
-  public addToStave(stave: Stave): string {
-    throw new Error('Method not implemented.');
-  }
-  public insertToStave(after: INotation, stave: Stave): string {
-    throw new Error('Method not implemented.');
-  }
 
   public updateInStave(): string {
     throw new Error('Method not implemented.');

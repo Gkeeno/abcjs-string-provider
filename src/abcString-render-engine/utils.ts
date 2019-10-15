@@ -1,6 +1,3 @@
-const NewLine = `\n`;
 
 
-export default {
-    NewLine
-}
+export const NewLine = `\n`;
