@@ -8,6 +8,7 @@
       <button @click="pitchup()">pitchup</button>
       <button @click="accidential()">accidential</button>
       <button @click="del()">del</button>
+      <button @click="changeTitle()">changeTitle</button>
     </section>
 
     <section>
@@ -56,6 +57,14 @@ export default class Home extends Vue {
     console.log(this.stave.abcString);
   }
 
+  public changeTitle() {
+    let input = prompt('title');
+    this.stave.title.setContent(x => {
+      console.log('org title:', x );
+      return input;
+    });
+    console.log(this.stave.abcString);
+  }
   public generatAbc() {
     // for (const i of this.stave.notations) {
     //   console.log(i.ibegin,i.iend);

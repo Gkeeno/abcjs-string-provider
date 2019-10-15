@@ -98,8 +98,8 @@ export class InfoField implements INotation {
       // 更新 已添加到 stave, 直接从stave中替换字符串
       return abcstr => {
         // a.拆分出前后字符串
-        const forward = abcstr.substring(0, before.ibegin);
-        const backend = abcstr.substring(before.iend + 1);
+        const forward = abcstr.substring(0, this._ibegin);
+        const backend = abcstr.substring(this._iend + 1);
         // b.处理相关记录的索引
         const org_iend = this._iend;
         this._ibegin = this._ibegin;
