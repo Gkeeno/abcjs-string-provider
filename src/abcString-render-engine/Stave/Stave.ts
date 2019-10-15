@@ -103,6 +103,7 @@ export class Stave {
         this.addNotation(notation);
       }
     }
+    return this;
   }
 
   /**

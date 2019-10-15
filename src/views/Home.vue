@@ -36,8 +36,7 @@ export default class Home extends Vue {
   public note2: Note;
 
   public rundemo() {
-    this.stave = new Stave();
-    this.stave.init();
+    this.stave = new Stave().init();
     this.note1 = new Note(NoteKey.C1, NoteDuration.Whole);
     this.note2 = new Note(NoteKey.F3, NoteDuration.Whole);
     this.stave.addNotation(this.note1);
