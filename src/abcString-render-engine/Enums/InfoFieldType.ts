@@ -7,7 +7,7 @@ export enum InfoFiledType {
   history = 'H:',
   instruction = 'I:',
   key = 'K:', // last header
-  note_unit_length = 'L:', // last header
+  note_unit_length = 'L:',
   metre = 'M:',
   macro = 'm:',
   notes = 'N:',

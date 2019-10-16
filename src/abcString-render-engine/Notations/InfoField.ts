@@ -24,11 +24,19 @@ export class InfoField implements INotation {
    */
   constructor(private fieldType: InfoFiledType, private content: string = '') {}
 
-  public setContent(setHandle:(string) => string) {
-    this.content = setHandle(this.content);
+  public setContent(setter: (string) => string);
+  public setContent(setter: string);
+  public setContent(setter: string | ((str: string) => string)) {
+    if (typeof setter === 'string') {
+      setter as string;
+      this.content = setter;
+    } else if (typeof setter === 'function') {
+      setter as Function;
+      this.content = setter(this.content);
+    }
     this.updateInStave();
   }
-  
+
   public addToStave(command: StaveCommand) {
     this._command = command;
     this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle);

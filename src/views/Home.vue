@@ -58,17 +58,12 @@ export default class Home extends Vue {
   }
 
   public changeTitle() {
-    let input = prompt('title');
-    this.stave.title.setContent(x => {
-      console.log('org title:', x );
-      return input;
-    });
+    const input = prompt('title');
+    this.stave.title.setContent(input);
     console.log(this.stave.abcString);
   }
   public generatAbc() {
-    // for (const i of this.stave.notations) {
-    //   console.log(i.ibegin,i.iend);
-    // }
+    console.log(this.stave.abcString);
   }
 }
 </script>
