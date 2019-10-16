@@ -13,11 +13,6 @@ export interface INotation {
    * 在 abcstring 中的结束位置
    */
   readonly iend: number;
-
-  /**
-   * 
-  
-   */
   
   /**
    * 将"符号"写入"谱子"

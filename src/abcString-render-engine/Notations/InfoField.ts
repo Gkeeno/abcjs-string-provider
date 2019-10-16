@@ -24,9 +24,9 @@ export class InfoField implements INotation {
    */
   constructor(private fieldType: InfoFiledType, private content: string = '') {}
 
-  public setContent(setter: (string) => string);
-  public setContent(setter: string);
-  public setContent(setter: string | ((str: string) => string)) {
+  public setContent(setter: (string) => string):InfoField;
+  public setContent(setter: string):InfoField;
+  public setContent(setter: string | ((str: string) => string)):InfoField {
     if (typeof setter === 'string') {
       setter as string;
       this.content = setter;
@@ -34,7 +34,12 @@ export class InfoField implements INotation {
       setter as Function;
       this.content = setter(this.content);
     }
+    
     this.updateInStave();
+    return this;
+  }
+  public getContent() {
+    return this.content;
   }
 
   public addToStave(command: StaveCommand) {

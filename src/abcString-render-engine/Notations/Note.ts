@@ -80,6 +80,7 @@ export class Note implements INotation {
     this._command.updateAbcString(this.createUpdateAbcStringHandle());
   }
   public removeInStave() {
+    // this._ibegin = this._iend = 0;
     this.toAbcString = () => ''; // 删除即更新为空字符串，空字符串在下次操作会异常
     this._command.updateAbcString(this.createUpdateAbcStringHandle());
     this._command.unsubscribeAbcStringIndexChange();
@@ -142,7 +143,7 @@ export class Note implements INotation {
         const org_iend = this._iend;
         this._ibegin = this._ibegin;
         this._iend = this._ibegin + notationStr.length - 1;
-
+        
         return {
           newStaveAbcString: forward.concat(notationStr).concat(backend),
           changesInfo: { org_iend, iend: this.iend }

@@ -6,17 +6,21 @@ import {
   updateAbcStringHandle
 } from '../types_defined';
 import { InfoField } from '../Notations/InfoField';
-import Vuex from 'vuex';
 import { InfoFiledType } from '../Enums/InfoFieldType';
 
 /**
+ *
+ * @description
  * a. 添加的任何 Notation 都可能引起 abcstring 变化
  * b. 添加的 Notation 的变化都可能引起 abcstring 变化
- * @description 采用vuex实现(todo)
  */
 export class Stave {
   public get abcString(): string {
     return this._abcString;
+  }
+  public set abcString(v: string) {
+    this._abcString = v;
+    this.abcstringChangeHandle(v);
   }
   /**
    * X:reference number
@@ -28,10 +32,16 @@ export class Stave {
    * followed X:
    */
   public title: InfoField = new InfoField(InfoFiledType.title, 'untitled');
+
+  public composer: InfoField = new InfoField(
+    InfoFiledType.composer,
+    'anonymous'
+  );
+  public tempo: InfoField = new InfoField(InfoFiledType.tempo, '60');
   /**
-   * M:meter 拍号
+   * M:metre 拍号
    */
-  public meter: InfoField = new InfoField(InfoFiledType.metre, '4/4');
+  public metre: InfoField = new InfoField(InfoFiledType.metre, '4/4');
   /**
    * L:unit note length
    * @description
@@ -57,6 +67,12 @@ export class Stave {
 
   constructor() {}
 
+  /**
+   * @param handle 不能含有更新字符串的操作，否则会造成循环更新
+   */
+  public setStaveChangeHandle(handle: (s: string) => void) {
+    this.abcstringChangeHandle = handle;
+  }
   public getSelectionInfo(): any {
     return NotationType.Note;
   }
@@ -67,11 +83,11 @@ export class Stave {
   }
 
   public addNotation(notaion: INotation) {
-    notaion.addToStave(this.createUpdateCommand());
+    notaion.addToStave(this.createOperateCommand());
     this.notations.push(notaion);
   }
   public insertNotation(before: INotation, notaion: INotation) {
-    notaion.insertToStave(before, this.createUpdateCommand());
+    notaion.insertToStave(before, this.createOperateCommand());
     this.notations.push(notaion);
   }
   /**
@@ -90,21 +106,23 @@ export class Stave {
   }
 
   public init() {
-    if (!this._abcString) {
+    if (!this.abcString) {
       const headers = [
         this.id,
         this.title,
-        this.meter,
+        this.composer,
+        this.tempo,
+        this.metre,
         this.unitNoteLength,
         this.key
       ];
-
       for (const notation of this.notations.concat(headers)) {
         this.addNotation(notation);
       }
     }
     return this;
   }
+  private abcstringChangeHandle: (newString: string) => void = function() {};
 
   /**
    * 添加string index的变动通知，为了保持note的 索引正确
@@ -138,13 +156,13 @@ export class Stave {
     }
   }
 
-  private createUpdateCommand(): StaveCommand {
+  private createOperateCommand(): StaveCommand {
     const updateAbcString = (update: updateAbcStringHandle) => {
-      const orgStr = this._abcString;
+      const orgStr = this.abcString;
       const { newStaveAbcString, changesInfo } = update(orgStr);
-      this._abcString = newStaveAbcString;
+      this.abcString = newStaveAbcString;
 
-      if (changesInfo && changesInfo.iend != changesInfo.org_iend) {
+      if (changesInfo && changesInfo.iend != changesInfo.org_iend) { // 删除的索引变化为 org_istar-1, 即iend - len
         this.triggleStringIndexChange(changesInfo.iend, changesInfo.org_iend);
       }
     };
@@ -156,6 +174,7 @@ export class Stave {
       unsubscribe = this.subscribeStringIndexChange(subhandle);
       return unsubscribe;
     };
+
     const unsubscribeAbcStringIndexChange = () => {
       if (unsubscribe) {
         unsubscribe();
