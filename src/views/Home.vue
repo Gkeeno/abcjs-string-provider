@@ -90,6 +90,7 @@ import {
 import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';
 import { INotation } from '../abcString-render-engine/Notations/INotation';
 import { BarLine } from '../abcString-render-engine/Notations/Bar';
+import { hasProto } from 'vue-class-component/lib/util';
 
 enum KeyName {
   Delete,
@@ -98,6 +99,12 @@ enum KeyName {
   ArrowDown,
   ArrowLeft,
   ArrowRight
+}
+enum SelectNotationType {
+  unkown,
+  note = 'note',
+  bar = 'bar',
+  treble = 'treble'
 }
 
 @Component
@@ -138,7 +145,7 @@ export default class Home extends Vue {
   }
 
   public stave: Stave;
-  public selectedNotation: INotation;
+  public selectedNotation: { type: SelectNotationType; value };
 
   @Provide() public clefArr = [
     { data: 'Whole', img: require('../assets/image/clef1.png') },
@@ -176,7 +183,6 @@ export default class Home extends Vue {
   private $tempo = new InfoField(InfoFiledType.tempo, '60');
 
   private tuneObjectArray;
-  private barline:BarLine;
 
   constructor() {
     super();
@@ -191,8 +197,9 @@ export default class Home extends Vue {
     stave.metre = this.$data.$metre;
     stave.tempo = this.$data.$tempo;
     this.stave = stave.init();
-    this.stave.setStaveChangeHandle(this.renderAbc.bind(this));
+    this.stave.addNotation(new Note(NoteKey.C3));
 
+    this.stave.setStaveChangeHandle(this.renderAbc.bind(this));
     // 手动渲染下界面
     this.renderAbc();
     // 手动绑定上表单的值，因为v-model无法直接从对象中获取
@@ -209,24 +216,16 @@ export default class Home extends Vue {
       add_classes: true,
       staffwidth: 500,
       clickListener(abcElem, tuneNumber, classes) {
-        that.selectedNotation = that.stave.getNotation(
+        console.log(that.stave.abcString.slice(abcElem.startChar,abcElem.endChar))
+        return;
+        const notation = that.stave.getNotation(
           abcElem.startChar,
           abcElem.endChar - 1
         );
-
-        console.log(
-          'select',
-          abcElem.startChar,
-          abcElem.endChar,
-          that.selectedNotation
-        );
-
-        // that.selectCharStart = abcElem.startChar;
-        // that.selectCharEnd = abcElem.endChar;
-        // that.selectDuration = abcElem.duration;
-        // that.selectAccidental =
-        //   abcElem.pitches && abcElem.pitches[0].accidental;
-        // that.selectCharPitch = abcElem.pitches && abcElem.pitches[0].pitch; // 现在每个音符默认就一个音
+        that.selectedNotation = {
+          type: abcElem.el_type || abcElem.type || SelectNotationType.unkown,
+          value: notation
+        };
       }
     });
   }
@@ -244,17 +243,19 @@ export default class Home extends Vue {
   public addBarline() {
     const barline = new BarLine();
     this.stave.addNotation(barline);
-    this.barline = barline;
-    console.log(barline);
   }
 
   public delNote() {
-    console.log('delnote');
-    this.stave.deleteNotation(this.selectedNotation);
+    this.stave.deleteNotation(this.selectedNotation.value);
   }
   public breaktie() {
-    console.log('breaktie', this.stave.abcString);
+    console.log(this.stave.abcString);return
+    
+    this.selectedNotation &&
+      this.selectedNotation.type == SelectNotationType.note &&
+      (this.selectedNotation.value as Note).setEndSpacing();
   }
+
   public setAccidental(accidentalName: string) {
     if (!this.selectedNotation) {
       return;
@@ -271,15 +272,20 @@ export default class Home extends Vue {
     } else if (e.key === KeyName[KeyName.ArrowUp]) {
       e.preventDefault();
       // 升高音符在音阶的一个音
-      this.selectedNotation && (this.selectedNotation as Note).pitchUp()
+      this.selectedNotation && (this.selectedNotation.value as Note).pitchUp();
     } else if (e.key === KeyName[KeyName.ArrowDown]) {
       e.preventDefault();
       // 降低音符在音阶的一个音
-      this.selectedNotation && (this.selectedNotation as Note).pitchDown()
+      this.selectedNotation &&
+        (this.selectedNotation.value as Note).pitchDown();
     }
   }
+
   public newline() {
-    this.barline.setNewlineInEnd();
+    if (this.selectedNotation.type !== SelectNotationType.bar) {
+      return;
+    }
+    this.selectedNotation.value.setNewlineInEnd();
   }
 
   public playMidi() {

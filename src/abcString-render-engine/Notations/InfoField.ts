@@ -18,7 +18,7 @@ export class InfoField extends Notation {
       this.content = setter(this.content);
     }
 
-    super.updateInStave();
+    this.updateInStave();
     return this;
   }
 

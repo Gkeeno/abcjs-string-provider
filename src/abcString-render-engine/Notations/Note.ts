@@ -1,16 +1,12 @@
-import { INotation } from './INotation';
 import { NoteKey } from '../Enums/NoteKey';
 import { NoteDuration } from '..';
 import { SequenceNoteKey } from '../constant';
 import { NoteAccidental } from '../Enums/NoteAccidental';
-import {
-  stringsIndexChangeHandle,
-  StaveCommand,
-  updateAbcStringHandle
-} from '../types_defined';
 import { Notation } from './Notation.abstract';
 
 export class Note extends Notation {
+  private lastString: string = '';
+
   constructor(
     public key: NoteKey = NoteKey.C1,
     public duration: NoteDuration = NoteDuration.Quarter,
@@ -33,6 +29,7 @@ export class Note extends Notation {
 
     this.updateInStave();
   }
+
   public pitchDown() {
     let iorg = SequenceNoteKey.indexOf(this.key);
     if (iorg === 0) {
@@ -48,6 +45,10 @@ export class Note extends Notation {
     this.updateInStave();
   }
 
+  public setEndSpacing() {
+    this.lastString = ' ';
+    this.updateInStave();
+  }
   /**
    * 添加符号：升降，重升/降，自然
    */
@@ -57,6 +58,6 @@ export class Note extends Notation {
   }
 
   public toAbcString() {
-    return this.accidental + this.key + this.duration;
+    return this.accidental + this.key + this.duration + this.lastString;
   }
 }

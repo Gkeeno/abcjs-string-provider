@@ -17,6 +17,7 @@ export class BarLine extends Notation {
   public toAbcString() {
     return '|' + (this.hasNewlineInEnd ? NewLine : '');
   }
+  
   public setNewlineInEnd() {
     this.hasNewlineInEnd = true;
     this.updateInStave();
