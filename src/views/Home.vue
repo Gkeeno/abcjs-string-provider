@@ -72,339 +72,356 @@
 import { Component, Prop, Vue, Provide } from 'vue-property-decorator';
 import abcjs from 'abcjs/midi';
 import {
-  Note,
-  NoteKey,
-  NoteDuration,
-  NotationType,
-  SequenceNoteKey,
-  InfoField,
-  Stave,
-  RestNote
+    Note,
+    NoteKey,
+    NoteDuration,
+    NotationType,
+    SequenceNoteKey,
+    InfoField,
+    Stave,
+    RestNote
 } from '../abcString-render-engine';
 
 import _ from 'lodash';
-import {
-  NoteDurationNameMap,
-  NoteAccidentalNameMap
-} from '../abcString-render-engine/constant';
+import { NoteDurationNameMap } from '../abcString-render-engine/constant';
 import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';
 import { INotation } from '../abcString-render-engine/Notations/INotation';
 import { BarLine } from '../abcString-render-engine/Notations/Bar';
-import { hasProto } from 'vue-class-component/lib/util';
+import { NoteAccidental } from '../abcString-render-engine/Enums/NoteAccidental';
 
 enum KeyName {
-  Delete,
-  Insert,
-  ArrowUp,
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  Backspace
+    Delete,
+    Insert,
+    ArrowUp,
+    ArrowDown,
+    ArrowLeft,
+    ArrowRight,
+    Backspace
 }
 enum SelectNotationType {
-  unkown,
-  note = 'note',
-  bar = 'bar',
-  treble = 'treble'
+    unkown,
+    note = 'note',
+    bar = 'bar',
+    treble = 'treble',
+    rest = 'rest'
 }
 
 @Component
 export default class Home extends Vue {
-  public get title(): string {
-    return this.$title && this.$title.getContent();
-  }
-  public set title(v: string) {
-    this.$data.$title.setContent(v);
-  }
+    public get title(): string {
+        return this.$title && this.$title.getContent();
+    }
+    public set title(v: string) {
+        this.$data.$title.setContent(v);
+    }
 
-  public get composer(): string {
-    return this.$composer && this.$data.$composer.getContent();
-  }
-  public set composer(v: string) {
-    this.$data.$composer.setContent(v);
-  }
+    public get composer(): string {
+        return this.$composer && this.$data.$composer.getContent();
+    }
+    public set composer(v: string) {
+        this.$data.$composer.setContent(v);
+    }
 
-  public get key(): string {
-    return this.$key && this.$key.getContent();
-  }
-  public set key(v: string) {
-    this.$data.$key.setContent(v);
-  }
+    public get key(): string {
+        return this.$key && this.$key.getContent();
+    }
+    public set key(v: string) {
+        this.$data.$key.setContent(v);
+    }
 
-  public get metre(): string {
-    return this.$metre && this.$metre.getContent();
-  }
-  public set metre(v: string) {
-    this.$data.$metre.setContent(v);
-  }
+    public get metre(): string {
+        return this.$metre && this.$metre.getContent();
+    }
+    public set metre(v: string) {
+        this.$data.$metre.setContent(v);
+    }
 
-  public get tempo(): string {
-    return this.$tempo && this.$tempo.getContent();
-  }
-  public set tempo(v: string) {
-    this.$data.$tempo.setContent(v);
-  }
+    public get tempo(): string {
+        return this.$tempo && this.$tempo.getContent();
+    }
+    public set tempo(v: string) {
+        this.$data.$tempo.setContent(v);
+    }
 
-  public stave: Stave;
-  public selectedNotation: { type: SelectNotationType; value };
+    public stave: Stave;
+    public selectedNotation: { type: SelectNotationType; value } = null;
 
-  @Provide() public clefArr = [
-    { data: 'Whole', img: require('../assets/image/clef1.png') },
-    { data: 'Half', img: require('../assets/image/clef2.png') },
-    { data: 'Quarter', img: require('../assets/image/clef3.png') },
-    { data: 'Quarter_dot1', img: require('../assets/image/clef3_dot.png') },
-    { data: 'Eighth', img: require('../assets/image/clef4.png') },
-    { data: 'Sixteenth', img: require('../assets/image/clef5.png') }
-  ];
-  @Provide() public restArr = [
-    { data: 'Whole', img: require('../assets/image/clef6.png') },
-    { data: 'Half', img: require('../assets/image/clef7.png') },
-    { data: 'Quarter', img: require('../assets/image/clef8.png') },
-    // { data: 'Eighth', img: require('../assets/image/clef9.png') },
-    { data: 'Eighth', img: require('../assets/image/clef10.png') },
-    { data: 'Sixteenth', img: require('../assets/image/clef11.png') }
-  ];
-  @Provide() public symbolArr = [
-    { data: 'Flat', img: require('../assets/image/attribute1.png') },
-    { data: 'Sharp', img: require('../assets/image/attribute2.png') },
-    { data: 'Natural', img: require('../assets/image/attribute3.png') },
-    { data: 'DoubleFlat', img: require('../assets/image/attribute4.png') },
-    { data: 'DoubleSharp', img: require('../assets/image/attribute5.png') }
-    // { data: 'symbol6', img: require('../assets/image/attribute6.png') }
-  ];
+    @Provide() public clefArr = [
+        { data: 'Whole', img: require('../assets/image/clef1.png') },
+        { data: 'Half', img: require('../assets/image/clef2.png') },
+        { data: 'Quarter', img: require('../assets/image/clef3.png') },
+        { data: 'Quarter_dot1', img: require('../assets/image/clef3_dot.png') },
+        { data: 'Eighth', img: require('../assets/image/clef4.png') },
+        { data: 'Sixteenth', img: require('../assets/image/clef5.png') }
+    ];
+    @Provide() public restArr = [
+        { data: 'Whole', img: require('../assets/image/clef6.png') },
+        { data: 'Half', img: require('../assets/image/clef7.png') },
+        { data: 'Quarter', img: require('../assets/image/clef8.png') },
+        // { data: 'Eighth', img: require('../assets/image/clef9.png') },
+        { data: 'Eighth', img: require('../assets/image/clef10.png') },
+        { data: 'Sixteenth', img: require('../assets/image/clef11.png') }
+    ];
+    @Provide() public symbolArr = [
+        { data: 'Flat', img: require('../assets/image/attribute1.png') },
+        { data: 'Sharp', img: require('../assets/image/attribute2.png') },
+        { data: 'Natural', img: require('../assets/image/attribute3.png') },
+        { data: 'DoubleFlat', img: require('../assets/image/attribute4.png') },
+        { data: 'DoubleSharp', img: require('../assets/image/attribute5.png') }
+        // { data: 'symbol6', img: require('../assets/image/attribute6.png') }
+    ];
 
-  private $title = new InfoField(InfoFiledType.title, 'untitled1');
+    private $title = new InfoField(InfoFiledType.title, 'untitled1');
 
-  private $composer = new InfoField(InfoFiledType.composer, 'none1');
+    private $composer = new InfoField(InfoFiledType.composer, 'none1');
 
-  private $key = new InfoField(InfoFiledType.key, 'C');
+    private $key = new InfoField(InfoFiledType.key, 'C');
 
-  private $metre = new InfoField(InfoFiledType.metre, '4/4');
+    private $metre = new InfoField(InfoFiledType.metre, '4/4');
 
-  private $tempo = new InfoField(InfoFiledType.tempo, '60');
+    private $tempo = new InfoField(InfoFiledType.tempo, '60');
 
-  private tuneObjectArray;
+    private tuneObjectArray;
 
-  constructor() {
-    super();
-    window.document.onkeydown = e => this.keypressHandle(e);
-  }
+    constructor() {
+        super();
+        window.document.onkeydown = e => this.keypressHandle(e);
+    }
 
-  public mounted() {
-    const stave = new Stave();
-    stave.title = this.$data.$title;
-    stave.composer = this.$data.$composer;
-    stave.key = this.$data.$key;
-    stave.metre = this.$data.$metre;
-    stave.tempo = this.$data.$tempo;
-    this.stave = stave.init();
-    this.stave.addNotation(new Note(NoteKey.C3));
+    public mounted() {
+        const stave = new Stave();
+        stave.title = this.$data.$title;
+        stave.composer = this.$data.$composer;
+        stave.key = this.$data.$key;
+        stave.metre = this.$data.$metre;
+        stave.tempo = this.$data.$tempo;
+        this.stave = stave.init();
+        this.stave.addNotation(new Note(NoteKey.C3));
 
-    this.stave.setStaveChangeHandle(this.renderAbc.bind(this));
-    // 手动渲染下界面
-    this.renderAbc();
-    // 手动绑定上表单的值，因为v-model无法直接从对象中获取
-    (this.$refs.title as any).value = stave.title.getContent();
-    (this.$refs.composer as any).value = stave.composer.getContent();
-    (this.$refs.key as any).value = stave.key.getContent();
-    (this.$refs.metre as any).value = stave.metre.getContent();
-    (this.$refs.tempo as any).value = stave.tempo.getContent();
-  }
+        this.stave.setStaveChangeHandle(this.renderAbc.bind(this));
+        // 手动渲染下界面
+        this.renderAbc();
+        // 手动绑定上表单的值，因为v-model无法直接从对象中获取
+        (this.$refs.title as any).value = stave.title.getContent();
+        (this.$refs.composer as any).value = stave.composer.getContent();
+        (this.$refs.key as any).value = stave.key.getContent();
+        (this.$refs.metre as any).value = stave.metre.getContent();
+        (this.$refs.tempo as any).value = stave.tempo.getContent();
+    }
 
-  public renderAbc() {
-    const that = this;
-    this.tuneObjectArray = abcjs.renderAbc('paper1', this.stave.abcString, {
-      add_classes: true,
-      staffwidth: 500,
-      clickListener(abcElem, tuneNumber, classes) {
-        console.log(
-          that.stave.abcString.slice(abcElem.startChar, abcElem.endChar)
-        );
-        return;
-        const notation = that.stave.getNotation(
-          abcElem.startChar,
-          abcElem.endChar - 1
-        );
-        that.selectedNotation = {
-          type: abcElem.el_type || abcElem.type || SelectNotationType.unkown,
-          value: notation
+    public renderAbc() {
+        const that = this;
+        this.tuneObjectArray = abcjs.renderAbc('paper1', this.stave.abcString, {
+            add_classes: true,
+            staffwidth: 500,
+            clickListener(abcElem, tuneNumber, classes) {
+                const notation = that.stave.getNotation(
+                    abcElem.startChar,
+                    abcElem.endChar - 1
+                );
+                that.selectedNotation = {
+                    type:
+                        (abcElem.rest && SelectNotationType.rest) ||
+                        abcElem.type ||
+                        abcElem.el_type ||
+                        SelectNotationType.unkown,
+                    value: notation
+                };
+
+                console.log(
+                    that.stave.abcString.slice(
+                        abcElem.startChar,
+                        abcElem.endChar
+                    ),
+                    notation
+                );
+            }
+        });
+    }
+
+    public addNote(duration: NoteDuration) {
+        const durationValue = NoteDuration[duration] || NoteDuration.Quarter;
+        const note = new Note(NoteKey.C3, durationValue);
+        this.stave.addNotation(note);
+        this.selectedNotation = { type: SelectNotationType.note, value: note };
+    }
+    public addRestNote(duration: NoteDuration) {
+        const durationValue = NoteDuration[duration] || NoteDuration.Quarter;
+        const note = new RestNote(durationValue);
+        this.stave.addNotation(note);
+        this.selectedNotation = { type: SelectNotationType.note, value: note };
+    }
+    public addBarline() {
+        const barline = new BarLine();
+        this.stave.addNotation(barline);
+        this.selectedNotation = {
+            type: SelectNotationType.bar,
+            value: barline
         };
-      }
-    });
-  }
-
-  public addNote(duration: NoteDuration) {
-    const durationValue = NoteDuration[duration] || NoteDuration.Quarter;
-    const note = new Note(NoteKey.C3, durationValue);
-    this.stave.addNotation(note);
-  }
-  public addRestNote(duration: NoteDuration) {
-    const durationValue = NoteDuration[duration] || NoteDuration.Quarter;
-    const note = new RestNote(durationValue);
-    this.stave.addNotation(note);
-  }
-  public addBarline() {
-    const barline = new BarLine();
-    this.stave.addNotation(barline);
-  }
-
-  public delNote() {
-    this.stave.deleteNotation(this.selectedNotation.value);
-  }
-  public breaktie() {
-    console.log(this.stave.abcString);
-    return;
-
-    this.selectedNotation &&
-      this.selectedNotation.type == SelectNotationType.note &&
-      (this.selectedNotation.value as Note).setEndSpacing();
-  }
-
-  public setAccidental(accidentalName: string) {
-    if (!this.selectedNotation) {
-      return;
     }
 
-    console.log('setAccidental'); 
-  }
-
-  public keypressHandle(e: KeyboardEvent) {
-    if (e.key === KeyName[KeyName.Delete]) {
-      e.preventDefault();
-      // 删除
-      this.delNote();
-    } else if (e.key === KeyName[KeyName.ArrowUp]) {
-      e.preventDefault();
-      // 升高音符在音阶的一个音
-      this.selectedNotation && (this.selectedNotation.value as Note).pitchUp();
-    } else if (e.key === KeyName[KeyName.ArrowDown]) {
-      e.preventDefault();
-      // 降低音符在音阶的一个音
-      this.selectedNotation &&
-        (this.selectedNotation.value as Note).pitchDown();
+    public delNote() {
+        this.stave.deleteNotation(this.selectedNotation.value);
+        this.selectedNotation = null;
     }
-  }
-
-  public newline() {
-    if (this.selectedNotation.type !== SelectNotationType.bar) {
-      return;
+    public breaktie() {
+        this.selectedNotation &&
+            this.selectedNotation.type == SelectNotationType.note &&
+            (this.selectedNotation.value as Note).setEndSpacing();
     }
-    this.selectedNotation.value.setNewlineInEnd();
-  }
 
-  public playMidi() {
-    let resumeBeforeColor = function() {};
-    abcjs.midi.setSoundFont('./');
-    abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
-      animate: {
-        listener(abcjsElement, currentEvent, context) {
-          console.log(abcjsElement, currentEvent, context);
-          resumeBeforeColor();
-          currentEvent &&
-            currentEvent.elements[0][0].setAttribute('fill', '#000FFF');
-          resumeBeforeColor = (function(event) {
-            return function() {
-              event.elements[0][0].setAttribute('fill', '#000000');
-            };
-          })(currentEvent);
-        },
-        target: this.tuneObjectArray[0],
-        qpm: this.tempo
-      },
-      // voicesOff: false,
-      inlineControls: { hide: true }
-    });
-    abcjs.midi.startPlaying(document.querySelector('.abcjs-inline-midi'));
-  }
+    public setAccidental(accidentalName: string) {
+        this.selectedNotation &&
+            this.selectedNotation.type == SelectNotationType.note &&
+            (this.selectedNotation.value as Note).setAccidential(
+                NoteAccidental[accidentalName] || NoteAccidental.None
+            );
+    }
+
+    public newline() {
+        this.selectedNotation &&
+            this.selectedNotation.type == SelectNotationType.bar &&
+            (this.selectedNotation.value as BarLine).setNewlineInEnd();
+    }
+
+    public keypressHandle(e: KeyboardEvent) {
+        if (!this.selectedNotation) return;
+
+        if (e.key === KeyName[KeyName.Delete]) {
+            e.preventDefault();
+            // 删除
+            this.delNote();
+        } else if (this.selectedNotation.type == SelectNotationType.note) {
+            // 音符操作
+            if (e.key === KeyName[KeyName.ArrowUp]) {
+                e.preventDefault();
+                (this.selectedNotation.value as Note).pitchUp(); // 升高音符在音阶的一个音
+            } else if (e.key === KeyName[KeyName.ArrowDown]) {
+                e.preventDefault();
+                (this.selectedNotation.value as Note).pitchDown();
+            }
+        }
+    }
+
+    public playMidi() {
+        let resumeBeforeColor = function() {};
+        abcjs.midi.setSoundFont('./');
+        abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
+            animate: {
+                listener(abcjsElement, currentEvent, context) {
+                    console.log(abcjsElement, currentEvent, context);
+                    resumeBeforeColor();
+                    currentEvent &&
+                        currentEvent.elements[0][0].setAttribute(
+                            'fill',
+                            '#000FFF'
+                        );
+                    resumeBeforeColor = (function(event) {
+                        return function() {
+                            event.elements[0][0].setAttribute(
+                                'fill',
+                                '#000000'
+                            );
+                        };
+                    })(currentEvent);
+                },
+                target: this.tuneObjectArray[0],
+                qpm: this.tempo
+            },
+            // voicesOff: false,
+            inlineControls: { hide: true }
+        });
+        abcjs.midi.startPlaying(document.querySelector('.abcjs-inline-midi'));
+    }
 }
 </script>
 
 <style lang="less" scoped>
 .home {
-	min-height: 100vh;
-	.btn_groups {
-		display: flex;
-		height: 40px;
-		padding-left: 20px;
-		.btn {
-			border: none;
-			margin-right: 20px;
-			background: transparent;
-			width: 100px;
-		}
-	}
-	&_box {
-		display: flex;
-		flex-direction: row;
-	}
-	.btn_group {
-		display: flex;
-		flex-wrap: wrap;
-		align-content: flex-start;
-		margin-top: 20px;
-	}
-	.headline {
-		background: #eee;
-		color: #000;
-		font-size: 18px;
-	}
-	.clef_box {
-		flex: 0.25;
-		height: 100%;
-		border-right: 1px solid #595959;
-		min-height: 80vh;
-		padding: 0 10px;
-		.img_box {
-			width: 100px;
-			height: 100px;
-			margin: 0 20px 20px 0;
-			img {
-				width: 100px;
-				height: 100px;
-				cursor: pointer;
-			}
-		}
-	}
-	.attribute_box {
-		flex: 0.3;
-		height: 100%;
-		border-left: 1px solid #595959;
-		min-height: 80vh;
-		padding: 0 10px;
-		.img_box {
-			width: 116px;
-			height: 116px;
-			margin: 0 0 20px 20px;
-			img {
-				width: 116px;
-				height: 116px;
-			}
-		}
-	}
-	.vex_box {
-		flex: 0.7;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		min-height: 80vh;
-		.input_box {
-			display: flex;
-		}
-		.input_item {
-			margin-left: 20px;
-			label {
-				margin-right: 10px;
-			}
-		}
-		.input_item:first-child {
-			margin-left: 0;
-		}
-		.svg_box {
-			margin-top: 20px;
-			width: 700px;
-			height: 700px;
-			border: 1px solid #595959;
-		}
-	}
+    min-height: 100vh;
+    .btn_groups {
+        display: flex;
+        height: 40px;
+        padding-left: 20px;
+        .btn {
+            border: none;
+            margin-right: 20px;
+            background: transparent;
+            width: 100px;
+        }
+    }
+    &_box {
+        display: flex;
+        flex-direction: row;
+    }
+    .btn_group {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        margin-top: 20px;
+    }
+    .headline {
+        background: #eee;
+        color: #000;
+        font-size: 18px;
+    }
+    .clef_box {
+        flex: 0.25;
+        height: 100%;
+        border-right: 1px solid #595959;
+        min-height: 80vh;
+        padding: 0 10px;
+        .img_box {
+            width: 100px;
+            height: 100px;
+            margin: 0 20px 20px 0;
+            img {
+                width: 100px;
+                height: 100px;
+                cursor: pointer;
+            }
+        }
+    }
+    .attribute_box {
+        flex: 0.3;
+        height: 100%;
+        border-left: 1px solid #595959;
+        min-height: 80vh;
+        padding: 0 10px;
+        .img_box {
+            width: 116px;
+            height: 116px;
+            margin: 0 0 20px 20px;
+            img {
+                width: 116px;
+                height: 116px;
+            }
+        }
+    }
+    .vex_box {
+        flex: 0.7;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 80vh;
+        .input_box {
+            display: flex;
+        }
+        .input_item {
+            margin-left: 20px;
+            label {
+                margin-right: 10px;
+            }
+        }
+        .input_item:first-child {
+            margin-left: 0;
+        }
+        .svg_box {
+            margin-top: 20px;
+            width: 700px;
+            height: 700px;
+            border: 1px solid #595959;
+        }
+    }
 }
 </style>

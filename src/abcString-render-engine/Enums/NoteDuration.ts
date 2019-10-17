@@ -19,7 +19,7 @@ export enum NoteDuration {
     Quarter='4',
     Eighth_dot1='3',
     Eighth='2',
-    Sixteenth='',
+    Sixteenth='/1',
     Thirty_Second='/2',
 }
 

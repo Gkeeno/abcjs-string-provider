@@ -43,10 +43,10 @@ export const NoteDurationNameMap = {
 	1: NoteDuration.Whole,
 }
 
-export const NoteAccidentalNameMap = {
-	sharp: NoteAccidental.Sharp,
-	dblsharp: NoteAccidental.DoubleSharp,
-	natural: NoteAccidental.Natural,
-	flat:NoteAccidental.Flat,
-	dblflat:NoteAccidental.DoubleFlat,
-}
+// export const NoteAccidentalNameMap = {
+// 	sharp: NoteAccidental.Sharp,
+// 	dblsharp: NoteAccidental.DoubleSharp,
+// 	natural: NoteAccidental.Natural,
+// 	flat:NoteAccidental.Flat,
+// 	dblflat:NoteAccidental.DoubleFlat,
+// }
