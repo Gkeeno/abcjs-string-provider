@@ -271,17 +271,17 @@ export default class Home extends Vue {
     } else if (e.key === KeyName[KeyName.ArrowUp]) {
       e.preventDefault();
       // 升高音符在音阶的一个音
-      console.log('up');
+      this.selectedNotation && (this.selectedNotation as Note).pitchUp()
     } else if (e.key === KeyName[KeyName.ArrowDown]) {
       e.preventDefault();
       // 降低音符在音阶的一个音
-      console.log('down');
+      this.selectedNotation && (this.selectedNotation as Note).pitchDown()
     }
   }
   public newline() {
     this.barline.setNewlineInEnd();
   }
-  
+
   public playMidi() {
     let resumeBeforeColor = function() {};
     abcjs.midi.setSoundFont('./');
