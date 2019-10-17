@@ -98,7 +98,8 @@ enum KeyName {
   ArrowUp,
   ArrowDown,
   ArrowLeft,
-  ArrowRight
+  ArrowRight,
+  Backspace
 }
 enum SelectNotationType {
   unkown,
@@ -216,7 +217,9 @@ export default class Home extends Vue {
       add_classes: true,
       staffwidth: 500,
       clickListener(abcElem, tuneNumber, classes) {
-        console.log(that.stave.abcString.slice(abcElem.startChar,abcElem.endChar))
+        console.log(
+          that.stave.abcString.slice(abcElem.startChar, abcElem.endChar)
+        );
         return;
         const notation = that.stave.getNotation(
           abcElem.startChar,
@@ -249,8 +252,9 @@ export default class Home extends Vue {
     this.stave.deleteNotation(this.selectedNotation.value);
   }
   public breaktie() {
-    console.log(this.stave.abcString);return
-    
+    console.log(this.stave.abcString);
+    return;
+
     this.selectedNotation &&
       this.selectedNotation.type == SelectNotationType.note &&
       (this.selectedNotation.value as Note).setEndSpacing();
@@ -261,7 +265,7 @@ export default class Home extends Vue {
       return;
     }
 
-    console.log('setAccidental');
+    console.log('setAccidental'); 
   }
 
   public keypressHandle(e: KeyboardEvent) {
