@@ -108,6 +108,15 @@ export default class canvasIndex extends Vue {
             });
         });
     }
+    public updated() {
+        const itemArr = this._canvas.getObjects();
+        console.log(itemArr);
+        itemArr.forEach(item => {
+            item.on('selected', options => {
+                this.selectObj = item;
+            });
+        });
+    }
     public keypressHandle(e: KeyboardEvent) {
         if (
             e.key === KeyName[KeyName.Delete] ||
