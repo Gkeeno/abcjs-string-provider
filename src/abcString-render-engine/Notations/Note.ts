@@ -81,7 +81,7 @@ export class Note implements INotation {
   }
   public removeInStave() {
     // this._ibegin = this._iend = 0;
-    this.toAbcString = () => ''; // 删除即更新为空字符串，空字符串在下次操作会异常
+    this.toAbcString = () => ''; // 删除即更新为空字符串
     this._command.updateAbcString(this.createUpdateAbcStringHandle());
     this._command.unsubscribeAbcStringIndexChange();
   }
@@ -142,7 +142,7 @@ export class Note implements INotation {
         // b.处理相关记录的索引
         const org_iend = this._iend;
         this._ibegin = this._ibegin;
-        this._iend = this._ibegin + notationStr.length - 1;
+        this._iend = this._ibegin + notationStr.length - 1; // 删除的索引变化为 org_istar-1, 即iend - len 或 ibegin - 1
         
         return {
           newStaveAbcString: forward.concat(notationStr).concat(backend),

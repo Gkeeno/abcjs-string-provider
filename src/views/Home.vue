@@ -89,6 +89,7 @@ import {
 } from '../abcString-render-engine/constant';
 import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';
 import { INotation } from '../abcString-render-engine/Notations/INotation';
+import { BarLine } from '../abcString-render-engine/Notations/Bar';
 
 enum KeyName {
   Delete,
@@ -138,11 +139,6 @@ export default class Home extends Vue {
 
   public stave: Stave;
   public selectedNotation: INotation;
-  public selectCharStart: number;
-  public selectCharEnd: number;
-  public selectCharPitch: number;
-  public selectDuration: number;
-  public selectAccidental: string;
 
   @Provide() public clefArr = [
     { data: 'Whole', img: require('../assets/image/clef1.png') },
@@ -180,6 +176,7 @@ export default class Home extends Vue {
   private $tempo = new InfoField(InfoFiledType.tempo, '60');
 
   private tuneObjectArray;
+  private barline:BarLine;
 
   constructor() {
     super();
@@ -196,9 +193,9 @@ export default class Home extends Vue {
     this.stave = stave.init();
     this.stave.setStaveChangeHandle(this.renderAbc.bind(this));
 
-    // 先手动渲染下界面
+    // 手动渲染下界面
     this.renderAbc();
-    // 先手动绑定上表单的值，因为v-model无法直接从对象中获取
+    // 手动绑定上表单的值，因为v-model无法直接从对象中获取
     (this.$refs.title as any).value = stave.title.getContent();
     (this.$refs.composer as any).value = stave.composer.getContent();
     (this.$refs.key as any).value = stave.key.getContent();
@@ -216,6 +213,7 @@ export default class Home extends Vue {
           abcElem.startChar,
           abcElem.endChar - 1
         );
+
         console.log(
           'select',
           abcElem.startChar,
@@ -233,14 +231,9 @@ export default class Home extends Vue {
     });
   }
 
-  public resetSelectChars() {
-    this.selectCharStart = 0;
-    this.selectCharEnd = 0;
-  }
-
   public addNote(duration: NoteDuration) {
     const durationValue = NoteDuration[duration] || NoteDuration.Quarter;
-    const note = new Note(NoteKey.C2, durationValue);
+    const note = new Note(NoteKey.C3, durationValue);
     this.stave.addNotation(note);
   }
   public addRestNote(duration: NoteDuration) {
@@ -249,30 +242,21 @@ export default class Home extends Vue {
     this.stave.addNotation(note);
   }
   public addBarline() {
-    // this.tunebookString += '|';
+    const barline = new BarLine();
+    this.stave.addNotation(barline);
+    this.barline = barline;
+    console.log(barline);
   }
 
   public delNote() {
-    // if (this.selectCharEnd === 0) {
-    //   return;
-    // }
-    // // 删除所选字符串
-    // const forward = this.tunebookString.substring(0, this.selectCharStart);
-    // const backward = this.tunebookString.substring(this.selectCharEnd);
-    // this.tunebookString = forward.concat(backward);
     console.log('delnote');
     this.stave.deleteNotation(this.selectedNotation);
-    this.resetSelectChars();
   }
   public breaktie() {
     console.log('breaktie', this.stave.abcString);
   }
   public setAccidental(accidentalName: string) {
-    if (
-      this.selectCharEnd === 0 ||
-      isNaN(this.selectCharPitch) ||
-      isNaN(this.selectDuration)
-    ) {
+    if (!this.selectedNotation) {
       return;
     }
 
@@ -295,22 +279,16 @@ export default class Home extends Vue {
     }
   }
   public newline() {
-    // this.tunebookString += newline + '|';
+    this.barline.setNewlineInEnd();
   }
+  
   public playMidi() {
-    // var elem_paper = document.querySelectorAll("#paper1")[0];
-    // abcjs.startAnimation(elem_paper, this.tuneObjectArray[0], {
-    //     showCursor: true
-    // });
-    // abcjs.midi.startPlaying(document.querySelector('.abcjs-inline-midi'));
-
     let resumeBeforeColor = function() {};
     abcjs.midi.setSoundFont('./');
     abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
       animate: {
         listener(abcjsElement, currentEvent, context) {
           console.log(abcjsElement, currentEvent, context);
-
           resumeBeforeColor();
           currentEvent &&
             currentEvent.elements[0][0].setAttribute('fill', '#000FFF');
