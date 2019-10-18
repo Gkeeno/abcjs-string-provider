@@ -1,10 +1,19 @@
 import { InfoFiledType } from '../Enums/InfoFieldType';
 import { NewLine } from '../utils';
 import { Notation } from './Notation.abstract';
+import { NotationType } from '..';
 
 export class InfoField extends Notation {
-  constructor(private fieldType: InfoFiledType, private content: string = '') {
+  public ntype = NotationType.InfoField;
+
+  constructor(private fieldType: InfoFiledType = InfoFiledType.reference_number, private content: string = '') {
     super();
+  }
+  public toJSON() {
+    return {
+      ntype:this.ntype,
+      state:[this.fieldType, this.content]
+    };
   }
 
   public setContent(setter: (string) => string): InfoField;

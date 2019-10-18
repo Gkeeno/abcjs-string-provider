@@ -1,8 +1,10 @@
 import { INotation } from "../INotation";
 import { Stave } from '../../Stave/Stave';
 import { StaveCommand } from "../../types_defined";
+import { NotationType } from '@/abcString-render-engine/Enums/NotationType';
 
 abstract class NotationWrapper implements INotation {
+    ntype: NotationType;
     query(param: any): boolean {
         throw new Error("Method not implemented.");
     }

@@ -4,6 +4,7 @@ import {
   StaveCommand,
   UpdateAbcStringHandle
 } from '../types_defined';
+import { NotationType } from '../Enums/NotationType';
 
 export abstract class Notation implements INotation {
   /**
@@ -18,16 +19,22 @@ export abstract class Notation implements INotation {
   get iend() {
     return this._iend;
   }
+  /**
+   * 标志序列化前的类型
+   */
+  public abstract ntype: NotationType;
   protected _ibegin: number = 0;
   protected _iend: number = 0;
   protected _command: StaveCommand;
 
-  constructor() { }
-  
-  public query(param: any): boolean {
-    if (!param.ichar_end) return false;
+  constructor() {}
 
-    return this.ibegin === param.ichar_start && this.iend === param.ichar_end
+  public query(param: any): boolean {
+    if (!param.ichar_end) {
+      return false;
+    }
+
+    return this.ibegin === param.ichar_start && this.iend === param.ichar_end;
   }
 
   public addToStave(command: StaveCommand) {
@@ -50,10 +57,12 @@ export abstract class Notation implements INotation {
   }
 
   public abstract toAbcString();
+  public abstract toJSON();
 
   protected stringIndexChangeHandle: StringsIndexChangeHandle = (sender, e) => {
     const isExceedThisEnd = this._ibegin > e.org_iend;
-    if (sender == this || !isExceedThisEnd) { // 除去本身触发这个事件的，没超过需要更新的结尾索引的
+    if (sender == this || !isExceedThisEnd) {
+      // 除去本身触发这个事件的，没超过需要更新的结尾索引的
       return;
     }
     // 更新在abcString中的索引

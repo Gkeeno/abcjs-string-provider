@@ -1,10 +1,12 @@
 import { NoteKey } from '../Enums/NoteKey';
-import { NoteDuration } from '..';
+import { NoteDuration, NotationType } from '..';
 import { SequenceNoteKey } from '../constant';
 import { NoteAccidental } from '../Enums/NoteAccidental';
 import { Notation } from './Notation.abstract';
 
 export class Note extends Notation {
+  public ntype = NotationType.Note;
+
   private lastString: string = '';
 
   constructor(
@@ -13,6 +15,12 @@ export class Note extends Notation {
     public accidental: NoteAccidental = NoteAccidental.None
   ) {
     super();
+  }
+  public toJSON() {
+    return {
+      ntype:this.ntype,
+      state:[this.key,this.duration,this.accidental]
+    };
   }
 
   public pitchUp() {

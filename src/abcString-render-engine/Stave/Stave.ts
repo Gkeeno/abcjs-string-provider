@@ -7,6 +7,9 @@ import {
 } from '../types_defined';
 import { InfoField } from '../Notations/InfoField';
 import { InfoFiledType } from '../Enums/InfoFieldType';
+import { Note } from '../Notations/Note';
+import { BarLine } from '../Notations/BarLine';
+import { RestNote } from '../Notations/RestNote';
 
 /**
  *
@@ -105,22 +108,45 @@ export class Stave {
     notation.removeInStave();
   }
 
-  public init() {
+  public init(data: any[] = null) {
     if (!this.abcString) {
-      const headers = [
-        this.id,
-        this.title,
-        this.composer,
-        this.tempo,
-        this.metre,
-        this.unitNoteLength,
-        this.key
-      ];
-      for (const notation of this.notations.concat(headers)) {
-        this.addNotation(notation);
+      if (data) {
+        for (const nState of data) {
+          this.addNotation(this.deserializeNotation(nState));
+        }
+      } else {
+        const headers = [
+          this.id,
+          this.title,
+          this.composer,
+          this.tempo,
+          this.metre,
+          this.unitNoteLength,
+          this.key
+        ];
+        for (const notation of this.notations.concat(headers)) {
+          this.addNotation(notation);
+        }
       }
     }
     return this;
+  }
+  public save() {
+    return JSON.stringify(this.notations);
+  }
+
+  private deserializeNotation(orgtate) {
+    let org_n: INotation;
+    if (orgtate.ntype == NotationType.Note) {
+      org_n = new Note(...orgtate.state);
+    } else if (orgtate.ntype == NotationType.InfoField) {
+      org_n = new InfoField(...orgtate.state);
+    } else if (orgtate.ntype == NotationType.BarLine) {
+      org_n = new BarLine(...orgtate.state);
+    } else if (orgtate.ntype == NotationType.RestNote) {
+      org_n = new RestNote(...orgtate.state);
+    }
+    return org_n;
   }
   private abcstringChangeHandle: (newString: string) => void = function() {};
 

@@ -1,6 +1,7 @@
 export enum NotationType{
-    Other,
+    Unknow,
     Note,
-    Rest,
-    Bar,
+    RestNote,
+    BarLine,
+    InfoField,
 }

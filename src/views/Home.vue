@@ -1,5 +1,9 @@
 <template>
   <div class="home">
+    <input v-model="staveData" />
+    <button @click="loadStave">加载谱子</button>
+    <button @click="saveStave">保存谱子</button>
+
     <div class="btn_groups">
       <button class="btn" @click="playMidi">试听乐谱</button>
     </div>
@@ -86,7 +90,7 @@ import _ from 'lodash';
 import { NoteDurationNameMap } from '../abcString-render-engine/constant';
 import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';
 import { INotation } from '../abcString-render-engine/Notations/INotation';
-import { BarLine } from '../abcString-render-engine/Notations/Bar';
+import { BarLine } from '../abcString-render-engine/Notations/BarLine';
 import { NoteAccidental } from '../abcString-render-engine/Enums/NoteAccidental';
 
 enum KeyName {
@@ -144,6 +148,7 @@ export default class Home extends Vue {
     this.$data.$tempo.setContent(v);
   }
 
+  public staveData: string = '';
   public stave: Stave;
   public selectedNotation: { type: SelectNotationType; value } = null;
 
@@ -187,6 +192,31 @@ export default class Home extends Vue {
   constructor() {
     super();
     window.document.onkeydown = e => this.keypressHandle(e);
+  }
+  public loadStave() {
+    const stave = new Stave();
+    stave.title = this.$data.$title;
+    stave.composer = this.$data.$composer;
+    stave.key = this.$data.$key;
+    stave.metre = this.$data.$metre;
+    stave.tempo = this.$data.$tempo;
+    this.stave = stave.init(JSON.parse(this.staveData));
+
+    (window as any).stave = stave;
+    this.stave.setStaveChangeHandle(this.renderAbc.bind(this));
+    // 手动渲染下界面
+    this.renderAbc();
+    // 手动绑定上表单的值，因为v-model无法直接从对象中获取
+    (this.$refs.title as any).value = stave.title.getContent();
+    (this.$refs.composer as any).value = stave.composer.getContent();
+    (this.$refs.key as any).value = stave.key.getContent();
+    (this.$refs.metre as any).value = stave.metre.getContent();
+    (this.$refs.tempo as any).value = stave.tempo.getContent();
+  }
+  public saveStave() {
+    console.log(this.staveData,this.stave.save());
+    
+    this.staveData = this.stave.save();
   }
 
   public mounted() {
@@ -237,7 +267,7 @@ export default class Home extends Vue {
           that.stave.abcString.substring(abcElem.startChar, abcElem.endChar),
           abcElem.startChar,
           abcElem.endChar,
-          that.selectedNotation
+          that.selectedNotation.value
         );
       }
     });
@@ -317,8 +347,8 @@ export default class Home extends Vue {
       }
     } else if (this.selectedNotation.type == SelectNotationType.bar) {
       // 小节线操作
-      if(e.key === KeyName[KeyName.Enter]){
-          this.newline();
+      if (e.key === KeyName[KeyName.Enter]) {
+        this.newline();
       }
     }
   }

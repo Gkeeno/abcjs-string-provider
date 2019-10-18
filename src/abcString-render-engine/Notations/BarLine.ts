@@ -1,9 +1,10 @@
 import { NewLine } from '../utils';
 import { Notation } from './Notation.abstract';
-import { UpdateAbcStringHandle } from '../types_defined';
-import { INotation } from './INotation';
+import { NotationType } from '..';
 
 export class BarLine extends Notation {
+  public ntype = NotationType.BarLine;
+
   get ibegin() {
     return this._ibegin;
   }
@@ -13,6 +14,13 @@ export class BarLine extends Notation {
 
   constructor(public hasNewlineInEnd: boolean = false) {
     super();
+  }
+
+  public toJSON() {
+    return {
+      ntype:this.ntype,
+      state:[this.hasNewlineInEnd]
+    };
   }
 
   public toAbcString() {
@@ -25,12 +33,13 @@ export class BarLine extends Notation {
   }
 
   public query(param): boolean {
-    if (!param.ichar_end) { return false; }
+    if (!param.ichar_end) {
+      return false;
+    }
     // tips: 因为abcjs选中回调中 不包括换行符，所以带换行符的符号要比实际少1，但是内部索引操作还是正常使用
     return (
       this.ibegin === param.ichar_start &&
       this.iend + (this.hasNewlineInEnd ? -1 : 0) === param.ichar_end
     );
   }
-
 }
