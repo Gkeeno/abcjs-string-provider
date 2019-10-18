@@ -1,7 +1,11 @@
 import { NewLine } from '../utils';
 import { Notation } from './Notation.abstract';
+import { UpdateAbcStringHandle } from '../types_defined';
+import { INotation } from './INotation';
+
 
 export class BarLine extends Notation {
+  
   get ibegin() {
     return this._ibegin;
   }
@@ -19,7 +23,30 @@ export class BarLine extends Notation {
   }
   
   public setNewlineInEnd() {
+    
     this.hasNewlineInEnd = true;
     this.updateInStave();
+  }
+
+  protected insertAbcStringHandle(before: INotation): UpdateAbcStringHandle{
+    const notationStr = this.toAbcString();
+    // 插入到前一符号后
+    return abcstr => {
+      // a.拆分出前后字符串
+      const forward = abcstr.substring(0, before.ibegin);
+      const backend = abcstr.substring(before.iend + 1);
+      // b.处理相关记录的索引
+      const org_iend = before.iend;
+      this._ibegin = before.iend + 1;
+      this._iend = this._ibegin + notationStr.length - 1;
+
+      return {
+        newStaveAbcString: forward
+          .concat(before.toAbcString())
+          .concat(notationStr)
+          .concat(backend),
+        changesInfo: { org_iend, iend: this.iend, sender: this }
+      };
+    };
   }
 }

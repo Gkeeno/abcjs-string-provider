@@ -23,5 +23,7 @@ export interface INotation {
   addToStave(command: StaveCommand);
   insertToStave(before: INotation,command: StaveCommand);
   updateInStave();
-	removeInStave();
+  removeInStave();
+  
+  toAbcString();
 }

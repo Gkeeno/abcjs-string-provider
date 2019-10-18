@@ -1,13 +1,14 @@
-export type stringsIndexChangeHandle = (iend: number, org_iend: number) => void;
-export type updateAbcStringHandle = (
+export type StringIndexChangeEventArgs = {iend: number, org_iend: number}
+export type StringsIndexChangeHandle = (sender:object,e :StringIndexChangeEventArgs) => void;
+export type UpdateAbcStringHandle = (
   staveAbcString: string
 ) => {
   newStaveAbcString: string;
-  changesInfo?: { iend: number; org_iend: number };
+  changesInfo?: { iend: number; org_iend: number,sender:object};
 };
 
 export interface StaveCommand {
-  updateAbcString: (handle: updateAbcStringHandle) => any;
+  updateAbcString: (handle: UpdateAbcStringHandle) => any;
   /**
    * 订阅变化并返回 取消订阅的函数
    * @returns 取消订阅函数
@@ -16,3 +17,4 @@ export interface StaveCommand {
 
   unsubscribeAbcStringIndexChange: () => any;
 }
+

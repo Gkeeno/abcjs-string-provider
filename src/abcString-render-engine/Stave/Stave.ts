@@ -1,9 +1,9 @@
 import { INotation } from '../Notations/INotation';
 import { NotationType } from '../Enums/NotationType';
 import {
-  stringsIndexChangeHandle,
+  StringsIndexChangeHandle,
   StaveCommand,
-  updateAbcStringHandle
+  UpdateAbcStringHandle
 } from '../types_defined';
 import { InfoField } from '../Notations/InfoField';
 import { InfoFiledType } from '../Enums/InfoFieldType';
@@ -15,7 +15,7 @@ import { InfoFiledType } from '../Enums/InfoFieldType';
  * b. 添加的 Notation 的变化都可能引起 abcstring 变化
  */
 export class Stave {
-  public static readonly abcversion: string = "standard:v2.1";
+  public static readonly abcversion: string = 'standard:v2.1';
 
   public get abcString(): string {
     return this._abcString;
@@ -65,7 +65,7 @@ export class Stave {
 
   private notations: INotation[] = [];
 
-  private stringIndexChangeSubscribers: stringsIndexChangeHandle[] = [];
+  private stringIndexChangeSubscribers: StringsIndexChangeHandle[] = [];
 
   constructor() {}
 
@@ -132,7 +132,7 @@ export class Stave {
    * @param subHandle
    */
   private subscribeStringIndexChange(
-    subHandle: stringsIndexChangeHandle
+    subHandle: StringsIndexChangeHandle
   ): () => void {
     const that = this;
     that.stringIndexChangeSubscribers.push(subHandle);
@@ -147,31 +147,36 @@ export class Stave {
    * @param iend
    * @param iorg_end
    */
-  private triggleStringIndexChange(iend: number, org_iend: number) {
+  private triggleStringIndexChange(sender:object, iend: number, org_iend: number) {
     // dispatch to subscribers
     for (
       let index = 0;
       index < this.stringIndexChangeSubscribers.length;
       index++
     ) {
-      this.stringIndexChangeSubscribers[index](iend, org_iend);
+      this.stringIndexChangeSubscribers[index](sender, { iend, org_iend });
     }
   }
 
   private createOperateCommand(): StaveCommand {
-    const updateAbcString = (update: updateAbcStringHandle) => {
+    const updateAbcString = (update: UpdateAbcStringHandle) => {
       const orgStr = this.abcString;
       const { newStaveAbcString, changesInfo } = update(orgStr);
       this.abcString = newStaveAbcString;
 
-      if (changesInfo && changesInfo.iend != changesInfo.org_iend) { // 删除的索引变化为 org_istar-1, 即iend - len
-        this.triggleStringIndexChange(changesInfo.iend, changesInfo.org_iend);
+      if (changesInfo && changesInfo.iend != changesInfo.org_iend) {
+        // 删除的索引变化为 org_istar-1, 即iend - len
+        this.triggleStringIndexChange(
+          changesInfo.sender,
+          changesInfo.iend,
+          changesInfo.org_iend
+        );
       }
     };
 
     let unsubscribe;
     const subscribeAbcStringIndexChange = (
-      subhandle: stringsIndexChangeHandle
+      subhandle: StringsIndexChangeHandle
     ) => {
       unsubscribe = this.subscribeStringIndexChange(subhandle);
       return unsubscribe;
