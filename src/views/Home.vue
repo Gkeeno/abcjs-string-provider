@@ -96,7 +96,8 @@ enum KeyName {
   ArrowDown,
   ArrowLeft,
   ArrowRight,
-  Backspace
+  Backspace,
+  Enter
 }
 enum SelectNotationType {
   unkown,
@@ -277,10 +278,6 @@ export default class Home extends Vue {
     this.selectedNotation = null;
   }
   public breaktie() {
-    console.log(this.stave.abcString);
-    console.log(this.selectedNotation.value);
-    return;
-
     this.selectedNotation &&
       this.selectedNotation.type == SelectNotationType.note &&
       (this.selectedNotation.value as Note).setEndSpacing();
@@ -317,6 +314,11 @@ export default class Home extends Vue {
       } else if (e.key === KeyName[KeyName.ArrowDown]) {
         e.preventDefault();
         (this.selectedNotation.value as Note).pitchDown();
+      }
+    } else if (this.selectedNotation.type == SelectNotationType.bar) {
+      // 小节线操作
+      if(e.key === KeyName[KeyName.Enter]){
+          this.newline();
       }
     }
   }
