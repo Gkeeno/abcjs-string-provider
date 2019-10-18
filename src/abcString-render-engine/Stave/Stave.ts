@@ -79,9 +79,7 @@ export class Stave {
     return NotationType.Note;
   }
   public getNotation(ichar_start: number, ichar_end: number): any {
-    return this.notations.find(
-      x => x.ibegin === ichar_start && x.iend === ichar_end
-    );
+    return this.notations.find(x => x.query({ ichar_start, ichar_end }));
   }
 
   public addNotation(notaion: INotation) {
@@ -147,7 +145,11 @@ export class Stave {
    * @param iend
    * @param iorg_end
    */
-  private triggleStringIndexChange(sender:object, iend: number, org_iend: number) {
+  private triggleStringIndexChange(
+    sender: object,
+    iend: number,
+    org_iend: number
+  ) {
     // dispatch to subscribers
     for (
       let index = 0;

@@ -3,6 +3,9 @@ import { Stave } from '../../Stave/Stave';
 import { StaveCommand } from "../../types_defined";
 
 abstract class NotationWrapper implements INotation {
+    query(param: any): boolean {
+        throw new Error("Method not implemented.");
+    }
     toAbcString() {
         throw new Error("Method not implemented.");
     }

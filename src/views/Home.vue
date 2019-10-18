@@ -234,7 +234,8 @@ export default class Home extends Vue {
 
         console.log(
           that.stave.abcString.substring(abcElem.startChar, abcElem.endChar),
-          abcElem.startChar, abcElem.endChar,
+          abcElem.startChar,
+          abcElem.endChar,
           that.selectedNotation
         );
       }
@@ -278,7 +279,6 @@ export default class Home extends Vue {
   public breaktie() {
     console.log(this.stave.abcString);
     console.log(this.selectedNotation.value);
-    
     return;
 
     this.selectedNotation &&

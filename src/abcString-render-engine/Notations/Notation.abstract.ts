@@ -6,9 +6,15 @@ import {
 } from '../types_defined';
 
 export abstract class Notation implements INotation {
+  /**
+   * gatter 只用来作hook,返回值不应该被改变
+   */
   get ibegin() {
     return this._ibegin;
   }
+  /**
+   * gatter 只用来作hook,返回值不应该被改变
+   */
   get iend() {
     return this._iend;
   }
@@ -16,7 +22,13 @@ export abstract class Notation implements INotation {
   protected _iend: number = 0;
   protected _command: StaveCommand;
 
-  constructor() {}
+  constructor() { }
+  
+  public query(param: any): boolean {
+    if (!param.ichar_end) return false;
+
+    return this.ibegin === param.ichar_start && this.iend === param.ichar_end
+  }
 
   public addToStave(command: StaveCommand) {
     this._command = command;
@@ -32,7 +44,6 @@ export abstract class Notation implements INotation {
     this._command.updateAbcString(this.createUpdateAbcStringHandle());
   }
   public removeInStave() {
-    // this._ibegin = this._iend = 0;
     this.toAbcString = () => ''; // 删除即更新为空字符串
     this._command.updateAbcString(this.createUpdateAbcStringHandle());
     this._command.unsubscribeAbcStringIndexChange();
@@ -42,8 +53,7 @@ export abstract class Notation implements INotation {
 
   protected stringIndexChangeHandle: StringsIndexChangeHandle = (sender, e) => {
     const isExceedThisEnd = this._ibegin > e.org_iend;
-    if (sender == this || !isExceedThisEnd) {
-      // 除去本身触发这个事件的，没超过需要更新的结尾索引的
+    if (sender == this || !isExceedThisEnd) { // 除去本身触发这个事件的，没超过需要更新的结尾索引的
       return;
     }
     // 更新在abcString中的索引
@@ -101,7 +111,7 @@ export abstract class Notation implements INotation {
       };
     };
   }
-  
+
   protected createUpdateAbcStringHandle(
     before?: INotation
   ): UpdateAbcStringHandle {

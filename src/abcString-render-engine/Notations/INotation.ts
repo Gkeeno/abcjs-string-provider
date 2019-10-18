@@ -14,6 +14,8 @@ export interface INotation {
    */
   readonly iend: number;
   
+  query(param): boolean;
+  
   /**
    * 将"符号"写入"谱子"
    * 订阅"谱子"相关的变化，自己的变化也将通知到"谱子"
