@@ -15,6 +15,8 @@ import { InfoFiledType } from '../Enums/InfoFieldType';
  * b. 添加的 Notation 的变化都可能引起 abcstring 变化
  */
 export class Stave {
+  public static readonly abcversion: string = "standard:v2.1";
+
   public get abcString(): string {
     return this._abcString;
   }
@@ -187,3 +189,5 @@ export class Stave {
     };
   }
 }
+
+(window as any).Stave = Stave;
