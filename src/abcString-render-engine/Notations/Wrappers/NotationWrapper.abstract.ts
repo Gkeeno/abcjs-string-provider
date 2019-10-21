@@ -1,28 +1,16 @@
-import { INotation } from "../INotation";
+import { INotation } from '../INotation';
 import { Stave } from '../../Stave/Stave';
-import { StaveCommand } from "../../types_defined";
+import { StaveCommand } from '../../types_defined';
 import { NotationType } from '@/abcString-render-engine/Enums/NotationType';
 
-abstract class NotationWrapper implements INotation {
-    ntype: NotationType;
-    query(param: any): boolean {
-        throw new Error("Method not implemented.");
-    }
-    toAbcString() {
-        throw new Error("Method not implemented.");
-    }
-    addToStave(command: StaveCommand) {
-        throw new Error("Method not implemented.");
-    }
-    insertToStave(before: INotation, command: StaveCommand) {
-        throw new Error("Method not implemented.");
-    }
-    
-    abstract ibegin: number;
-    abstract iend: number;
-    
-    constructor(...notations: INotation[]) { }
 
-    abstract updateInStave(): string;
-    abstract removeInStave(): string;
+/**
+ * @useage new 一个包装器, 表示一个需要包裹的符号,实例则产生start 和 end并添加,且默认在start 后插入
+ * 在其中的符号后面正常添加,但是插入需要在包装器后插入才能插入到外面
+ * 反序列化的时候就根据 start, end还原一个包装器
+ */
+export abstract class NotationWrapper {
+  constructor(/**some attribute */) {}
+
+  public abstract build(): { start: INotation; end: INotation };
 }
