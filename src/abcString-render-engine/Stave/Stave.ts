@@ -10,6 +10,7 @@ import { InfoFiledType } from '../Enums/InfoFieldType';
 import { Note } from '../Notations/Note';
 import { BarLine } from '../Notations/BarLine';
 import { RestNote } from '../Notations/RestNote';
+import { NotationWrapper } from '../Notations/Wrappers/NotationWrapper.abstract';
 
 /**
  *
@@ -81,22 +82,34 @@ export class Stave {
   public getSelectionInfo(): any {
     return NotationType.Note;
   }
+  /**
+   * 
+   * @param ichar_start 
+   * @param ichar_end abcjs中的通常会大1, 表示[,) 结尾开区间
+   */
   public getNotation(ichar_start: number, ichar_end: number): any {
-    return this.notations.find(x => x.query({ ichar_start, ichar_end }));
+    var queryParam = { ichar_start, ichar_end };
+    return this.notations.find(x => x.query(queryParam));
   }
 
   public addNotation(notaion: INotation) {
     notaion.addToStave(this.createOperateCommand());
-    // this.notations.push(notaion);
+  }
+  public insertWrapper(notation: INotation, wrapper: NotationWrapper) {
+    const iBeforeInsert = this.notations.indexOf(notation) - 1;
+    const note = this.notations[iBeforeInsert];
+    if (!note) {
+      console.warn('不存在wrapper将作用的notation');
+      return;
+    }
+    wrapper.begin.insertToStave(note,this.createOperateCommand());
+    wrapper.end.insertToStave(notation,this.createOperateCommand());
   }
   public insertNotation(before: INotation, notaion: INotation) {
     notaion.insertToStave(before, this.createOperateCommand());
-    // this.notations.push(notaion);
   }
   /**
    * 从字符串区间中删除符号
-   * @todo
-   * a.需要知道符号是否存在 b.需要知道符号是否在相应字符串区间
    */
   public deleteNotation(notation: INotation) {
     const iRemove = this.notations.indexOf(notation);
@@ -104,7 +117,6 @@ export class Stave {
       console.warn('不存在将删除的notation');
       return;
     }
-    // this.notations.splice(iRemove, 1)[0];
     notation.removeInStave();
   }
 

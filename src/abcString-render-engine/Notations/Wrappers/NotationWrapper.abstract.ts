@@ -3,14 +3,21 @@ import { Stave } from '../../Stave/Stave';
 import { StaveCommand } from '../../types_defined';
 import { NotationType } from '@/abcString-render-engine/Enums/NotationType';
 
-
 /**
- * @useage new 一个包装器, 表示一个需要包裹的符号,实例则产生start 和 end并添加,且默认在start 后插入
- * 在其中的符号后面正常添加,但是插入需要在包装器后插入才能插入到外面
- * 反序列化的时候就根据 start, end还原一个包装器
+ * 一个包装器,表示一组需要包裹的符号, 主要用作联动前后有关的一组 start end符号
+ * @useage new 一个包装器, 实例则产生start 和 end 并添加,且需要要选中start插入音符
+ * 在 start 后插入到wrapper内,end插入到wrapper外
+ * `反序列化`的时候就根据 start, end还原一个包装器 (同时实例一个wrapper)
+ * 在边界附近的音符 相应匹配索引规则会变
  */
 export abstract class NotationWrapper {
+  abstract get begin(): INotation;
+  abstract get end(): INotation;
+
   constructor(/**some attribute */) {}
 
-  public abstract build(): { start: INotation; end: INotation };
+  /**
+   * @returns `start`,`end`
+   */
+  public abstract writeToStave(stave:Stave);
 }

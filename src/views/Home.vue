@@ -67,6 +67,7 @@
           </div>
         </div>
         <button @click="breaktie">断开符尾</button>
+        <button @click="setUnisons">添加延音</button>
       </div>
     </div>
   </div>
@@ -83,7 +84,8 @@ import {
   SequenceNoteKey,
   InfoField,
   Stave,
-  RestNote
+  RestNote,
+  UnisonsWrapper
 } from '../abcString-render-engine';
 
 import _ from 'lodash';
@@ -92,6 +94,7 @@ import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';
 import { INotation } from '../abcString-render-engine/Notations/INotation';
 import { BarLine } from '../abcString-render-engine/Notations/BarLine';
 import { NoteAccidental } from '../abcString-render-engine/Enums/NoteAccidental';
+
 
 enum KeyName {
   Delete,
@@ -309,6 +312,11 @@ export default class Home extends Vue {
     this.selectedNotation &&
       this.selectedNotation.type == SelectNotationType.note &&
       (this.selectedNotation.value as Note).setEndSpacing();
+  }
+   public setUnisons() {
+    this.selectedNotation &&
+      this.selectedNotation.type == SelectNotationType.note &&
+      this.stave.insertWrapper(this.selectedNotation.value,new UnisonsWrapper())
   }
 
   public setAccidental(accidentalName: string) {
