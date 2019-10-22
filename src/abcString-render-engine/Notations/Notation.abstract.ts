@@ -33,10 +33,6 @@ export abstract class Notation implements INotation {
   constructor() {}
 
   public query(param: any): boolean {
-    if (!param.ichar_end) {
-      return false;
-    }
-
     return this.ibegin === param.ichar_start && this.iend === param.ichar_end;
   }
 

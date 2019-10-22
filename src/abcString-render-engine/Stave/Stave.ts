@@ -10,7 +10,6 @@ import { InfoFiledType } from '../Enums/InfoFieldType';
 import { Note } from '../Notations/Note';
 import { BarLine } from '../Notations/BarLine';
 import { RestNote } from '../Notations/RestNote';
-import { NotationWrapper } from '../Notations/Wrappers/NotationWrapper.abstract';
 
 /**
  *
@@ -95,16 +94,7 @@ export class Stave {
   public addNotation(notaion: INotation) {
     notaion.addToStave(this.createOperateCommand());
   }
-  public insertWrapper(notation: INotation, wrapper: NotationWrapper) {
-    const iBeforeInsert = this.notations.indexOf(notation) - 1;
-    const note = this.notations[iBeforeInsert];
-    if (!note) {
-      console.warn('不存在wrapper将作用的notation');
-      return;
-    }
-    wrapper.begin.insertToStave(note,this.createOperateCommand());
-    wrapper.end.insertToStave(notation,this.createOperateCommand());
-  }
+  
   public insertNotation(before: INotation, notaion: INotation) {
     notaion.insertToStave(before, this.createOperateCommand());
   }

@@ -6,7 +6,7 @@ import { SequenceNoteKey } from './constant';
 import { InfoField } from './Notations/InfoField';
 import { RestNote } from './Notations/RestNote';
 import { Stave } from './Stave/Stave';
-import { UnisonsWrapper } from './Notations/Wrappers/UnisonsWrapper';
+import { UnisonsBoundary } from './Notations/Wrappers/UnisonsBoundary';
 
 
 export {
@@ -18,5 +18,5 @@ export {
     SequenceNoteKey,
     InfoField,
     Stave,
-    UnisonsWrapper
+    UnisonsBoundary
 } 
