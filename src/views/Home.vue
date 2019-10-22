@@ -214,8 +214,6 @@ export default class Home extends Vue {
     (this.$refs.tempo as any).value = stave.tempo.getContent();
   }
   public saveStave() {
-    console.log(this.staveData,this.stave.save());
-    
     this.staveData = this.stave.save();
   }
 

@@ -6,6 +6,9 @@ import {
 } from '../types_defined';
 import { NotationType } from '../Enums/NotationType';
 
+/**
+ * @description `反序列化` 所有的状态应该可在构造函数内被还原
+ */
 export abstract class Notation implements INotation {
   /**
    * gatter 只用来作hook,返回值不应该被改变
@@ -41,11 +44,26 @@ export abstract class Notation implements INotation {
     this._command = command;
     this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle);
     this._command.updateAbcString(this.createUpdateAbcStringHandle());
+    this._command.updateNotations(narr => {
+      narr.push(this);
+      return narr;
+    });
   }
   public insertToStave(before: INotation, command: StaveCommand) {
     this._command = command;
     this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle);
     this._command.updateAbcString(this.createUpdateAbcStringHandle(before));
+    this._command.updateNotations(narr => {
+      const iBefore = narr.indexOf(before);
+      if (iBefore == -1) {
+        console.warn('不存在将插入的 notation');
+        return;
+      }
+      let forward = narr.slice(0, iBefore + 1);
+      let backward = narr.slice(iBefore + 1);
+      narr = forward.concat(this).concat(backward);
+      return narr;
+    });
   }
   public updateInStave() {
     this._command.updateAbcString(this.createUpdateAbcStringHandle());
@@ -54,6 +72,15 @@ export abstract class Notation implements INotation {
     this.toAbcString = () => ''; // 删除即更新为空字符串
     this._command.updateAbcString(this.createUpdateAbcStringHandle());
     this._command.unsubscribeAbcStringIndexChange();
+    this._command.updateNotations(narr => {
+      const iRemove = narr.indexOf(this);
+      if (iRemove == -1) {
+        console.warn('不存在将删除的notation');
+        return;
+      }
+      narr.splice(iRemove, 1);
+      return narr;
+    });
   }
 
   public abstract toAbcString();

@@ -87,11 +87,11 @@ export class Stave {
 
   public addNotation(notaion: INotation) {
     notaion.addToStave(this.createOperateCommand());
-    this.notations.push(notaion);
+    // this.notations.push(notaion);
   }
   public insertNotation(before: INotation, notaion: INotation) {
     notaion.insertToStave(before, this.createOperateCommand());
-    this.notations.push(notaion);
+    // this.notations.push(notaion);
   }
   /**
    * 从字符串区间中删除符号
@@ -104,29 +104,31 @@ export class Stave {
       console.warn('不存在将删除的notation');
       return;
     }
-    this.notations.splice(iRemove, 1)[0];
+    // this.notations.splice(iRemove, 1)[0];
     notation.removeInStave();
   }
 
   public init(data: any[] = null) {
-    if (!this.abcString) {
-      if (data) {
-        for (const nState of data) {
-          this.addNotation(this.deserializeNotation(nState));
-        }
-      } else {
-        const headers = [
-          this.id,
-          this.title,
-          this.composer,
-          this.tempo,
-          this.metre,
-          this.unitNoteLength,
-          this.key
-        ];
-        for (const notation of this.notations.concat(headers)) {
-          this.addNotation(notation);
-        }
+    if (this.abcString) {
+      return;
+    }
+
+    if (data) {
+      for (const nState of data) {
+        this.addNotation(this.deserializeNotation(nState));
+      }
+    } else {
+      const headers = [
+        this.id,
+        this.title,
+        this.composer,
+        this.tempo,
+        this.metre,
+        this.unitNoteLength,
+        this.key
+      ];
+      for (const notation of this.notations.concat(headers)) {
+        this.addNotation(notation);
       }
     }
     return this;
@@ -135,16 +137,16 @@ export class Stave {
     return JSON.stringify(this.notations);
   }
 
-  private deserializeNotation(orgtate) {
+  private deserializeNotation(orgState) {
     let org_n: INotation;
-    if (orgtate.ntype == NotationType.Note) {
-      org_n = new Note(...orgtate.state);
-    } else if (orgtate.ntype == NotationType.InfoField) {
-      org_n = new InfoField(...orgtate.state);
-    } else if (orgtate.ntype == NotationType.BarLine) {
-      org_n = new BarLine(...orgtate.state);
-    } else if (orgtate.ntype == NotationType.RestNote) {
-      org_n = new RestNote(...orgtate.state);
+    if (orgState.ntype == NotationType.Note) {
+      org_n = new Note(...orgState.state);
+    } else if (orgState.ntype == NotationType.InfoField) {
+      org_n = new InfoField(...orgState.state);
+    } else if (orgState.ntype == NotationType.BarLine) {
+      org_n = new BarLine(...orgState.state);
+    } else if (orgState.ntype == NotationType.RestNote) {
+      org_n = new RestNote(...orgState.state);
     }
     return org_n;
   }
@@ -187,9 +189,9 @@ export class Stave {
   }
 
   private createOperateCommand(): StaveCommand {
-    const updateAbcString = (update: UpdateAbcStringHandle) => {
+    const updateAbcString = (update_abcsting: UpdateAbcStringHandle) => {
       const orgStr = this.abcString;
-      const { newStaveAbcString, changesInfo } = update(orgStr);
+      const { newStaveAbcString, changesInfo } = update_abcsting(orgStr);
       this.abcString = newStaveAbcString;
 
       if (changesInfo && changesInfo.iend != changesInfo.org_iend) {
@@ -200,6 +202,10 @@ export class Stave {
           changesInfo.org_iend
         );
       }
+    };
+
+    const updateNotations = (update_notations: (narr:INotation[]) => any) => {
+      this.notations = update_notations(this.notations) || this.notations;
     };
 
     let unsubscribe;
@@ -215,8 +221,10 @@ export class Stave {
         unsubscribe();
       }
     };
+
     return {
       updateAbcString,
+      updateNotations,
       subscribeAbcStringIndexChange,
       unsubscribeAbcStringIndexChange
     };
