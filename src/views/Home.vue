@@ -81,19 +81,16 @@ import {
     NoteKey,
     NoteDuration,
     NotationType,
-    SequenceNoteKey,
     InfoField,
     Stave,
     RestNote,
-    UnisonsBoundary
+    UnisonsBoundary,
+	InfoFiledType,
+	BarLine,
+	NoteAccidental
 } from '../abcString-render-engine';
 
 import _ from 'lodash';
-import { NoteDurationNameMap } from '../abcString-render-engine/constant';
-import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';
-import { INotation } from '../abcString-render-engine/Notations/INotation';
-import { BarLine } from '../abcString-render-engine/Notations/BarLine';
-import { NoteAccidental } from '../abcString-render-engine/Enums/NoteAccidental';
 
 enum KeyName {
     Delete,

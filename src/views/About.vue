@@ -75,11 +75,10 @@ import {
   Note,
   NoteKey,
   NoteDuration,
-  NotationType,
-  SequenceNoteKey
+  NotationType
 } from '../abcString-render-engine';
 import _ from 'lodash';
-import { NoteDurationNameMap } from '../abcString-render-engine/constant';
+import { NoteDurationNameMap, SequenceNoteKey } from '../abcString-render-engine/constant';
 import { RestNote } from '../abcString-render-engine/Notations/RestNote';
 import { NoteAccidental } from '../abcString-render-engine/Enums/NoteAccidental';
 
