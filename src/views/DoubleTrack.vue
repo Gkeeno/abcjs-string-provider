@@ -52,6 +52,14 @@
             <label for="tempo">速率</label>
             <input type="text" id="tempo" v-model="tempo" ref="tempo" />
           </div>
+
+          <div class="curEditTrack_input input_item">
+            <label for="curEditTrack">当前编辑轨道</label>
+            <select id="curEditTrack" ref="curEditTrack" @change="changeEditTrack($event)">
+              <option>右手</option>
+              <option>左手</option>
+            </select>
+          </div>
         </div>
         <div class="svg_box" ref="paper">
           <div id="paper1" class="sheet-music"></div>
@@ -91,6 +99,7 @@ import {
 } from '../abcString-render-engine';
 
 import _ from 'lodash';
+import { StringIndexChangeEventArgs } from '../abcString-render-engine/types_defined';
 
 enum KeyName {
 	Delete,
@@ -150,6 +159,7 @@ export default class DoubleTrack extends Vue {
 	public staveData: string = '';
 	public stave: Stave;
 	public selectedNotation: { type: SelectNotationType; value } = null;
+	public curEditTrack: '左手' | '右手' = '右手';
 
 	@Provide() public clefArr = [
 		{ data: 'Whole', img: require('../assets/image/clef1.png') },
@@ -271,6 +281,12 @@ export default class DoubleTrack extends Vue {
 				);
 			}
 		});
+	}
+	
+	public changeEditTrack(e:Event) {
+		var sender = e.target as HTMLSelectElement;
+		this.curEditTrack = (sender.value as '左手'|'右手');
+		console.log(this.curEditTrack);
 	}
 
 	public addNote(duration: NoteDuration) {
