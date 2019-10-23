@@ -10,6 +10,7 @@ import { InfoFiledType } from '../Enums/InfoFieldType';
 import { Note } from '../Notations/Note';
 import { BarLine } from '../Notations/BarLine';
 import { RestNote } from '../Notations/RestNote';
+import { InlineInfoField } from '../Notations/InlineInfoField';
 
 /**
  *
@@ -27,42 +28,20 @@ export class StaveDoubleTrack {
     this._abcString = v;
     this.abcstringChangeHandle(v);
   }
-  /**
-   * X:reference number
-   */
-  public id: InfoField = new InfoField(InfoFiledType.reference_number, '1');
-  /**
-   * T:title
-   * @description
-   * followed X:
-   */
-  public title: InfoField = new InfoField(InfoFiledType.title, 'untitled');
+  
+  public id = new InfoField(InfoFiledType.reference_number, '1');
+  public title = new InfoField(InfoFiledType.title, 'untitled');
+  public composer = new InfoField(InfoFiledType.composer, 'anonymous');
+  public tempo = new InfoField(InfoFiledType.tempo, '60');
+  public metre = new InfoField(InfoFiledType.metre, '4/4');
+  public unitNoteLength = new InfoField(InfoFiledType.note_unit_length, '1/16');
+  public key = new InfoField(InfoFiledType.key, 'C');
 
-  public composer: InfoField = new InfoField(
-    InfoFiledType.composer,
-    'anonymous'
-  );
-  public tempo: InfoField = new InfoField(InfoFiledType.tempo, '60');
-  /**
-   * M:metre 拍号
-   */
-  public metre: InfoField = new InfoField(InfoFiledType.metre, '4/4');
-  /**
-   * L:unit note length
-   * @description
-   * 目前不涉及复杂制谱的标准都用 1/16
-   * 每个音符时长的步进单位 例:  C - C/2 = L; C3 - C2 =L
-   */
-  public unitNoteLength: InfoField = new InfoField(
-    InfoFiledType.note_unit_length,
-    '1/16'
-  );
-  /**
-   * K:key
-   * @description
-   * 调号、finish field. (general)
-   */
-  public key: InfoField = new InfoField(InfoFiledType.key, 'C');
+  public spacingStaves = new InfoField(InfoFiledType.spacing_staves,'{(PianoRightHand) (PianoLeftHand)}');
+  public rightHandHeader = new InfoField(InfoFiledType.voice,'PianoRightHand clef=treble');
+  public leftHandHeader = new InfoField(InfoFiledType.voice,'PianoLeftHand clef=bass');
+  public rightHand = new InlineInfoField(InfoFiledType.voice,'PianoRightHand');
+  public leftHand = new InlineInfoField(InfoFiledType.voice,'PianoLeftHand');
 
   private _abcString: string = '';
 
@@ -82,8 +61,8 @@ export class StaveDoubleTrack {
     return NotationType.Note;
   }
   /**
-   * 
-   * @param ichar_start 
+   *
+   * @param ichar_start
    * @param ichar_end abcjs中的通常会大1, 表示[,) 结尾开区间
    */
   public getNotation(ichar_start: number, ichar_end: number): any {
@@ -94,7 +73,7 @@ export class StaveDoubleTrack {
   public addNotation(notaion: INotation) {
     notaion.addToStave(this.createOperateCommand());
   }
-  
+
   public insertNotation(before: INotation, notaion: INotation) {
     notaion.insertToStave(before, this.createOperateCommand());
   }
@@ -127,7 +106,12 @@ export class StaveDoubleTrack {
         this.tempo,
         this.metre,
         this.unitNoteLength,
-        this.key
+        this.spacingStaves,
+        this.rightHandHeader,
+        this.leftHandHeader,
+        this.key,
+        this.rightHand,
+        this.leftHand,
       ];
       for (const notation of this.notations.concat(headers)) {
         this.addNotation(notation);
@@ -206,7 +190,7 @@ export class StaveDoubleTrack {
       }
     };
 
-    const updateNotations = (update_notations: (narr:INotation[]) => any) => {
+    const updateNotations = (update_notations: (narr: INotation[]) => any) => {
       this.notations = update_notations(this.notations) || this.notations;
     };
 
@@ -232,4 +216,3 @@ export class StaveDoubleTrack {
     };
   }
 }
-

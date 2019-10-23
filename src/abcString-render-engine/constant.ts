@@ -6,6 +6,14 @@ import { RestNote } from './Notations/RestNote';
 import { Note } from './Notations/Note';
 
 export const SequenceNoteKey: NoteKey[] = [
+  NoteKey.C0,
+  NoteKey.D0,
+  NoteKey.E0,
+  NoteKey.F0,
+  NoteKey.G0,
+  NoteKey.A0,
+  NoteKey.B0,
+
   NoteKey.C1,
   NoteKey.D1,
   NoteKey.E1,
@@ -13,13 +21,15 @@ export const SequenceNoteKey: NoteKey[] = [
   NoteKey.G1,
   NoteKey.A1,
   NoteKey.B1,
-  NoteKey.C2, // abcElem.pitches[0].pitch == 0
+
+  NoteKey.C2, 
   NoteKey.D2,
   NoteKey.E2,
   NoteKey.F2,
   NoteKey.G2,
   NoteKey.A2,
   NoteKey.B2,
+
   NoteKey.C3,
   NoteKey.D3,
   NoteKey.E3,
@@ -27,13 +37,30 @@ export const SequenceNoteKey: NoteKey[] = [
   NoteKey.G3,
   NoteKey.A3,
   NoteKey.B3,
-  NoteKey.C4,
+
+  NoteKey.C4, // abcElem.pitches[0].pitch == 0
   NoteKey.D4,
   NoteKey.E4,
   NoteKey.F4,
   NoteKey.G4,
   NoteKey.A4,
-  NoteKey.B4
+  NoteKey.B4,
+
+  NoteKey.C5, 
+  NoteKey.D5,
+  NoteKey.E5,
+  NoteKey.F5,
+  NoteKey.G5,
+  NoteKey.A5,
+  NoteKey.B5,
+
+  NoteKey.C6, 
+  NoteKey.D6,
+  NoteKey.E6,
+  NoteKey.F6,
+  NoteKey.G6,
+  NoteKey.A6,
+  NoteKey.B6,
 ];
 
 export const NoteDurationNameMap = {

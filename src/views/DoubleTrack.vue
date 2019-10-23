@@ -54,8 +54,12 @@
           </div>
 
           <div class="curEditTrack_input input_item">
-            <label for="curEditTrack">当前编辑轨道</label>
-            <select id="curEditTrack" ref="curEditTrack" @change="changeEditTrack($event)">
+            <label for="curEditTrack">当前插入轨道</label>
+            <select
+              id="curEditTrack"
+              ref="curEditTrack"
+              @change="changeEditTrack($event)"
+            >
               <option>右手</option>
               <option>左手</option>
             </select>
@@ -100,6 +104,7 @@ import {
 
 import _ from 'lodash';
 import { StringIndexChangeEventArgs } from '../abcString-render-engine/types_defined';
+import { StaveDoubleTrack } from '../abcString-render-engine/Stave/DoubleTrackStave';
 
 enum KeyName {
 	Delete,
@@ -157,7 +162,7 @@ export default class DoubleTrack extends Vue {
 	}
 
 	public staveData: string = '';
-	public stave: Stave;
+	public stave: StaveDoubleTrack;
 	public selectedNotation: { type: SelectNotationType; value } = null;
 	public curEditTrack: '左手' | '右手' = '右手';
 
@@ -203,7 +208,7 @@ export default class DoubleTrack extends Vue {
 		window.document.onkeydown = e => this.keypressHandle(e);
 	}
 	public loadStave() {
-		const stave = new Stave();
+		const stave = new StaveDoubleTrack();
 		stave.title = this.$data.$title;
 		stave.composer = this.$data.$composer;
 		stave.key = this.$data.$key;
@@ -227,14 +232,14 @@ export default class DoubleTrack extends Vue {
 	}
 
 	public mounted() {
-		const stave = new Stave();
+		const stave = new StaveDoubleTrack();
 		stave.title = this.$data.$title;
 		stave.composer = this.$data.$composer;
 		stave.key = this.$data.$key;
 		stave.metre = this.$data.$metre;
 		stave.tempo = this.$data.$tempo;
 		this.stave = stave.init();
-		this.stave.addNotation(new Note(NoteKey.C3));
+		this.stave.insertNotation(this.stave.rightHand, new Note(NoteKey.C4));
 
 		(window as any).stave = stave;
 		this.stave.setStaveChangeHandle(this.renderAbc.bind(this));
@@ -246,6 +251,14 @@ export default class DoubleTrack extends Vue {
 		(this.$refs.key as any).value = stave.key.getContent();
 		(this.$refs.metre as any).value = stave.metre.getContent();
 		(this.$refs.tempo as any).value = stave.tempo.getContent();
+		(this.$refs.curEditTrack as HTMLSelectElement).value = this.curEditTrack;
+		this.selectedNotation = {
+			type: SelectNotationType.note,
+			value:
+				this.curEditTrack === '右手'
+					? this.stave.rightHand
+					: this.stave.leftHand
+		};
 	}
 
 	public renderAbc() {
@@ -282,16 +295,26 @@ export default class DoubleTrack extends Vue {
 			}
 		});
 	}
-	
-	public changeEditTrack(e:Event) {
+
+	public changeEditTrack(e: Event) {
 		var sender = e.target as HTMLSelectElement;
-		this.curEditTrack = (sender.value as '左手'|'右手');
-		console.log(this.curEditTrack);
+		this.curEditTrack = sender.value as '左手' | '右手';
+		if (this.curEditTrack == '左手') {
+			this.selectedNotation = {
+				type: SelectNotationType.note,
+				value: this.stave.leftHand
+			};
+		} else if (this.curEditTrack == '右手') {
+			this.selectedNotation = {
+				type: SelectNotationType.note,
+				value: this.stave.rightHand
+			};
+		}
 	}
 
 	public addNote(duration: NoteDuration) {
 		const durationValue = NoteDuration[duration] || NoteDuration.Quarter;
-		const note = new Note(NoteKey.C3, durationValue);
+		const note = new Note(NoteKey.C2, durationValue);
 
 		this.selectedNotation
 			? this.stave.insertNotation(this.selectedNotation.value, note)

@@ -6,7 +6,7 @@ import { NotationType } from '..';
 export class InfoField extends Notation {
   public ntype = NotationType.InfoField;
 
-  constructor(private fieldType: InfoFiledType = InfoFiledType.reference_number, private content: string = '') {
+  constructor(protected fieldType: InfoFiledType = InfoFiledType.reference_number, protected content: string = '') {
     super();
   }
   public toJSON() {

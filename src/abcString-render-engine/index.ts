@@ -2,11 +2,10 @@ import { Note } from "./Notations/Note";
 import { NotationType } from './Enums/NotationType';
 import { NoteDuration } from './Enums/NoteDuration';
 import { NoteKey } from './Enums/NoteKey';
-import { SequenceNoteKey } from './constant';
 import { InfoField } from './Notations/InfoField';
 import { RestNote } from './Notations/RestNote';
 import { Stave } from './Stave/Stave';
-import { UnisonsBoundary } from './Notations/Wrappers/UnisonsBoundary';
+import { UnisonsBoundary } from './Notations/Boundaries/UnisonsBoundary';
 
 import { NoteDurationNameMap } from '../abcString-render-engine/constant';
 import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';

@@ -1,4 +1,11 @@
 export enum InfoFiledType {
+  /**
+   * ====================================================
+   * 
+   *  Information & Headers
+   * 
+   * ====================================================
+   */
   book = 'B:',
   composer = 'C:',
   discography = 'D:',
@@ -25,4 +32,25 @@ export enum InfoFiledType {
   words_aftertune = 'w:',
   reference_number = 'X:',
   transcriber = 'z:',
+  /**
+   * ====================================================
+   * 
+   *  Formatting
+   * 
+   * ====================================================
+   */
+  // ########### Page Format
+
+  // ########### Fonts
+
+  // ########### Spacing
+  spacing_staves = '%%staves', // 设置双手谱 连谱线
+
+  spacing_stretchlast = '%%stretchlast',
+  // ########### Measures/Bars
+
+  // ########### Text
+
+  // ########### Misc
+
 }

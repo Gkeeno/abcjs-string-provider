@@ -4,5 +4,6 @@ export enum NotationType{
     RestNote,
     BarLine,
     InfoField,
-    UnisonsBoundary
+    IninlineInfoField,
+    UnisonsBoundary,
 }

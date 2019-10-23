@@ -1,7 +1,6 @@
 import { INotation } from '../INotation';
 import { Notation } from '../Notation.abstract';
 import { NotationType } from '@/abcString-render-engine/Enums/NotationType';
-import { Stave } from '@/abcString-render-engine/Stave/Stave';
 import { IBoundary } from './IBoundary';
 import { StaveCommand } from '@/abcString-render-engine/types_defined';
 
