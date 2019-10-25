@@ -54,7 +54,7 @@
           </div>
 
           <div class="curEditTrack_input input_item">
-            <label for="curEditTrack">当前插入轨道</label>
+            <label for="curEditTrack">默认插入轨道</label>
             <select
               id="curEditTrack"
               ref="curEditTrack"
