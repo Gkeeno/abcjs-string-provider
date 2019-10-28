@@ -75,6 +75,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Provide } from 'vue-property-decorator';
+import _ from 'lodash';
 import abcjs from 'abcjs/midi';
 import {
 	Note,
@@ -89,8 +90,6 @@ import {
 	BarLine,
 	NoteAccidental
 } from '../abcString-render-engine';
-
-import _ from 'lodash';
 
 enum KeyName {
 	Delete,
@@ -377,35 +376,54 @@ export default class Home extends Vue {
 	}
 
 	public playMidi() {
+		let elems_firstPlayed = null;
 		let resumeBeforeColor = function() {};
-		let setColorAndGetResumeBeforeColor = function(event) {
-			let resumeColorHandle = function() {};
-			if (!event) {
-				return resumeColorHandle;
+		let setNoteSVGColor = function(el, colorHash) {
+			if (
+				el.getAttribute('fill') &&
+				el.getAttribute('fill').includes('#')
+			) {
+				el.setAttribute('fill', colorHash);
 			}
 
-			let els = event.elements[0];
-			if (!els) {
+			if (
+				el.getAttribute('stroke') &&
+				el.getAttribute('stroke').includes('#')
+			) {
+				el.setAttribute('stroke', colorHash);
+			}
+		};
+
+		let setColorAndGetResumeBeforeColor = function(event) {
+			let resumeColorHandle = function() {};
+
+			// 播放完成 最后一个 event为 null
+			if (!event || !event.elements) {
 				resumeColorHandle = function() {
 					console.log('play complete.');
 				};
 				return resumeColorHandle;
 			}
-
-			for (const el of els) {
-				el.getAttribute('fill') && el.setAttribute('fill', '#3D9AFC');
-				el.getAttribute('stroke') &&
-					el.setAttribute('stroke', '#3D9AFC');
+			// 且 播放完成 后会选中第一个 note
+			let note_els = event.elements[0] || [];
+			if (elems_firstPlayed == note_els) {
+				resumeColorHandle = function() {
+					console.log('play complete.');
+				};
+				return resumeColorHandle;
 			}
+			elems_firstPlayed || (elems_firstPlayed = note_els);
+
+			// 高亮
+			for (const note_el of note_els) {
+				setNoteSVGColor(note_el, '#3D9AFC');
+			}
+			// 高亮恢复
 			resumeColorHandle = function() {
-				for (const el of els) {
-					el.getAttribute('fill') &&
-						el.setAttribute('fill', '#000000');
-					el.getAttribute('stroke') &&
-						el.setAttribute('stroke', '#000000');
+				for (const note_el of note_els) {
+					setNoteSVGColor(note_el, '#000000');
 				}
 			};
-
 			return resumeColorHandle;
 		};
 
@@ -413,6 +431,8 @@ export default class Home extends Vue {
 		abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
 			animate: {
 				listener(abcjsElement, currentEvent, context) {
+					console.log(abcjsElement, currentEvent, context);
+
 					resumeBeforeColor();
 					resumeBeforeColor = setColorAndGetResumeBeforeColor(
 						currentEvent

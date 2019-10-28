@@ -55,11 +55,7 @@
 
           <div class="curEditTrack_input input_item">
             <label for="curEditTrack">默认插入轨道</label>
-            <select
-              id="curEditTrack"
-              ref="curEditTrack"
-              @change="changeEditTrack($event)"
-            >
+            <select id="curEditTrack" ref="curEditTrack" @change="changeEditTrack($event)">
               <option>右手</option>
               <option>左手</option>
             </select>
@@ -251,7 +247,8 @@ export default class DoubleTrack extends Vue {
 		(this.$refs.key as any).value = stave.key.getContent();
 		(this.$refs.metre as any).value = stave.metre.getContent();
 		(this.$refs.tempo as any).value = stave.tempo.getContent();
-		(this.$refs.curEditTrack as HTMLSelectElement).value = this.curEditTrack;
+		(this.$refs
+			.curEditTrack as HTMLSelectElement).value = this.curEditTrack;
 		this.selectedNotation = {
 			type: SelectNotationType.note,
 			value:
@@ -416,26 +413,74 @@ export default class DoubleTrack extends Vue {
 	}
 
 	public playMidi() {
+		let elems_firstPlayed = null;
 		let resumeBeforeColor = function() {};
+		let setNoteSVGColor = function(el, colorHash) {
+			if (
+				el.getAttribute('fill') &&
+				el.getAttribute('fill').includes('#')
+			) {
+				el.setAttribute('fill', colorHash);
+			}
+
+			if (
+				el.getAttribute('stroke') &&
+				el.getAttribute('stroke').includes('#')
+			) {
+				el.setAttribute('stroke', colorHash);
+			}
+		};
+
+		let setColorAndGetResumeBeforeColor = function(event) {
+			let resumeColorHandle = function() {};
+
+			// 播放完成 最后一个 event为 null
+			if (!event || !event.elements) {
+				resumeColorHandle = function() {
+					console.log('play complete.');
+				};
+				return resumeColorHandle;
+			}
+			// 且 播放完成 后会选中第一个 note
+			let note_firsttrack_els = event.elements[0] || [];
+			let note_secondtrack_els = event.elements[1] || [];
+			if (elems_firstPlayed == note_firsttrack_els) {
+				resumeColorHandle = function() {
+					console.log('play complete.');
+				};
+				return resumeColorHandle;
+			}
+			elems_firstPlayed || (elems_firstPlayed = note_firsttrack_els);
+
+			// 高亮
+			for (const note_el of note_firsttrack_els) {
+				setNoteSVGColor(note_el, '#3D9AFC');
+			}
+			for (const note_el of note_secondtrack_els) {
+				setNoteSVGColor(note_el, '#3D9AFC');
+			}
+			// 高亮恢复
+			resumeColorHandle = function() {
+				for (const note_el of note_firsttrack_els) {
+					setNoteSVGColor(note_el, '#000000');
+				}
+				for (const note_el of note_secondtrack_els) {
+					setNoteSVGColor(note_el, '#000000');
+				}
+			};
+			return resumeColorHandle;
+		};
+
 		abcjs.midi.setSoundFont('./');
 		abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
 			animate: {
 				listener(abcjsElement, currentEvent, context) {
 					console.log(abcjsElement, currentEvent, context);
+
 					resumeBeforeColor();
-					currentEvent &&
-						currentEvent.elements[0][0].setAttribute(
-							'fill',
-							'#000FFF'
-						);
-					resumeBeforeColor = (function(event) {
-						return function() {
-							event.elements[0][0].setAttribute(
-								'fill',
-								'#000000'
-							);
-						};
-					})(currentEvent);
+					resumeBeforeColor = setColorAndGetResumeBeforeColor(
+						currentEvent
+					);
 				},
 				target: this.tuneObjectArray[0],
 				qpm: this.tempo
