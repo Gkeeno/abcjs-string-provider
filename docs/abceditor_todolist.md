@@ -1,30 +1,31 @@
-## 待实现符号(特殊)
-- [ ] 二分音符附点
+## 待实现符号(特殊) 
+- [ ] 二分音符附点  0.5
 - [x] 四分音符附点
-- [ ] 和弦音符
-- [ ] 反复小节线，终止小节线等 `|| :| |: :: |] [|`
+- [ ] 和弦音符      2
+- [ ] 反复小节线，终止小节线等 `|| :| |: :: |] [|`  2
 - [ ] ~~三连音~~ 暂不用实现
 
 ## 待实现特征
-- [x] 合音，延音(仅倆音之间能形成)
+- [x] 合音，延音(仅倆音之间能形成)  
   - [ ] 能更改形成合音俩音的时值
   - [ ] 由stave添加boundary到notations改为 添加start boundary自己能添加end boundary 到notations
-- [ ] 【和弦】合音，延音（仅俩和弦之间能形成）
+- [ ] 【和弦】合音，延音（仅俩和弦之间能形成）4
   - [ ] 能更改形成合音俩音的时值
   - [ ] 由stave添加boundary到notations改为 添加start boundary自己能添加end boundary 到notations
 
-- [ ] 音符 备注/歌词(Lyrics下方)
+- [ ] 音符 备注/歌词(Lyrics下方)  4
 
-## 待实现调性
+## 待实现调性 1
 - [ ] 左右手谱：能分别选调性
 - [x] C major `C大调`
-- [ ] G major
-- [ ] D major
-- [ ] F major
-- [ ] A minor melodic `A旋律小调`
-- [ ] D minor melodic
-- [ ] A minor harmonic `A和声小调`
-- [ ] C# harmonic (enharmonic D)
+- [ ] A minor `A小调` (降b的调!?)
+- [ ] ~~G major~~
+- [ ] ~~D major~~
+- [ ] ~~F major~~
+- [ ] ~~A minor melodic `A旋律小调`~~
+- [ ] ~~D minor melodic~~
+- [ ] ~~A minor harmonic `A和声小调`~~
+- [ ] ~~C# harmonic (enharmonic D)~~
 
 ## 待实现播放
 - [x] 播放音符高亮、同步(如果最后结束是休止符不会高亮)
