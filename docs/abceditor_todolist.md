@@ -8,7 +8,7 @@
 - [ ] ~~三连音~~ 暂不用实现
 
 ## 待实现特征
-- [x] 合音，延音(仅倆音之间能形成)  
+- [x] 合音，延音(仅倆音之间能形成)  3
   - [ ] 能更改形成合音俩音的时值
   - [ ] 由stave添加boundary到notations改为 添加start boundary自己能添加end boundary 到notations
 - [ ] 【和弦】合音，延音（仅俩和弦之间能形成）4
