@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="500"
+   height="500"
+   id="svg3278"
+   version="1.1"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="half note.svg">
+ 
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     transform="translate(0,20)">
+    <!-- <g
+       id="g3411"
+       transform="matrix(9.3985091,0,0,9.3985091,-5027.4097,-1265.7363)">
+      <rect
+         style="fill:#000000;fill-opacity:1;stroke:none"
+         id="rect3198-1"
+         width="2"
+         height="43"
+         x="569.12866"
+         y="132.54616"
+         ry="1" /> -->
+      <path
+         d="m 76.936 173.63c 0.36 -0.03 1.2 0 1.53 0.06c 1.17 0.24 1.89 0.84 2.16 1.83c 0.06 0.18 0.06 0.3 0.06 0.66c 0 0.45 0 0.63 -0.15 1.08c -0.66 2.04 -3.06 3.93 -5.52 4.38c -0.54 0.09 -1.44 0.09 -1.83 0.03c -1.23 -0.27 -1.98 -0.87 -2.25 -1.86c -0.06 -0.18 -0.06 -0.3 -0.06 -0.66c 0 -0.45 0 -0.63 0.15 -1.08c 0.24 -0.78 0.75 -1.53 1.44 -2.22c 1.2 -1.2 2.85 -2.01 4.47 -2.22zm 3.719999999999999 -46.32499999999999L 80.656 176.38833333333335L 79.656 176.38833333333335L 79.656 127.305z" stroke="none" fill="#000000"
+         style="fill:#000000;fill-opacity:1;"
+          />
+    <!-- </g> -->
+
+    <path
+         d="m 76.936 173.63c 0.36 -0.03 1.2 0 1.53 0.06c 1.17 0.24 1.89 0.84 2.16 1.83c 0.06 0.18 0.06 0.3 0.06 0.66c 0 0.45 0 0.63 -0.15 1.08c -0.66 2.04 -3.06 3.93 -5.52 4.38c -0.54 0.09 -1.44 0.09 -1.83 0.03c -1.23 -0.27 -1.98 -0.87 -2.25 -1.86c -0.06 -0.18 -0.06 -0.3 -0.06 -0.66c 0 -0.45 0 -0.63 0.15 -1.08c 0.24 -0.78 0.75 -1.53 1.44 -2.22c 1.2 -1.2 2.85 -2.01 4.47 -2.22zm 3.719999999999999 -46.32499999999999L 80.656 176.38833333333335L 79.656 176.38833333333335L 79.656 127.305z" stroke="none" fill="#000000"
+          />
+  </g>
+</svg>

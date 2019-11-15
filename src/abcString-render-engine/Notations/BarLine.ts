@@ -30,7 +30,7 @@ export class BarLine extends Notation {
         : this.type === BarlineType.ThickThin_DoubleBarline
         ? '[|'
         : this.type === BarlineType.ThinThick_DoubleBarline
-        ? '[|'
+        ? '|]'
         : this.type === BarlineType.RepeatedSetion_Start
         ? '|:'
         : this.type === BarlineType.RepeatedSetion_End
@@ -57,7 +57,7 @@ export class BarLine extends Notation {
     this.updateInStave();
   }
 
-  public changeBarlineType(newtype: BarlineType) {
+  public setBarlineType(newtype: BarlineType) {
     this.type = newtype;
     this.updateInStave();
   }

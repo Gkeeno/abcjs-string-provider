@@ -68,6 +68,12 @@
           </div>
         </div>
         <button @click="breaktie">断开符尾</button>
+
+        <div class="btn_group">
+          <div class="img_box" v-for="(item, index) in barlineTypeArr" :key="index">
+            <img :src="item.img" alt @click="setBarlineType(item.data)" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -174,6 +180,32 @@ export default class Home extends Vue {
 		{ data: 'DoubleFlat', img: require('../assets/image/attribute4.png') },
 		{ data: 'DoubleSharp', img: require('../assets/image/attribute5.png') }
 		// { data: 'symbol6', img: require('../assets/image/attribute6.png') }
+	];
+	@Provide() public barlineTypeArr = [
+		{
+			data: 'DoubleBarline',
+			img: require('../assets/image/DoubleBarline.png')
+		},
+		{
+			data: 'ThinThick_DoubleBarline',
+			img: require('../assets/image/ThinThick_DoubleBarline.png')
+		},
+		{
+			data: 'ThickThin_DoubleBarline',
+			img: require('../assets/image/ThickThin_DoubleBarline.png')
+		},
+		{
+			data: 'RepeatedSetion_Start',
+			img: require('../assets/image/RepeatedSetion_Start.png')
+		},
+		{
+			data: 'RepeatedSetion_End',
+			img: require('../assets/image/RepeatedSetion_End.png')
+		},
+		{
+			data: 'RepeatedSetion_StartAndEnd',
+			img: require('../assets/image/RepeatedSetion_StartAndEnd.png')
+		}
 	];
 
 	private $title = new InfoField(InfoFiledType.title, 'untitled1');
@@ -282,6 +314,7 @@ export default class Home extends Vue {
 			: this.stave.addNotation(note);
 		this.selectedNotation = { type: SelectNotationType.note, value: note };
 	}
+
 	public addRestNote(duration: NoteDuration) {
 		const durationValue = NoteDuration[duration] || NoteDuration.Quarter;
 		const note = new RestNote(durationValue);
@@ -291,6 +324,7 @@ export default class Home extends Vue {
 			: this.stave.addNotation(note);
 		this.selectedNotation = { type: SelectNotationType.note, value: note };
 	}
+
 	public addBarline() {
 		const barline = new BarLine();
 
@@ -302,13 +336,22 @@ export default class Home extends Vue {
 				value: barline
 			};
 			return;
-		} else {
-			if (
-				this.selectedNotation.type === SelectNotationType.bar &&
-				(before as BarLine).type === BarlineType.SingleBarline
-			) {
-				(before as BarLine).changeBarlineType(BarlineType.DoubleBarline);
-				return; // 若要插入的音符也为bar 改变先前的 SingleBarline 为 DoubleBarline
+
+		} else if (this.selectedNotation.type === SelectNotationType.bar) {
+			// 若要插入的音符也为bar 改变先前的 SingleBarline 为 DoubleBarline
+			if ((before as BarLine).type === BarlineType.SingleBarline) {
+				(before as BarLine).setBarlineType(BarlineType.DoubleBarline);
+				return;
+			}
+			// 若前一个符号为 :| 则 添加小节线无任何反应 因为展示 :|| equles :| 
+			if ((before as BarLine).type === BarlineType.RepeatedSetion_End) {
+				alert('重复终止小节线后不能再添加小节线！');
+				return;
+			}
+			// TODO：小节线后不能再加小节线的提示
+			if ((before as BarLine).type === BarlineType.RepeatedSetion_End) {
+				alert('重复终止小节线后不能再添加小节线！');
+				return;
 			}
 		}
 
@@ -357,6 +400,14 @@ export default class Home extends Vue {
 			this.selectedNotation.type == SelectNotationType.note &&
 			(this.selectedNotation.value as Note).setAccidential(
 				NoteAccidental[accidentalName] || NoteAccidental.None
+			);
+	}
+
+	public setBarlineType(barlineTypeName: string) {
+		this.selectedNotation &&
+			this.selectedNotation.type == SelectNotationType.bar &&
+			(this.selectedNotation.value as BarLine).setBarlineType(
+				BarlineType[barlineTypeName] || BarlineType.SingleBarline
 			);
 	}
 
