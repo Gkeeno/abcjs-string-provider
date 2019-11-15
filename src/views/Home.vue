@@ -337,22 +337,10 @@ export default class Home extends Vue {
 			};
 			return;
 
-		} else if (this.selectedNotation.type === SelectNotationType.bar) {
-			// 若要插入的音符也为bar 改变先前的 SingleBarline 为 DoubleBarline
-			if ((before as BarLine).type === BarlineType.SingleBarline) {
-				(before as BarLine).setBarlineType(BarlineType.DoubleBarline);
-				return;
-			}
-			// 若前一个符号为 :| 则 添加小节线无任何反应 因为展示 :|| equles :| 
-			if ((before as BarLine).type === BarlineType.RepeatedSetion_End) {
-				alert('重复终止小节线后不能再添加小节线！');
-				return;
-			}
-			// TODO：小节线后不能再加小节线的提示
-			if ((before as BarLine).type === BarlineType.RepeatedSetion_End) {
-				alert('重复终止小节线后不能再添加小节线！');
-				return;
-			}
+		} 
+		else if (this.selectedNotation.type === SelectNotationType.bar) {
+			alert('小节线后需要添加音符再添加小节线！');
+			return;
 		}
 
 		this.stave.insertNotation(before, barline);
