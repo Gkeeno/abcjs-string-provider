@@ -12,6 +12,7 @@ import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';
 import { INotation } from '../abcString-render-engine/Notations/INotation';
 import { BarLine } from '../abcString-render-engine/Notations/BarLine';
 import { NoteAccidental } from '../abcString-render-engine/Enums/NoteAccidental';
+import { BarlineType } from './Enums/BarlineType';
 
 
 export {
@@ -24,6 +25,7 @@ export {
     NoteDuration,
     InfoField,
     InfoFiledType,
+    BarlineType,
     BarLine,
     UnisonsBoundary,
     NoteDurationNameMap,

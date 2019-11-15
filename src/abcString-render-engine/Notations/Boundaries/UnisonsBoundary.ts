@@ -4,23 +4,9 @@ import { NotationType } from '@/abcString-render-engine/Enums/NotationType';
 import { IBoundary } from './IBoundary';
 import { StaveCommand } from '@/abcString-render-engine/types_defined';
 
-// export class UnisonsWrapper extends NotationWrapper {
-//   public begin: INotation;
-//   public end: INotation;
-
-//   constructor(beginNote: INotation, endNote: INotation) {
-//     super();
-//     this.begin = new UnisonsBoundary(beginNote);
-//     this.end = new UnisonsBoundary(endNote, true);
-//   }
-
-//   public writeToStave(stave: Stave) {
-//     throw new Error('Method not implemented.');
-//   }
-// }
-
 /**
  * 必须俩个音符(Note)以上得才能 组成 unisons，且与关联音符(bindNote)一同插入
+ * TODO: 实现装饰器(Note被装饰)模式
  */
 export class UnisonsBoundary extends Notation implements IBoundary {
   public ntype = NotationType.UnisonsBoundary;
@@ -82,7 +68,8 @@ export class UnisonsBoundary extends Notation implements IBoundary {
       this.bindNote.insertToStave(this, commond);
     }
   }
-  public removeInStave() {
+  public removeInStave()
+  {
     super.removeInStave();
     this.removeInStave = function() {};
     this.bindNote.removeInStave();
@@ -90,13 +77,16 @@ export class UnisonsBoundary extends Notation implements IBoundary {
     this.siblingBoundary &&
       ((this.siblingBoundary as any) as UnisonsBoundary).removeInStave();
   }
-
+  /**
+   * 使双方都互调用 link; 实现关联逻辑
+   * @param sibling 被动关联的Boundary
+   */
   public link(sibling: IBoundary) {
     if (this.siblingBoundary === sibling) {
       return;
     }
-
     this.siblingBoundary = sibling;
+    
     sibling.link(this);
   }
 

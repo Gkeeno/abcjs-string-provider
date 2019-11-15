@@ -1,35 +1,44 @@
 import { NewLine } from '../utils';
 import { Notation } from './Notation.abstract';
-import { NotationType } from '..';
+import { NotationType, INotation } from '..';
+import { StaveCommand } from '../types_defined';
+import { BarlineType } from '../Enums/BarlineType';
 
 export class BarLine extends Notation {
   public ntype = NotationType.BarLine;
 
-  get ibegin() {
-    return this._ibegin;
-  }
-  get iend() {
-    return this._iend;
-  }
-
-  constructor(public hasNewlineInEnd: boolean = false) {
+  constructor(
+    public type: BarlineType = BarlineType.SingleBarline,
+    protected hasNewlineInEnd: boolean = false
+  ) {
     super();
   }
 
   public toJSON() {
     return {
-      ntype:this.ntype,
-      state:[this.hasNewlineInEnd]
+      ntype: this.ntype,
+      state: [this.hasNewlineInEnd]
     };
   }
 
   public toAbcString() {
-    return '|' + (this.hasNewlineInEnd ? NewLine : '');
-  }
-
-  public setNewlineInEnd() {
-    this.hasNewlineInEnd = true;
-    this.updateInStave();
+    return (
+      (this.type === BarlineType.SingleBarline
+        ? '|'
+        : this.type === BarlineType.DoubleBarline
+        ? '||'
+        : this.type === BarlineType.ThickThin_DoubleBarline
+        ? '[|'
+        : this.type === BarlineType.ThinThick_DoubleBarline
+        ? '[|'
+        : this.type === BarlineType.RepeatedSetion_Start
+        ? '|:'
+        : this.type === BarlineType.RepeatedSetion_End
+        ? ':|'
+        : this.type === BarlineType.RepeatedSetion_StartAndEnd
+        ? '::'
+        : '|') + (this.hasNewlineInEnd ? NewLine : '')
+    );
   }
 
   public query(param): boolean {
@@ -41,5 +50,15 @@ export class BarLine extends Notation {
       this.ibegin === param.ichar_start &&
       this.iend + (this.hasNewlineInEnd ? -1 : 0) === param.ichar_end
     );
+  }
+
+  public setNewlineInEnd() {
+    this.hasNewlineInEnd = true;
+    this.updateInStave();
+  }
+
+  public changeBarlineType(newtype: BarlineType) {
+    this.type = newtype;
+    this.updateInStave();
   }
 }

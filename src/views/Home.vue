@@ -88,7 +88,8 @@ import {
 	UnisonsBoundary,
 	InfoFiledType,
 	BarLine,
-	NoteAccidental
+	NoteAccidental,
+	BarlineType
 } from '../abcString-render-engine';
 
 enum KeyName {
@@ -293,9 +294,25 @@ export default class Home extends Vue {
 	public addBarline() {
 		const barline = new BarLine();
 
-		this.selectedNotation
-			? this.stave.insertNotation(this.selectedNotation.value, barline)
-			: this.stave.addNotation(barline);
+		var before = this.selectedNotation && this.selectedNotation.value;
+		if (!before) {
+			this.stave.addNotation(barline);
+			this.selectedNotation = {
+				type: SelectNotationType.bar,
+				value: barline
+			};
+			return;
+		} else {
+			if (
+				this.selectedNotation.type === SelectNotationType.bar &&
+				(before as BarLine).type === BarlineType.SingleBarline
+			) {
+				(before as BarLine).changeBarlineType(BarlineType.DoubleBarline);
+				return; // 若要插入的音符也为bar 改变先前的 SingleBarline 为 DoubleBarline
+			}
+		}
+
+		this.stave.insertNotation(before, barline);
 		this.selectedNotation = {
 			type: SelectNotationType.bar,
 			value: barline
@@ -370,7 +387,7 @@ export default class Home extends Vue {
 		} else if (this.selectedNotation.type == SelectNotationType.bar) {
 			// 小节线操作
 			if (e.key === KeyName[KeyName.Enter]) {
-				this.newline();
+				(this.selectedNotation.value as BarLine).setNewlineInEnd();
 			}
 		}
 	}
