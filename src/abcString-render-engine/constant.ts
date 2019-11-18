@@ -5,6 +5,11 @@ import { InfoField } from './Notations/InfoField';
 import { RestNote } from './Notations/RestNote';
 import { Note } from './Notations/Note';
 
+/**
+ * 内容不会被abcjs展示，用来保证符号之间的分割而不会粘滞
+ */
+export const SymbolSpacer = '@';
+
 export const SequenceNoteKey: NoteKey[] = [
   NoteKey.C0,
   NoteKey.D0,

@@ -16,6 +16,11 @@ export class Note extends Notation {
   ) {
     super();
   }
+  
+  public toAbcString() {
+    return this.accidental + this.key + this.duration + this.lastString;
+  }
+  
   public toJSON() {
     return {
       ntype:this.ntype,
@@ -65,7 +70,4 @@ export class Note extends Notation {
     this.updateInStave();
   }
 
-  public toAbcString() {
-    return this.accidental + this.key + this.duration + this.lastString;
-  }
 }

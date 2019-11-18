@@ -1,8 +1,8 @@
 import { NewLine } from '../utils';
 import { Notation } from './Notation.abstract';
-import { NotationType, INotation } from '..';
-import { StaveCommand } from '../types_defined';
+import { NotationType } from '..';
 import { BarlineType } from '../Enums/BarlineType';
+import { SymbolSpacer } from '../constant';
 
 export class BarLine extends Notation {
   public ntype = NotationType.BarLine;
@@ -23,6 +23,7 @@ export class BarLine extends Notation {
 
   public toAbcString() {
     return (
+      SymbolSpacer + // 防止粘滞到一起出现非预期的展示
       (this.type === BarlineType.SingleBarline
         ? '|'
         : this.type === BarlineType.DoubleBarline
@@ -37,7 +38,8 @@ export class BarLine extends Notation {
         ? ':|'
         : this.type === BarlineType.RepeatedSetion_StartAndEnd
         ? '::'
-        : '|') + (this.hasNewlineInEnd ? NewLine : '')
+        : '|') +
+      (this.hasNewlineInEnd ? NewLine : '')
     );
   }
 
@@ -45,9 +47,11 @@ export class BarLine extends Notation {
     if (!param.ichar_end) {
       return false;
     }
-    // tips: 因为abcjs选中回调中 不包括换行符，所以带换行符的符号要比实际少1，但是内部索引操作还是正常使用
+
     return (
-      this.ibegin === param.ichar_start &&
+      // 因为abcjs选中回调中 不包括分割符号
+      this.ibegin + SymbolSpacer.length === param.ichar_start &&
+      // 因为abcjs选中回调中 不包括换行符，所以带换行符的符号要比实际少1，但是内部索引操作还是正常使用
       this.iend + (this.hasNewlineInEnd ? -1 : 0) === param.ichar_end
     );
   }

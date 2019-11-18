@@ -328,22 +328,9 @@ export default class Home extends Vue {
 	public addBarline() {
 		const barline = new BarLine();
 
-		var before = this.selectedNotation && this.selectedNotation.value;
-		if (!before) {
-			this.stave.addNotation(barline);
-			this.selectedNotation = {
-				type: SelectNotationType.bar,
-				value: barline
-			};
-			return;
-
-		} 
-		else if (this.selectedNotation.type === SelectNotationType.bar) {
-			alert('小节线后需要添加音符再添加小节线！');
-			return;
-		}
-
-		this.stave.insertNotation(before, barline);
+		this.selectedNotation
+			? this.stave.insertNotation(this.selectedNotation.value, barline)
+			: this.stave.addNotation(barline);
 		this.selectedNotation = {
 			type: SelectNotationType.bar,
 			value: barline
@@ -354,6 +341,7 @@ export default class Home extends Vue {
 		this.stave.deleteNotation(this.selectedNotation.value);
 		this.selectedNotation = null;
 	}
+	
 	public breaktie() {
 		this.selectedNotation &&
 			this.selectedNotation.type == SelectNotationType.note &&
