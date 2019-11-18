@@ -160,6 +160,7 @@ export default class Home extends Vue {
 	@Provide() public clefArr = [
 		{ data: 'Whole', img: require('../assets/image/clef1.png') },
 		{ data: 'Half', img: require('../assets/image/clef2.png') },
+		{ data: 'Half_dot1', img: require('../assets/image/Half_dot1.png') },
 		{ data: 'Quarter', img: require('../assets/image/clef3.png') },
 		{ data: 'Quarter_dot1', img: require('../assets/image/clef3_dot.png') },
 		{ data: 'Eighth', img: require('../assets/image/clef4.png') },
@@ -341,7 +342,7 @@ export default class Home extends Vue {
 		this.stave.deleteNotation(this.selectedNotation.value);
 		this.selectedNotation = null;
 	}
-	
+
 	public breaktie() {
 		this.selectedNotation &&
 			this.selectedNotation.type == SelectNotationType.note &&
