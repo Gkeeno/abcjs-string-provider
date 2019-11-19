@@ -17,7 +17,7 @@ export class BarLine extends Notation {
   public toJSON() {
     return {
       ntype: this.ntype,
-      state: [this.hasNewlineInEnd]
+      state: [this.type,this.hasNewlineInEnd]
     };
   }
 
