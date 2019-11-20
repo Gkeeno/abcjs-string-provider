@@ -76,6 +76,9 @@
           </div>
         </div>
         <button @click="breaktie">断开符尾</button>
+				<br/>
+
+				<input type="text" v-model="tempLyrics"/><button>添加歌词</button>
       </div>
     </div>
   </div>
@@ -91,6 +94,7 @@ import {
 	NotationType,
 	InfoField,
 	Stave,
+	StaveDoubleTrack,
 	RestNote,
 	UnisonsBoundary,
 	InfoFiledType,
@@ -99,8 +103,6 @@ import {
 } from '../abcString-render-engine';
 
 import _ from 'lodash';
-import { StringIndexChangeEventArgs } from '../abcString-render-engine/types_defined';
-import { StaveDoubleTrack } from '../abcString-render-engine/Stave/DoubleTrackStave';
 
 enum KeyName {
 	Delete,
@@ -161,6 +163,7 @@ export default class DoubleTrack extends Vue {
 	public stave: StaveDoubleTrack;
 	public selectedNotation: { type: SelectNotationType; value } = null;
 	public curEditTrack: '左手' | '右手' = '右手';
+	public tempLyrics = '';
 
 	@Provide() public clefArr = [
 		{ data: 'Whole', img: require('../assets/image/clef1.png') },
@@ -210,7 +213,7 @@ export default class DoubleTrack extends Vue {
 		stave.key = this.$data.$key;
 		stave.metre = this.$data.$metre;
 		stave.tempo = this.$data.$tempo;
-		this.stave = stave.init(JSON.parse(this.staveData));
+		this.stave = stave.init(this.staveData);
 
 		(window as any).stave = stave;
 		this.stave.setStaveChangeHandle(this.renderAbc.bind(this));

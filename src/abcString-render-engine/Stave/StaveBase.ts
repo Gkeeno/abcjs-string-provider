@@ -54,7 +54,6 @@ export abstract class StaveBase {
   }
   
   /**
-   *
    * @param ichar_start
    * @param ichar_end abcjs中的通常会大1, 表示[,) 结尾开区间
    */
@@ -70,6 +69,7 @@ export abstract class StaveBase {
   public insertNotation(before: INotation, notaion: INotation) {
     notaion.insertToStave(before, this.createOperateCommand());
   }
+  
   /**
    * 从字符串区间中删除符号
    */

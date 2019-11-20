@@ -19,12 +19,14 @@ export class Stave extends StaveBase {
 
   constructor() { super();}
 
-  public init(data: any[] = null) {
+  public init(dataraw: string = '[]') {
+    var data = JSON.parse(dataraw);
+
     if (this.abcString) {
       return;
     }
 
-    if (data) {
+    if (data.length) {
       for (const nState of data) {
         this.addNotation(this.deserializeNotation(nState));
       }

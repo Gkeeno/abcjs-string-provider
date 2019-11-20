@@ -232,7 +232,7 @@ export default class Home extends Vue {
 		stave.key = this.$data.$key;
 		stave.metre = this.$data.$metre;
 		stave.tempo = this.$data.$tempo;
-		this.stave = stave.init(JSON.parse(this.staveData));
+		this.stave = stave.init(this.staveData);
 
 		(window as any).stave = stave;
 		this.stave.setStaveChangeHandle(this.renderAbc.bind(this));

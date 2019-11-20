@@ -13,11 +13,13 @@ import { INotation } from '../abcString-render-engine/Notations/INotation';
 import { BarLine } from '../abcString-render-engine/Notations/BarLine';
 import { NoteAccidental } from '../abcString-render-engine/Enums/NoteAccidental';
 import { BarlineType } from './Enums/BarlineType';
+import { StaveDoubleTrack } from './Stave/DoubleTrackStave';
 
 
 export {
     INotation,
     Stave,
+    StaveDoubleTrack,
     Note,
     RestNote,
     NoteKey,
