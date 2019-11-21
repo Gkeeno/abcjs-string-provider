@@ -9,7 +9,7 @@ export class BarLine extends Notation {
 
   constructor(
     public type: BarlineType = BarlineType.SingleBarline,
-    protected hasNewlineInEnd: boolean = false
+    public hasNewlineInEnd: boolean = false
   ) {
     super();
   }

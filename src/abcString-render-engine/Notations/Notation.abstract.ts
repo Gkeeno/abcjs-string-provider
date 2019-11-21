@@ -7,7 +7,8 @@ import {
 import { NotationType } from '../Enums/NotationType';
 
 /**
- * @description `反序列化` 所有的状态应该可在构造函数内被还原
+ * @description `反序列化` 所有的状态应该可在构造函数内被还原；
+ * 构造函数内的公共参数不应由外部变化，仅作只读访问
  */
 export abstract class Notation implements INotation {
   /**

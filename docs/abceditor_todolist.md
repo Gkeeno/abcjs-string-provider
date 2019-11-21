@@ -15,7 +15,9 @@
   - [ ] 能更改形成合音俩音的时值
   - [ ] 由stave添加boundary到notations改为 添加start boundary自己能添加end boundary 到notations
 
-- [ ] 音符 备注/歌词(Lyrics下方)  4
+- [x] 音符 ~~备注~~/歌词(Lyrics下方)  4
+  > 目前规则：点击每个Note添加歌词，删除Note的时候也会一起删除;
+  > 只有结尾是barline的音符行才可以正常的添加进歌词
 
 ## 待实现调性 1
 - [ ] 左右手谱：能分别选调性

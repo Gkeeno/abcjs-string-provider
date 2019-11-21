@@ -76,9 +76,10 @@
           </div>
         </div>
         <button @click="breaktie">断开符尾</button>
-				<br/>
+        <br />
 
-				<input type="text" v-model="tempLyrics"/><button>添加歌词</button>
+        <input type="text" ref="txt_lyrics" />
+        <button @click="addLyrics">添加歌词</button>
       </div>
     </div>
   </div>
@@ -163,7 +164,6 @@ export default class DoubleTrack extends Vue {
 	public stave: StaveDoubleTrack;
 	public selectedNotation: { type: SelectNotationType; value } = null;
 	public curEditTrack: '左手' | '右手' = '右手';
-	public tempLyrics = '';
 
 	@Provide() public clefArr = [
 		{ data: 'Whole', img: require('../assets/image/clef1.png') },
@@ -283,6 +283,12 @@ export default class DoubleTrack extends Vue {
 							value: notation
 					  });
 
+				// 歌词框显示内容
+				if (that.selectedNotation.type === SelectNotationType.note) {
+					(that.$refs.txt_lyrics as HTMLInputElement).value = (that
+						.selectedNotation.value as Note).lyrics;
+				}
+
 				console.log(
 					that.stave.abcString.substring(
 						abcElem.startChar,
@@ -341,10 +347,21 @@ export default class DoubleTrack extends Vue {
 			value: barline
 		};
 	}
+	public addLyrics() {
+		if (this.selectedNotation.type !== SelectNotationType.note) {
+			return;
+		}
+
+		let txt_lyrics = this.$refs.txt_lyrics as HTMLInputElement;
+		this.selectedNotation.value.lyrics = txt_lyrics.value;
+		// txt_lyrics.value = '';
+		this.stave.generationLyrics();
+	}
 
 	public delNote() {
 		this.stave.deleteNotation(this.selectedNotation.value);
 		this.selectedNotation = null;
+		this.stave.generationLyrics();
 	}
 	public breaktie() {
 		this.selectedNotation &&

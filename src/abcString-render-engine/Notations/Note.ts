@@ -10,9 +10,10 @@ export class Note extends Notation {
   private lastString: string = '';
 
   constructor(
-    public key: NoteKey = NoteKey.C1,
-    public duration: NoteDuration = NoteDuration.Quarter,
-    public accidental: NoteAccidental = NoteAccidental.None
+    protected key: NoteKey = NoteKey.C1,
+    protected duration: NoteDuration = NoteDuration.Quarter,
+    protected accidental: NoteAccidental = NoteAccidental.None,
+    public lyrics = ''
   ) {
     super();
   }
@@ -24,7 +25,7 @@ export class Note extends Notation {
   public toJSON() {
     return {
       ntype:this.ntype,
-      state:[this.key,this.duration,this.accidental]
+      state:[this.key,this.duration,this.accidental,this.lyrics]
     };
   }
 
