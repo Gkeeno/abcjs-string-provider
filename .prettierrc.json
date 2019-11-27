@@ -1,4 +1,16 @@
 {
-    "singleQuote": true,
-    "semi": true
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "semi": false,
+  "singleQuote": true,
+  "endOfLine": "lf",
+  "printWidth": 110,
+  "overrides": [
+    {
+      "files": ["*.md", "*.json", "*.yml", "*.yaml"],
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
 }
