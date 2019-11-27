@@ -1,7 +1,7 @@
 export enum NotationType{
     Unknow,
     Note,
-    ChordsNote,
+    ChordNote,
     RestNote,
     BarLine,
     InfoField,
