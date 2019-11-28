@@ -14,6 +14,8 @@ import { BarLine } from '../abcString-render-engine/Notations/BarLine';
 import { NoteAccidental } from '../abcString-render-engine/Enums/NoteAccidental';
 import { BarlineType } from './Enums/BarlineType';
 import { StaveDoubleTrack } from './Stave/DoubleTrackStave';
+import { ChordNote } from './Notations/ChordNote';
+import { ChordType } from './Enums/ChordType';
 
 
 export {
@@ -22,6 +24,8 @@ export {
     StaveDoubleTrack,
     Note,
     RestNote,
+    ChordNote,
+    ChordType,
     NoteKey,
     NotationType,
     NoteDuration,

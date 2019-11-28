@@ -20,6 +20,9 @@
             <img :src="item.img" alt @click="addRestNote(item.data)" />
           </div>
           <div class="img_box">
+            <img src="../assets/image/ChordNote.png" alt @click="addChordNote()" />
+          </div>
+          <div class="img_box">
             <img src="../assets/image/barline.png" alt @click="addBarline()" />
           </div>
         </div>
@@ -74,6 +77,13 @@
             <img :src="item.img" alt @click="setBarlineType(item.data)" />
           </div>
         </div>
+
+        <select ref="sel_chordtype">
+					<option value>大三和弦</option>
+          <option value>小三和弦</option>
+        </select>
+        <button @click="changeChordType">设置和弦类型</button>
+				
       </div>
     </div>
   </div>
@@ -96,6 +106,8 @@ import {
 	BarLine,
 	NoteAccidental,
 	BarlineType,
+	ChordNote,
+	ChordType,
 } from '../abcString-render-engine'
 
 enum KeyName {
@@ -316,6 +328,15 @@ export default class Home extends Vue {
 			? this.stave.insertNotation(this.selectedNotation.value, note)
 			: this.stave.addNotation(note)
 		this.selectedNotation = { type: SelectNotationType.note, value: note }
+	}
+
+	public addChordNote() {
+		const chordnote = new ChordNote(NoteKey.C3, NoteDuration.Quarter, ChordType.Major)
+
+		this.selectedNotation
+			? this.stave.insertNotation(this.selectedNotation.value, chordnote)
+			: this.stave.addNotation(chordnote)
+		this.selectedNotation = { type: SelectNotationType.note, value: chordnote }
 	}
 
 	public addBarline() {

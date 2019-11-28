@@ -4,6 +4,7 @@ import { BarLine } from './Notations/BarLine';
 import { InfoField } from './Notations/InfoField';
 import { RestNote } from './Notations/RestNote';
 import { Note } from './Notations/Note';
+import { ChordType } from './Enums/ChordType';
 
 /**
  * 内容不会被abcjs展示，用来保证符号之间的分割而不会粘滞
@@ -77,3 +78,14 @@ export const NoteDurationNameMap = {
   0.5: NoteDuration.Half,
   1: NoteDuration.Whole
 };
+
+
+// root note -> max note
+export const ChordNoteIntervalMap = {
+  [ChordType.Major]: 4,
+  [ChordType.Minor]: 4,
+  [ChordType.Augmented]: 4,
+  [ChordType.Diminished]: 4,
+  [ChordType.Suspended]:4,
+}
+

@@ -1,9 +1,11 @@
 import { NoteKey } from '../Enums/NoteKey'
-import { NoteDuration, NotationType } from '..'
-import { SequenceNoteKey } from '../constant'
+import { SequenceNoteKey, ChordNoteIntervalMap } from '../constant'
 import { NoteAccidental } from '../Enums/NoteAccidental'
 import { Notation } from './Notation.abstract'
 import { ChordType } from '../Enums/ChordType'
+import { Note } from './Note'
+import { NotationType } from '../Enums/NotationType'
+import { NoteDuration } from '../Enums/NoteDuration'
 
 /**
  * 编辑方式：以根音为基础，和单音一样的调整音高方式；
@@ -23,6 +25,11 @@ export class ChordNote extends Notation {
     public lyrics = '',
   ) {
     super()
+
+    const i_sequence = SequenceNoteKey.indexOf(rootkey);
+    if (isNaN(i_sequence)) {
+      throw 'invalid rootkey.'
+    }
   }
 
   public toAbcString() {
@@ -37,36 +44,22 @@ export class ChordNote extends Notation {
   }
 
   public pitchUp() {
-    let iorg = SequenceNoteKey.indexOf(this.rootkey) + 13 // 根音预留出最大的十三和弦
-    if (iorg >= SequenceNoteKey.length - 1) {
-      // already top
+    const note_pitchUp = tryPitchUpKey(this.rootkey, 1, ChordNoteIntervalMap[this.chordType])
+    if (this.rootkey === note_pitchUp) {
       return
     }
 
-    const key_pitchUp = SequenceNoteKey[++iorg]
-    if (!key_pitchUp) {
-      // already top
-      return
-    }
-    this.rootkey = key_pitchUp
-
+    this.rootkey = note_pitchUp
     this.updateInStave()
   }
 
   public pitchDown() {
-    let iorg = SequenceNoteKey.indexOf(this.rootkey)
-    if (iorg === 0) {
-      // already bottom
-      return false
+    const note_pitchDown = tryPitchDownKey(this.rootkey, 1)
+    if (this.rootkey === note_pitchDown) {
+      return
     }
 
-    const key_pitchDown = SequenceNoteKey[--iorg]
-    if (!key_pitchDown) {
-      // already bottom
-      return false
-    }
-    this.rootkey = key_pitchDown
-
+    this.rootkey = note_pitchDown
     this.updateInStave()
   }
 
@@ -75,7 +68,71 @@ export class ChordNote extends Notation {
     this.updateInStave()
   }
 
+  public setDuration(duration: NoteDuration) {
+    this.duration = duration
+    this.updateInStave()
+  }
+
   private generateChordString(rootkey: NoteKey, duration: NoteDuration, chordType: ChordType) {
-    return ''
+    // 1. build notes
+    const notes: Note[] = []
+    notes.push(new Note(rootkey, duration)) // Root note. 只会会以第一个Note的时值为准
+
+    if (chordType === ChordType.Major) {
+      notes.push(new Note(tryPitchUpKey(rootkey, 2))) // Third note
+      notes.push(new Note(tryPitchUpKey(rootkey, 4))) // Fifth note
+    } else if (chordType === ChordType.Minor) {
+      const third = new Note(tryPitchDownKey(rootkey, 2)) // Third note
+      third.setAccidential(NoteAccidental.Flat)
+      const fifth = new Note(tryPitchDownKey(rootkey, 4)) // Fifth note
+      notes.push(third)
+      notes.push(fifth)
+    }
+
+    // 2. to abcstring
+    let notesStr = ''
+    notes.map((note, i) => {
+      notesStr += note.toAbcString()
+    })
+    return `[${notesStr}]`
   }
 }
+
+function tryPitchUpKey(key: NoteKey, interval: number, prelimit:number = 0) {
+  const i_sequence = SequenceNoteKey.indexOf(key)
+  if (isNaN(i_sequence)) {
+    console.warn('key is invalid .')
+    return key
+  } else if (i_sequence + prelimit === SequenceNoteKey.length - 1) {
+    console.warn('key is already at top.')
+    return key
+  }
+
+  const key_pitchUp = SequenceNoteKey[i_sequence + interval]
+  if (!key_pitchUp) {
+    console.warn('can not pitch up anymore.', key + ' + ' + interval)
+    return key
+  }
+
+  return key_pitchUp
+}
+
+function tryPitchDownKey(key: NoteKey, interval: number) {
+  const i_sequence = SequenceNoteKey.indexOf(key)
+  if (isNaN(i_sequence)) {
+    console.warn('key is invalid.')
+    return key
+  } else if (i_sequence === 0) {
+    console.warn('key is already at bottom.')
+    return key
+  }
+
+  const key_pitchDown = SequenceNoteKey[i_sequence - interval]
+  if (!key_pitchDown) {
+    console.warn('can not pitch down anymore.', key + ' + ' + interval)
+    return key
+  }
+
+  return key_pitchDown
+}
+

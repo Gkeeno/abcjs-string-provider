@@ -15,6 +15,11 @@ export class Note extends Notation {
     public lyrics = '',
   ) {
     super()
+    
+    const i_sequence = SequenceNoteKey.indexOf(key);
+    if (isNaN(i_sequence)) {
+      throw 'invalid rootkey.'
+    }
   }
 
   public toAbcString() {
@@ -29,32 +34,22 @@ export class Note extends Notation {
   }
 
   public pitchUp() {
-    let iorg = SequenceNoteKey.indexOf(this.key)
-    if (iorg === SequenceNoteKey.length - 1) {
+    const note_pitchUp = tryPitchUpKey(this.key, 1)
+    if (this.key === note_pitchUp) {
       return
     }
 
-    const tempkey = SequenceNoteKey[++iorg]
-    if (!tempkey) {
-      return
-    }
-    this.key = tempkey
-
+    this.key = note_pitchUp
     this.updateInStave()
   }
 
   public pitchDown() {
-    let iorg = SequenceNoteKey.indexOf(this.key)
-    if (iorg === 0) {
-      return false
+    const note_pitchDown = tryPitchDownKey(this.key, 1)
+    if (this.key === note_pitchDown) {
+      return
     }
-
-    const tempkey = SequenceNoteKey[--iorg]
-    if (!tempkey) {
-      return false
-    }
-    this.key = tempkey
-
+    
+    this.key = note_pitchDown
     this.updateInStave()
   }
 
@@ -69,4 +64,42 @@ export class Note extends Notation {
     this.accidental = accidentalType
     this.updateInStave()
   }
+}
+
+function tryPitchUpKey(key: NoteKey, interval: number) {
+  const i_sequence = SequenceNoteKey.indexOf(key)
+  if (isNaN(i_sequence)) {
+    console.warn('key is invalid .')
+    return key 
+  } else if (i_sequence === SequenceNoteKey.length - 1) {
+    console.warn('key is already at top.')
+    return key 
+  }
+
+  const key_pitchUp = SequenceNoteKey[i_sequence + interval]
+  if (!key_pitchUp) {
+    console.warn('can not pitch up anymore.', key + ' + ' + interval)
+    return key
+  }
+
+  return key_pitchUp
+}
+
+function tryPitchDownKey(key: NoteKey, interval: number) {
+  const i_sequence = SequenceNoteKey.indexOf(key)
+  if (isNaN(i_sequence)) {
+    console.warn('key is invalid.')
+    return key 
+  } else if (i_sequence === 0) {
+    console.warn('key is already at bottom.')
+    return key 
+  }
+
+  const key_pitchDown = SequenceNoteKey[i_sequence - interval]
+  if (!key_pitchDown) {
+    console.warn('can not pitch down anymore.', key + ' + ' + interval)
+    return key 
+  }
+  
+  return key_pitchDown
 }
