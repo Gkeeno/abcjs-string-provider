@@ -79,10 +79,10 @@
         </div>
 
         <select ref="sel_chordtype" v-model="selectedChordType">
-					<optgroup label="三和弦">
+          <optgroup label="三和弦">
             <option value="0">大三和弦</option>
             <option value="1">小三和弦</option>
-						<option value="4">挂四和弦</option>
+            <option value="4">挂四和弦</option>
           </optgroup>
 
           <optgroup label="双音">
@@ -92,6 +92,16 @@
           </optgroup>
         </select>
         <button @click="changeChordType">更改和弦类型</button>
+
+        <select ref="sel_chordtype" v-model="selectedChordDuration">
+          <option value="16">全音符</option>
+          <option value="12">二分音符附点</option>
+          <option value="8">二分音符</option>
+          <option value="6">四分音符附点</option>
+          <option value="4">四分音符</option>
+          <option value="2">八分音符</option>
+        </select>
+        <button @click="changeChordDuration">更改和弦时值</button>
       </div>
     </div>
   </div>
@@ -176,7 +186,8 @@ export default class Home extends Vue {
 	public staveData: string = ''
 	public stave: Stave
 	public selectedNotation: { type: SelectNotationType; value } = null
-	public selectedChordType: ChordType = ChordType.Major;
+	public selectedChordType: ChordType = ChordType.Major
+	public selectedChordDuration: NoteDuration = NoteDuration.Quarter
 
 	@Provide() public clefArr = [
 		{ data: 'Whole', img: require('../assets/image/clef1.png') },
@@ -408,10 +419,16 @@ export default class Home extends Vue {
 			(this.selectedNotation.value as BarLine).setNewlineInEnd()
 	}
 
-	public changeChordType(){
+	public changeChordType() {
 		this.selectedNotation &&
 			this.selectedNotation.value.ntype == NotationType.ChordNote &&
 			(this.selectedNotation.value as ChordNote).setChordType(this.selectedChordType)
+	}
+
+	public changeChordDuration() {
+		this.selectedNotation &&
+			this.selectedNotation.value.ntype == NotationType.ChordNote &&
+			(this.selectedNotation.value as ChordNote).setDuration(this.selectedChordDuration)
 	}
 
 	public keypressHandle(e: KeyboardEvent) {
