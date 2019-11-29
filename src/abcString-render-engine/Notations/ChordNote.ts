@@ -8,11 +8,9 @@ import { NotationType } from '../Enums/NotationType'
 import { NoteDuration } from '../Enums/NoteDuration'
 
 /**
- * 编辑方式：以根音为基础，和单音一样的调整音高方式；
  * a.默认新增是大三和弦，可以改变和弦的属性去调整和弦内音符的相对属性
  * b.节奏和音符装饰(Decorations)可以标志在[xxx]周围,但是具体到音符的符号(Accidential)必须要在
  * 音符周围去实现;
- * c.提供基本调整和详细调整
  */
 export class ChordNote extends Notation {
   public ntype = NotationType.ChordNote
@@ -26,7 +24,7 @@ export class ChordNote extends Notation {
   ) {
     super()
 
-    const i_sequence = SequenceNoteKey.indexOf(rootkey);
+    const i_sequence = SequenceNoteKey.indexOf(rootkey)
     if (isNaN(i_sequence)) {
       throw 'invalid rootkey.'
     }
@@ -73,20 +71,41 @@ export class ChordNote extends Notation {
     this.updateInStave()
   }
 
+  public setChordType(type: ChordType) {
+    this.chordType = type
+    this.updateInStave()
+  }
+
   private generateChordString(rootkey: NoteKey, duration: NoteDuration, chordType: ChordType) {
     // 1. build notes
     const notes: Note[] = []
     notes.push(new Note(rootkey, duration)) // Root note. 只会会以第一个Note的时值为准
 
-    if (chordType === ChordType.Major) {
-      notes.push(new Note(tryPitchUpKey(rootkey, 2))) // Third note
-      notes.push(new Note(tryPitchUpKey(rootkey, 4))) // Fifth note
-    } else if (chordType === ChordType.Minor) {
-      const third = new Note(tryPitchDownKey(rootkey, 2)) // Third note
-      third.setAccidential(NoteAccidental.Flat)
-      const fifth = new Note(tryPitchDownKey(rootkey, 4)) // Fifth note
+    if (chordType == ChordType.Major) {
+      const third = new Note(tryPitchUpKey(rootkey, 2)) // Third note
+      const fifth = new Note(tryPitchUpKey(rootkey, 4)) // Fifth note
       notes.push(third)
       notes.push(fifth)
+    } else if (chordType == ChordType.Minor) {
+      const third = new Note(tryPitchUpKey(rootkey, 2)) // Third note
+      third.setAccidential(NoteAccidental.Flat)
+      const fifth = new Note(tryPitchUpKey(rootkey, 4)) // Fifth note
+      notes.push(third)
+      notes.push(fifth)
+    } else if (chordType == ChordType.Suspended4) {
+      const third = new Note(tryPitchUpKey(rootkey, 3)) // Third note
+      const fifth = new Note(tryPitchUpKey(rootkey, 4)) // Fifth note
+      notes.push(third)
+      notes.push(fifth)
+    } else if (chordType == ChordType.Double3) {
+      const second = new Note(tryPitchUpKey(rootkey, 2)) // Second note
+      notes.push(second)
+    } else if (chordType == ChordType.Double4) {
+      const second = new Note(tryPitchUpKey(rootkey, 3)) // Second note
+      notes.push(second)
+    } else if (chordType == ChordType.Double5) { 
+      const second = new Note(tryPitchUpKey(rootkey, 4)) // Second note
+      notes.push(second)
     }
 
     // 2. to abcstring
@@ -98,7 +117,7 @@ export class ChordNote extends Notation {
   }
 }
 
-function tryPitchUpKey(key: NoteKey, interval: number, prelimit:number = 0) {
+function tryPitchUpKey(key: NoteKey, interval: number, prelimit: number = 0) {
   const i_sequence = SequenceNoteKey.indexOf(key)
   if (isNaN(i_sequence)) {
     console.warn('key is invalid .')
@@ -135,4 +154,3 @@ function tryPitchDownKey(key: NoteKey, interval: number) {
 
   return key_pitchDown
 }
-

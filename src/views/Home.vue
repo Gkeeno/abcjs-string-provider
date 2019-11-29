@@ -78,12 +78,20 @@
           </div>
         </div>
 
-        <select ref="sel_chordtype">
-					<option value>大三和弦</option>
-          <option value>小三和弦</option>
+        <select ref="sel_chordtype" v-model="selectedChordType">
+					<optgroup label="三和弦">
+            <option value="0">大三和弦</option>
+            <option value="1">小三和弦</option>
+						<option value="4">挂四和弦</option>
+          </optgroup>
+
+          <optgroup label="双音">
+            <option value="5">三度</option>
+            <option value="6">四度</option>
+            <option value="7">五度</option>
+          </optgroup>
         </select>
-        <button @click="changeChordType">设置和弦类型</button>
-				
+        <button @click="changeChordType">更改和弦类型</button>
       </div>
     </div>
   </div>
@@ -168,6 +176,7 @@ export default class Home extends Vue {
 	public staveData: string = ''
 	public stave: Stave
 	public selectedNotation: { type: SelectNotationType; value } = null
+	public selectedChordType: ChordType = ChordType.Major;
 
 	@Provide() public clefArr = [
 		{ data: 'Whole', img: require('../assets/image/clef1.png') },
@@ -237,6 +246,7 @@ export default class Home extends Vue {
 		super()
 		window.document.onkeydown = e => this.keypressHandle(e)
 	}
+
 	public loadStave() {
 		const stave = new Stave()
 		stave.title = this.$data.$title
@@ -396,6 +406,12 @@ export default class Home extends Vue {
 		this.selectedNotation &&
 			this.selectedNotation.type == SelectNotationType.bar &&
 			(this.selectedNotation.value as BarLine).setNewlineInEnd()
+	}
+
+	public changeChordType(){
+		this.selectedNotation &&
+			this.selectedNotation.value.ntype == NotationType.ChordNote &&
+			(this.selectedNotation.value as ChordNote).setChordType(this.selectedChordType)
 	}
 
 	public keypressHandle(e: KeyboardEvent) {
