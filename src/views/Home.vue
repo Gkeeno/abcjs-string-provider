@@ -92,7 +92,7 @@
           </optgroup>
         </select>
         <button @click="changeChordType">更改和弦类型</button>
-
+				<br>
         <select ref="sel_chordtype" v-model="selectedChordDuration">
           <option value="16">全音符</option>
           <option value="12">二分音符附点</option>
@@ -102,6 +102,9 @@
           <option value="2">八分音符</option>
         </select>
         <button @click="changeChordDuration">更改和弦时值</button>
+				<br>
+				<br>
+				
       </div>
     </div>
   </div>

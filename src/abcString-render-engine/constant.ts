@@ -86,6 +86,6 @@ export const ChordNoteIntervalMap = {
   [ChordType.Minor]: 4,
   [ChordType.Augmented]: 4,
   [ChordType.Diminished]: 4,
-  [ChordType.Suspended]:4,
+  [ChordType.Suspended4]:4,
 }
 
