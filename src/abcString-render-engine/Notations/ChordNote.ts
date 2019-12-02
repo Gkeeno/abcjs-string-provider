@@ -11,6 +11,9 @@ import { NoteDuration } from '../Enums/NoteDuration'
  * a.默认新增是大三和弦，可以改变和弦的属性去调整和弦内音符的相对属性
  * b.节奏和音符装饰(Decorations)可以标志在[xxx]周围,但是具体到音符的符号(Accidential)必须要在
  * 音符周围去实现;
+ * @todo
+ * A. 添加`note`后如果设置`lastString`空格，可能导致无法选中，因为不会截取到空格;
+ * 但是其后如果`notation`，则会选中空格（先添加小节不影响使用）;
  */
 export class ChordNote extends Notation {
   public ntype = NotationType.ChordNote
@@ -25,7 +28,7 @@ export class ChordNote extends Notation {
     super()
 
     const i_sequence = SequenceNoteKey.indexOf(rootkey)
-    if (isNaN(i_sequence)) {
+    if (i_sequence === -1) {
       throw 'invalid rootkey.'
     }
   }
@@ -103,7 +106,7 @@ export class ChordNote extends Notation {
     } else if (chordType == ChordType.Double4) {
       const second = new Note(tryPitchUpKey(rootkey, 3)) // Second note
       notes.push(second)
-    } else if (chordType == ChordType.Double5) { 
+    } else if (chordType == ChordType.Double5) {
       const second = new Note(tryPitchUpKey(rootkey, 4)) // Second note
       notes.push(second)
     }
@@ -119,7 +122,7 @@ export class ChordNote extends Notation {
 
 function tryPitchUpKey(key: NoteKey, interval: number, prelimit: number = 0) {
   const i_sequence = SequenceNoteKey.indexOf(key)
-  if (isNaN(i_sequence)) {
+  if (i_sequence === -1) {
     console.warn('key is invalid .')
     return key
   } else if (i_sequence + prelimit === SequenceNoteKey.length - 1) {
@@ -138,7 +141,7 @@ function tryPitchUpKey(key: NoteKey, interval: number, prelimit: number = 0) {
 
 function tryPitchDownKey(key: NoteKey, interval: number) {
   const i_sequence = SequenceNoteKey.indexOf(key)
-  if (isNaN(i_sequence)) {
+  if (i_sequence === -1) {
     console.warn('key is invalid.')
     return key
   } else if (i_sequence === 0) {

@@ -68,7 +68,7 @@ export class Note extends Notation {
 
 function tryPitchUpKey(key: NoteKey, interval: number) {
   const i_sequence = SequenceNoteKey.indexOf(key)
-  if (isNaN(i_sequence)) {
+  if (i_sequence === -1) {
     console.warn('key is invalid .')
     return key 
   } else if (i_sequence === SequenceNoteKey.length - 1) {
@@ -87,7 +87,7 @@ function tryPitchUpKey(key: NoteKey, interval: number) {
 
 function tryPitchDownKey(key: NoteKey, interval: number) {
   const i_sequence = SequenceNoteKey.indexOf(key)
-  if (isNaN(i_sequence)) {
+  if (i_sequence === -1) {
     console.warn('key is invalid.')
     return key 
   } else if (i_sequence === 0) {
