@@ -3,6 +3,7 @@ import { Notation } from '../Notation.abstract'
 import { NotationType } from '../../Enums/NotationType'
 import { IBoundary } from './IBoundary'
 import { StaveCommand } from '../../types_defined'
+import { Stave } from '../../Stave/Stave'
 
 /**
  * 必须俩个音符(Note)以上得才能 组成 unisons，且与关联音符(bindNote)一同插入
@@ -20,7 +21,7 @@ export class TiesBoundary extends Notation implements IBoundary {
   /**
    * 实例成对的Unisons
    */
-  public static create(beginNote: INotation) {
+  public static setBeginning(beginNote: INotation) {
     const setEnding = function (endNote: INotation) {
       if (beginNote.iend >= endNote.iend) {
         console.warn(beginNote.iend, endNote.iend)
@@ -30,7 +31,12 @@ export class TiesBoundary extends Notation implements IBoundary {
       const begin = new TiesBoundary(beginNote, false)
       const end = new TiesBoundary(endNote, true)
       end.link(begin)
-      return { addNotation: end }
+      return {
+        appendToStave: function (stave:Stave) {
+          stave.addNotation(begin);
+          stave.addNotation(end);
+        }
+      }
     }
     return { setEnding }
   }
@@ -77,14 +83,13 @@ export class TiesBoundary extends Notation implements IBoundary {
   public addToStave(command: StaveCommand) {
     // 为保证成对，应由ending来添加。insert同理
     if (this.isEnding) {
-      this.siblingBoundary.insertToStaveBefore(this.siblingBoundary.n_inner, command)
-      // this.siblingBoundary.n_inner.insertToStave(this.siblingBoundary, command)
-      // this.n_inner.insertToStave(this.siblingBoundary.n_inner, command)
-      super.insertToStave(this.n_inner, command)
+      super.insertToStaveAfter(this.n_inner, command)  
+    } else {
+      super.insertToStaveBefore(this.n_inner, command)  
     }
   }
 
-  public insertToStave(before: INotation, command: StaveCommand) {
+  public insertToStaveAfter(before: INotation, command: StaveCommand) {
     throw 'no implement.'
   }
   public updateInStave() {

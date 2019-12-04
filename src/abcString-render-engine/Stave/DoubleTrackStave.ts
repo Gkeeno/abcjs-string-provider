@@ -114,7 +114,7 @@ export class StaveDoubleTrack extends StaveBase {
         // 如果结尾是小节线才添加歌词，其他情况暂不加（用作编辑完成，再添加歌词的场景）
         if (n instanceof BarLine) {
           n.hasNewlineInEnd || n.setNewlineInEnd(); // 手动换行
-          this.insertNotation(n, lyricsInfoField);
+          this.insertNotationAfter(n, lyricsInfoField);
           i++;
         };
       }

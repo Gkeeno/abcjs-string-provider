@@ -7,7 +7,6 @@ import { NotationType } from '../Enums/NotationType'
  * 构造函数内的公共参数不应由外部变化，仅作只读访问
  */
 export abstract class Notation implements INotation {
-  
   /**
    * gatter 只用来作hook,返回值不应该被改变
    */
@@ -36,7 +35,7 @@ export abstract class Notation implements INotation {
 
   public addToStave(command: StaveCommand) {
     if (this._command) return
-    
+
     this._command = command
     this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle)
     this._command.updateAbcString(this.createUpdateAbcStringHandle())
@@ -46,16 +45,16 @@ export abstract class Notation implements INotation {
     })
   }
 
-  public insertToStave(before: INotation, command: StaveCommand) {
+  public insertToStaveAfter(nbefore: INotation, command: StaveCommand) {
     if (this._command) return
 
     this._command = command
     this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle)
-    this._command.updateAbcString(this.createUpdateAbcStringHandle(before))
+    this._command.updateAbcString(this.createUpdateAbcStringHandle(nbefore))
     this._command.updateNotations(narr => {
-      const iBefore = narr.indexOf(before)
+      const iBefore = narr.indexOf(nbefore)
       if (iBefore == -1) {
-        throw "不存在将插入的 notation"
+        throw '不存在将插入的 notation'
       }
       let forward = narr.slice(0, iBefore + 1)
       let backward = narr.slice(iBefore + 1)
@@ -64,24 +63,24 @@ export abstract class Notation implements INotation {
     })
   }
 
-  public insertToStaveBefore(after: INotation, command: StaveCommand) {
+  public insertToStaveBefore(nafter: INotation, command: StaveCommand) {
     if (this._command) return
 
-    let before: INotation = null;
+    let nbefore: INotation = null
     this._command = command
     this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle)
     this._command.updateNotations(narr => {
-      const iAfter = narr.indexOf(after)
-      before = narr[iAfter - 1];
-      if (iAfter == -1 || !before) {
-        throw "不存在将插入到前方的 notation"
+      const iAfter = narr.indexOf(nafter)
+      nbefore = narr[iAfter - 1]
+      if (iAfter == -1 || !nbefore) {
+        throw '不存在将插入到前方的 notation'
       }
       let forward = narr.slice(0, iAfter)
       let backward = narr.slice(iAfter)
       narr = forward.concat(this).concat(backward)
       return narr
     })
-    this._command.updateAbcString(this.createUpdateAbcStringHandle(before))
+    this._command.updateAbcString(this.createUpdateAbcStringHandle(nbefore))
   }
 
   public updateInStave() {
@@ -98,7 +97,7 @@ export abstract class Notation implements INotation {
     this._command.updateNotations(narr => {
       const iRemove = narr.indexOf(this)
       if (iRemove == -1) {
-        throw "不存在将插入到前方的 notation"
+        throw '不存在将插入到前方的 notation'
       }
       narr.splice(iRemove, 1)
       return narr

@@ -27,8 +27,7 @@
           </div>
         </div>
         <button @click="newline">换下一行</button>
-        <!-- <button @click="addUnisons">添加合音</button> -->
-        <button @click="selectUnisons">添加合音</button>
+        <button @click="selectUnisons">选择俩个音符合音</button>
       </div>
       <div class="vex_box">
         <div class="input_box">
@@ -347,7 +346,7 @@ export default class Home extends Vue {
 		const note = new Note(NoteKey.C3, durationValue)
 
 		this.selectedNotation
-			? this.stave.insertNotation(this.selectedNotation.value, note)
+			? this.stave.insertNotationAfter(this.selectedNotation.value, note)
 			: this.stave.addNotation(note)
 		this.selectedNotation = { type: SelectNotationType.note, value: note }
 	}
@@ -357,7 +356,7 @@ export default class Home extends Vue {
 		const note = new RestNote(durationValue)
 
 		this.selectedNotation
-			? this.stave.insertNotation(this.selectedNotation.value, note)
+			? this.stave.insertNotationAfter(this.selectedNotation.value, note)
 			: this.stave.addNotation(note)
 		this.selectedNotation = { type: SelectNotationType.note, value: note }
 	}
@@ -366,7 +365,7 @@ export default class Home extends Vue {
 		const chordnote = new ChordNote(NoteKey.C3, NoteDuration.Quarter, ChordType.Major)
 
 		this.selectedNotation
-			? this.stave.insertNotation(this.selectedNotation.value, chordnote)
+			? this.stave.insertNotationAfter(this.selectedNotation.value, chordnote)
 			: this.stave.addNotation(chordnote)
 		this.selectedNotation = { type: SelectNotationType.note, value: chordnote }
 	}
@@ -375,7 +374,7 @@ export default class Home extends Vue {
 		const barline = new BarLine()
 
 		this.selectedNotation
-			? this.stave.insertNotation(this.selectedNotation.value, barline)
+			? this.stave.insertNotationAfter(this.selectedNotation.value, barline)
 			: this.stave.addNotation(barline)
 		this.selectedNotation = {
 			type: SelectNotationType.bar,
@@ -394,26 +393,6 @@ export default class Home extends Vue {
 			(this.selectedNotation.value as Note).setEndSpacing()
 	}
 
-	public addUnisons() {
-		// var boundaryS = new UnisonsBoundary(new Note(NoteKey.C3, NoteDuration.Quarter), false)
-		// var boundaryE = new UnisonsBoundary(new Note(NoteKey.C3, NoteDuration.Quarter), true)
-		// boundaryS.link(boundaryE)
-
-		// const begin = this.selectedNotation ? this.selectedNotation.value : null;
-		const appendNote = TiesBoundary.create(new Note(NoteKey.C3, NoteDuration.Quarter)).setEnding(
-			new Note(NoteKey.C3, NoteDuration.Quarter),
-		).addNotation
-
-		if (this.selectedNotation && this.selectedNotation.type == SelectNotationType.note) {
-			// this.stave.insertNotation(this.selectedNotation.value, boundaryS)
-			// this.stave.insertNotation(boundaryS.bindNote, boundaryE)
-			this.stave.insertNotation(this.selectedNotation.value, appendNote)
-		} else {
-			this.stave.addNotation(appendNote)
-			// this.stave.addNotation(boundaryS)
-			// this.stave.insertNotation(boundaryS.bindNote, boundaryE)
-		}
-	}
 	public selectUnisons() {
 		const notestack: INotation[] = [] // 0begin 1end
 		const defaultHandle = function() {}
@@ -432,8 +411,9 @@ export default class Home extends Vue {
 			// 添加了俩个以上
 
 			try {
-				const nadd = TiesBoundary.create(notestack[0]).setEnding(notestack[1]).addNotation
-				this.stave.addNotation(nadd)
+				TiesBoundary.setBeginning(notestack[0])
+					.setEnding(notestack[1])
+					.appendToStave(this.stave)
 			} catch (error) {
 				alert(error)
 			} finally {

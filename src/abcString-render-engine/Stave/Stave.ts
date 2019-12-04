@@ -1,15 +1,3 @@
-import { INotation } from '../Notations/INotation';
-import { NotationType } from '../Enums/NotationType';
-import {
-  StringsIndexChangeHandle,
-  StaveCommand,
-  UpdateAbcStringHandle
-} from '../types_defined';
-import { InfoField } from '../Notations/InfoField';
-import { InfoFiledType } from '../Enums/InfoFieldType';
-import { Note } from '../Notations/Note';
-import { BarLine } from '../Notations/BarLine';
-import { RestNote } from '../Notations/RestNote';
 import { StaveBase } from './StaveBase';
 
 /**

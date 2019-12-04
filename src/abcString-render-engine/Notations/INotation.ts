@@ -24,8 +24,8 @@ export interface INotation {
    * @param command 更新到`stave`的命令对象，所有对`stave`的交互都是通过该对象
    */
   addToStave(command: StaveCommand);
-  insertToStave(before: INotation, command: StaveCommand);
-  insertToStaveBefore(after: INotation, command: StaveCommand);
+  insertToStaveAfter(nbefore: INotation, command: StaveCommand);
+  insertToStaveBefore(nafter: INotation, command: StaveCommand);
   updateInStave();
   removeInStave();
 

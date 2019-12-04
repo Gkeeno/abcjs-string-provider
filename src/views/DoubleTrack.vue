@@ -238,7 +238,7 @@ export default class DoubleTrack extends Vue {
 		stave.metre = this.$data.$metre;
 		stave.tempo = this.$data.$tempo;
 		this.stave = stave.init();
-		this.stave.insertNotation(this.stave.rightHand, new Note(NoteKey.C4));
+		this.stave.insertNotationAfter(this.stave.rightHand, new Note(NoteKey.C4));
 
 		(window as any).stave = stave;
 		this.stave.setStaveChangeHandle(this.renderAbc.bind(this));
@@ -323,7 +323,7 @@ export default class DoubleTrack extends Vue {
 		const note = new Note(NoteKey.C2, durationValue);
 
 		this.selectedNotation
-			? this.stave.insertNotation(this.selectedNotation.value, note)
+			? this.stave.insertNotationAfter(this.selectedNotation.value, note)
 			: this.stave.addNotation(note);
 		this.selectedNotation = { type: SelectNotationType.note, value: note };
 	}
@@ -332,7 +332,7 @@ export default class DoubleTrack extends Vue {
 		const note = new RestNote(durationValue);
 
 		this.selectedNotation
-			? this.stave.insertNotation(this.selectedNotation.value, note)
+			? this.stave.insertNotationAfter(this.selectedNotation.value, note)
 			: this.stave.addNotation(note);
 		this.selectedNotation = { type: SelectNotationType.note, value: note };
 	}
@@ -340,7 +340,7 @@ export default class DoubleTrack extends Vue {
 		const barline = new BarLine();
 
 		this.selectedNotation
-			? this.stave.insertNotation(this.selectedNotation.value, barline)
+			? this.stave.insertNotationAfter(this.selectedNotation.value, barline)
 			: this.stave.addNotation(barline);
 		this.selectedNotation = {
 			type: SelectNotationType.bar,

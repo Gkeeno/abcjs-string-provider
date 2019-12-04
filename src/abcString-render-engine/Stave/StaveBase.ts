@@ -64,14 +64,14 @@ export abstract class StaveBase {
     notation.addToStave(this.createOperateCommand())
   }
 
-  public insertNotation(before: INotation, notation: INotation) {
+  public insertNotationAfter(before: INotation, notation: INotation) {
     if (before instanceof TiesBoundary) {
       if (!before.isEnding) {
         before = before.getInner();
       }
     }
 
-    notation.insertToStave(before, this.createOperateCommand())
+    notation.insertToStaveAfter(before, this.createOperateCommand())
   }
   public insertNotationBefore(after: INotation, notation: INotation) {
     if (after instanceof TiesBoundary) {
@@ -142,6 +142,10 @@ export abstract class StaveBase {
     }
   }
 
+  /**
+   * 创建命令对象，解耦 notation 和 stave 
+   * @summary 添加的时候需维持 每个notation 对应一个 command，不然可能有一些奇怪的bug;
+   */
   protected createOperateCommand(): StaveCommand {
     const updateAbcString = (update_abcsting: UpdateAbcStringHandle) => {
       const orgStr = this.abcString
