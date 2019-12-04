@@ -8,6 +8,7 @@ import { BarLine } from '../Notations/BarLine'
 import { RestNote } from '../Notations/RestNote'
 import { ChordNote } from '../Notations/ChordNote'
 import { InlineInfoField } from '../Notations/InlineInfoField'
+import { TiesBoundary } from '../Notations/Boundaries/TiesBoundary'
 
 /**
  * @description
@@ -56,15 +57,30 @@ export abstract class StaveBase {
    */
   public getNotation(ichar_start: number, ichar_end: number): any {
     var queryParam = { ichar_start, ichar_end }
-    return this.notations.find(x => x.query(queryParam))
+    return this.notations.filter(x => x.query(queryParam)).pop() // 取得最后一个
   }
 
-  public addNotation(notaion: INotation) {
-    notaion.addToStave(this.createOperateCommand())
+  public addNotation(notation: INotation) {
+    notation.addToStave(this.createOperateCommand())
   }
 
-  public insertNotation(before: INotation, notaion: INotation) {
-    notaion.insertToStave(before, this.createOperateCommand())
+  public insertNotation(before: INotation, notation: INotation) {
+    if (before instanceof TiesBoundary) {
+      if (!before.isEnding) {
+        before = before.getInner();
+      }
+    }
+
+    notation.insertToStave(before, this.createOperateCommand())
+  }
+  public insertNotationBefore(after: INotation, notation: INotation) {
+    if (after instanceof TiesBoundary) {
+      if (!after.isEnding) {
+        after = after.getInner();
+      }
+    }
+    
+    notation.insertToStaveBefore(after, this.createOperateCommand())
   }
 
   /**

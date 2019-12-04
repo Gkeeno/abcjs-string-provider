@@ -97,7 +97,7 @@ import {
 	Stave,
 	StaveDoubleTrack,
 	RestNote,
-	UnisonsBoundary,
+	TiesBoundary,
 	InfoFiledType,
 	BarLine,
 	NoteAccidental
@@ -370,26 +370,26 @@ export default class DoubleTrack extends Vue {
 	}
 
 	public addUnisons() {
-		var boundaryS = new UnisonsBoundary(
-			new Note(NoteKey.C3, NoteDuration.Quarter),
-			false
-		);
-		var boundaryE = new UnisonsBoundary(
-			new Note(NoteKey.C3, NoteDuration.Quarter),
-			true
-		);
-		boundaryS.link(boundaryE);
+		// var boundaryS = new UnisonsBoundary(
+		// 	new Note(NoteKey.C3, NoteDuration.Quarter),
+		// 	false
+		// );
+		// var boundaryE = new UnisonsBoundary(
+		// 	new Note(NoteKey.C3, NoteDuration.Quarter),
+		// 	true
+		// );
+		// boundaryS.link(boundaryE);
 
-		if (
-			this.selectedNotation &&
-			this.selectedNotation.type == SelectNotationType.note
-		) {
-			this.stave.insertNotation(this.selectedNotation.value, boundaryS);
-			this.stave.insertNotation(boundaryS.bindNote, boundaryE);
-		} else {
-			this.stave.addNotation(boundaryS);
-			this.stave.insertNotation(boundaryS.bindNote, boundaryE);
-		}
+		// if (
+		// 	this.selectedNotation &&
+		// 	this.selectedNotation.type == SelectNotationType.note
+		// ) {
+		// 	this.stave.insertNotation(this.selectedNotation.value, boundaryS);
+		// 	this.stave.insertNotation(boundaryS.bindNote, boundaryE);
+		// } else {
+		// 	this.stave.addNotation(boundaryS);
+		// 	this.stave.insertNotation(boundaryS.bindNote, boundaryE);
+		// }
 	}
 
 	public setAccidental(accidentalName: string) {

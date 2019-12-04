@@ -25,6 +25,7 @@ export interface INotation {
    */
   addToStave(command: StaveCommand);
   insertToStave(before: INotation, command: StaveCommand);
+  insertToStaveBefore(after: INotation, command: StaveCommand);
   updateInStave();
   removeInStave();
 

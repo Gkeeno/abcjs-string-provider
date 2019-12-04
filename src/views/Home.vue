@@ -27,7 +27,8 @@
           </div>
         </div>
         <button @click="newline">换下一行</button>
-        <button @click="addUnisons">添加合音</button>
+        <!-- <button @click="addUnisons">添加合音</button> -->
+        <button @click="selectUnisons">添加合音</button>
       </div>
       <div class="vex_box">
         <div class="input_box">
@@ -92,7 +93,7 @@
           </optgroup>
         </select>
         <button @click="changeChordType">更改和弦类型</button>
-				<br>
+        <br />
         <select ref="sel_chordtype" v-model="selectedChordDuration">
           <option value="16">全音符</option>
           <option value="12">二分音符附点</option>
@@ -102,9 +103,8 @@
           <option value="2">八分音符</option>
         </select>
         <button @click="changeChordDuration">更改和弦时值</button>
-				<br>
-				<br>
-				
+        <br />
+        <br />
       </div>
     </div>
   </div>
@@ -122,13 +122,14 @@ import {
 	InfoField,
 	Stave,
 	RestNote,
-	UnisonsBoundary,
+	TiesBoundary,
 	InfoFiledType,
 	BarLine,
 	NoteAccidental,
 	BarlineType,
 	ChordNote,
 	ChordType,
+	INotation,
 } from '../abcString-render-engine'
 
 enum KeyName {
@@ -256,6 +257,8 @@ export default class Home extends Vue {
 
 	private tuneObjectArray
 
+	private clickHook_selectUnisons: (notaion: INotation) => void = function() {}
+
 	constructor() {
 		super()
 		window.document.onkeydown = e => this.keypressHandle(e)
@@ -324,6 +327,11 @@ export default class Home extends Vue {
 							value: notation,
 					  })
 
+				that.clickHook_selectUnisons(notation)
+				// if(that.selectedNotation && that.selectedNotation.value instanceof UnisonsBoundary){
+				// 	that.selectedNotation.value = that.selectedNotation.value.getInner();
+				// }
+
 				console.log(
 					that.stave.abcString.substring(abcElem.startChar, abcElem.endChar),
 					abcElem.startChar,
@@ -387,16 +395,52 @@ export default class Home extends Vue {
 	}
 
 	public addUnisons() {
-		var boundaryS = new UnisonsBoundary(new Note(NoteKey.C3, NoteDuration.Quarter), false)
-		var boundaryE = new UnisonsBoundary(new Note(NoteKey.C3, NoteDuration.Quarter), true)
-		boundaryS.link(boundaryE)
+		// var boundaryS = new UnisonsBoundary(new Note(NoteKey.C3, NoteDuration.Quarter), false)
+		// var boundaryE = new UnisonsBoundary(new Note(NoteKey.C3, NoteDuration.Quarter), true)
+		// boundaryS.link(boundaryE)
+
+		// const begin = this.selectedNotation ? this.selectedNotation.value : null;
+		const appendNote = TiesBoundary.create(new Note(NoteKey.C3, NoteDuration.Quarter)).setEnding(
+			new Note(NoteKey.C3, NoteDuration.Quarter),
+		).addNotation
 
 		if (this.selectedNotation && this.selectedNotation.type == SelectNotationType.note) {
-			this.stave.insertNotation(this.selectedNotation.value, boundaryS)
-			this.stave.insertNotation(boundaryS.bindNote, boundaryE)
+			// this.stave.insertNotation(this.selectedNotation.value, boundaryS)
+			// this.stave.insertNotation(boundaryS.bindNote, boundaryE)
+			this.stave.insertNotation(this.selectedNotation.value, appendNote)
 		} else {
-			this.stave.addNotation(boundaryS)
-			this.stave.insertNotation(boundaryS.bindNote, boundaryE)
+			this.stave.addNotation(appendNote)
+			// this.stave.addNotation(boundaryS)
+			// this.stave.insertNotation(boundaryS.bindNote, boundaryE)
+		}
+	}
+	public selectUnisons() {
+		const notestack: INotation[] = [] // 0begin 1end
+		const defaultHandle = function() {}
+		this.clickHook_selectUnisons = notation => {
+			let note: INotation = null
+			if (notation instanceof Note) {
+				note = notation
+			} else if (notation instanceof TiesBoundary) {
+				note = notation.getInner()
+			} else {
+				return
+			}
+
+			// 第一个
+			notestack.push(note)
+			if (notestack.length != 2) return
+
+			// 第二个
+			if (notestack[0].iend >= notestack[1].iend) {
+				this.clickHook_selectUnisons = defaultHandle
+				alert('结束note位置不能大于等于开始note')
+				throw '结束note位置不能大于等于开始note'
+			}
+			const nadd = TiesBoundary.create(notestack[0]).setEnding(notestack[1]).addNotation
+			this.stave.addNotation(nadd)
+
+			this.clickHook_selectUnisons = defaultHandle
 		}
 	}
 
