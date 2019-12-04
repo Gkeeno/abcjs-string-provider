@@ -427,20 +427,18 @@ export default class Home extends Vue {
 				return
 			}
 
-			// 第一个
 			notestack.push(note)
-			if (notestack.length != 2) return
+			if (notestack.length < 2) return
+			// 添加了俩个以上
 
-			// 第二个
-			if (notestack[0].iend >= notestack[1].iend) {
+			try {
+				const nadd = TiesBoundary.create(notestack[0]).setEnding(notestack[1]).addNotation
+				this.stave.addNotation(nadd)
+			} catch (error) {
+				alert(error)
+			} finally {
 				this.clickHook_selectUnisons = defaultHandle
-				alert('结束note位置不能大于等于开始note')
-				throw '结束note位置不能大于等于开始note'
 			}
-			const nadd = TiesBoundary.create(notestack[0]).setEnding(notestack[1]).addNotation
-			this.stave.addNotation(nadd)
-
-			this.clickHook_selectUnisons = defaultHandle
 		}
 	}
 

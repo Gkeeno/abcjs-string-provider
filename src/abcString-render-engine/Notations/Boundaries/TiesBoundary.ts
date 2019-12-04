@@ -21,11 +21,15 @@ export class TiesBoundary extends Notation implements IBoundary {
    * 实例成对的Unisons
    */
   public static create(beginNote: INotation) {
-    const begin = new TiesBoundary(beginNote, false)
-    const setEnding = function(endNote: INotation) {
+    const setEnding = function (endNote: INotation) {
+      if (beginNote.iend >= endNote.iend) {
+        console.warn(beginNote.iend, endNote.iend)
+        throw '结束note位置不能大于等于开始note'
+      }
+      
+      const begin = new TiesBoundary(beginNote, false)
       const end = new TiesBoundary(endNote, true)
       end.link(begin)
-
       return { addNotation: end }
     }
     return { setEnding }
@@ -37,7 +41,7 @@ export class TiesBoundary extends Notation implements IBoundary {
    */
   private constructor(public n_inner: INotation, public isEnding: boolean) {
     super()
-    checkNoteBindingUnisons(this.n_inner, isEnding)
+    checkNoteBindingTies(this.n_inner, isEnding)
   }
 
   public toJSON() {
@@ -88,12 +92,11 @@ export class TiesBoundary extends Notation implements IBoundary {
   }
 
   public removeInStave() {
-    uncheckNoteBindingUnisons(this.n_inner);
+    uncheckNoteBindingTies(this.n_inner)
 
     super.removeInStave()
-    this.removeInStave = function () { }
+    this.removeInStave = function() {}
     // this.n_inner.removeInStave() // 不采用内联移除的方式可以 减少一些移除的bug
-    this.siblingBoundary && (this.siblingBoundary as TiesBoundary).removeInStave()
   }
 
   /**
@@ -105,13 +108,25 @@ export class TiesBoundary extends Notation implements IBoundary {
       return
     }
 
+    // combine Begin - End Method
+    if (this.isEnding) {
+      // 按照一定顺序删除,先begin 后 end（以修复一些bug）
+      let rm_handle_end = this.removeInStave.bind(this)
+      let rm_hendle_begin = sibling.removeInStave.bind(sibling)
+      let removeInStave_linked = function() {
+        rm_handle_end()
+        rm_hendle_begin()
+      }
+      this.removeInStave = removeInStave_linked
+      sibling.removeInStave = removeInStave_linked
+    }
     this.siblingBoundary = sibling
     sibling.link(this)
   }
 }
 
 // hack：记录note被依附Unison的flag
-function checkNoteBindingUnisons(note, isEnding: boolean) {
+function checkNoteBindingTies(note, isEnding: boolean) {
   if (!note.__UnisonsBoundary_innner_flag) {
     note.__UnisonsBoundary_innner_flag = {} // 实例一个对象防止解构异常
   }
@@ -122,6 +137,6 @@ function checkNoteBindingUnisons(note, isEnding: boolean) {
   note.__UnisonsBoundary_innner_flag[isEnding ? 'isBindEnd' : 'isBindBegin'] = true
 }
 
-function uncheckNoteBindingUnisons(note) {
+function uncheckNoteBindingTies(note) {
   note.__UnisonsBoundary_innner_flag && delete note.__UnisonsBoundary_innner_flag
 }
