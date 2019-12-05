@@ -97,7 +97,7 @@ import {
 	Stave,
 	StaveDoubleTrack,
 	RestNote,
-	TiesBoundary,
+	SlursBoundary,
 	InfoFiledType,
 	BarLine,
 	NoteAccidental

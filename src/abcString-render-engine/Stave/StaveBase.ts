@@ -8,12 +8,11 @@ import { BarLine } from '../Notations/BarLine'
 import { RestNote } from '../Notations/RestNote'
 import { ChordNote } from '../Notations/ChordNote'
 import { InlineInfoField } from '../Notations/InlineInfoField'
-import { TiesBoundary } from '../Notations/Boundaries/TiesBoundary'
+import { SlursBoundary } from '../Notations/Boundaries/TiesBoundary'
 
 /**
  * @description
- * a. 添加的任何 Notation 都可能引起 abcstring 变化
- * b. 添加的 Notation 的变化都可能引起 abcstring 变化
+ * a. 添加的任何 Notation 及变化可能引起 abcstring 变化
  */
 export abstract class StaveBase {
   public static readonly abcversion: string = 'standard:v2.1'
@@ -65,7 +64,7 @@ export abstract class StaveBase {
   }
 
   public insertNotationAfter(before: INotation, notation: INotation) {
-    if (before instanceof TiesBoundary) {
+    if (before instanceof SlursBoundary) {
       if (!before.isEnding) {
         before = before.getInner();
       }
@@ -74,7 +73,7 @@ export abstract class StaveBase {
     notation.insertToStaveAfter(before, this.createOperateCommand())
   }
   public insertNotationBefore(after: INotation, notation: INotation) {
-    if (after instanceof TiesBoundary) {
+    if (after instanceof SlursBoundary) {
       if (!after.isEnding) {
         after = after.getInner();
       }

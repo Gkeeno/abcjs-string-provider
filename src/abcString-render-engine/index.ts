@@ -5,7 +5,7 @@ import { NoteKey } from './Enums/NoteKey';
 import { InfoField } from './Notations/InfoField';
 import { RestNote } from './Notations/RestNote';
 import { Stave } from './Stave/Stave';
-import { TiesBoundary } from './Notations/Boundaries/TiesBoundary';
+import { SlursBoundary } from './Notations/Boundaries/TiesBoundary';
 
 import { NoteDurationNameMap } from '../abcString-render-engine/constant';
 import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';
@@ -33,7 +33,7 @@ export {
     InfoFiledType,
     BarlineType,
     BarLine,
-    TiesBoundary,
+    SlursBoundary,
     NoteDurationNameMap,
     NoteAccidental
 } 

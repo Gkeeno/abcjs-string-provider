@@ -6,15 +6,15 @@ import { StaveCommand } from '../../types_defined'
 import { Stave } from '../../Stave/Stave'
 
 /**
- * 必须俩个音符(Note)以上得才能 组成 unisons，且与关联音符(bindNote)一同插入
- * TODO: 实现装饰器(Note被装饰)模式; 或代理模式,增删改等其他功能代理子类；
- * 因为Boundary不直接提供Note方法操作
+ * 圆滑线(Slur)
+ * @description 必须俩个音符(Note)以上得才能 组成 Ties；
+ * 不支持和弦(Chord) ,因为选中的和弦 的abcstring索引不会关联到之前的特殊符号
  */
-export class TiesBoundary extends Notation implements IBoundary {
-  public ntype = NotationType.UnisonsBoundary
+export class SlursBoundary extends Notation implements IBoundary {
+  public ntype = NotationType.SlursBoundary
 
   /**
-   * 一组相关联的 "boundary"
+   * 相关联的 "boundary"
    */
   public siblingBoundary: IBoundary
 
@@ -28,8 +28,8 @@ export class TiesBoundary extends Notation implements IBoundary {
         throw '结束note位置不能大于等于开始note'
       }
       
-      const begin = new TiesBoundary(beginNote, false)
-      const end = new TiesBoundary(endNote, true)
+      const begin = new SlursBoundary(beginNote, false)
+      const end = new SlursBoundary(endNote, true)
       end.link(begin)
       return {
         appendToStave: function (stave:Stave) {
@@ -68,11 +68,6 @@ export class TiesBoundary extends Notation implements IBoundary {
    * 具有boundary 的 note; 选中索引会加上前缀或后缀
    */
   public query(param) {
-    // if (this.isEnding) {
-    //   return this.n_inner.ibegin === param.ichar_start && this.iend === param.ichar_end
-    // } else {
-    //   return this.ibegin === param.ichar_start && this.n_inner.iend === param.ichar_end
-    // }
     if (this.isEnding) {
       return this.iend === param.ichar_end
     } else {
@@ -81,7 +76,6 @@ export class TiesBoundary extends Notation implements IBoundary {
   }
 
   public addToStave(command: StaveCommand) {
-    // 为保证成对，应由ending来添加。insert同理
     if (this.isEnding) {
       super.insertToStaveAfter(this.n_inner, command)  
     } else {
@@ -113,9 +107,9 @@ export class TiesBoundary extends Notation implements IBoundary {
       return
     }
 
-    // combine Begin - End Method
+    // combine Begin&End Method
     if (this.isEnding) {
-      // 按照一定顺序删除,先begin 后 end（以修复一些bug）
+      // 按照一定顺序删除,先end后begin（以修复一些bug）
       let rm_handle_end = this.removeInStave.bind(this)
       let rm_hendle_begin = sibling.removeInStave.bind(sibling)
       let removeInStave_linked = function() {

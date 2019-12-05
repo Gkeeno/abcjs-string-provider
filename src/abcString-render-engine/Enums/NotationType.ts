@@ -6,5 +6,5 @@ export enum NotationType{
     BarLine,
     InfoField,
     IninlineInfoField,
-    UnisonsBoundary,
+    SlursBoundary,
 }

@@ -27,7 +27,7 @@
           </div>
         </div>
         <button @click="newline">换下一行</button>
-        <button @click="selectUnisons">选择俩个音符合音</button>
+        <button @click="selectSlurs">选择俩个音符合音</button>
       </div>
       <div class="vex_box">
         <div class="input_box">
@@ -121,7 +121,7 @@ import {
 	InfoField,
 	Stave,
 	RestNote,
-	TiesBoundary,
+	SlursBoundary,
 	InfoFiledType,
 	BarLine,
 	NoteAccidental,
@@ -327,9 +327,6 @@ export default class Home extends Vue {
 					  })
 
 				that.clickHook_selectUnisons(notation)
-				// if(that.selectedNotation && that.selectedNotation.value instanceof UnisonsBoundary){
-				// 	that.selectedNotation.value = that.selectedNotation.value.getInner();
-				// }
 
 				console.log(
 					that.stave.abcString.substring(abcElem.startChar, abcElem.endChar),
@@ -393,14 +390,14 @@ export default class Home extends Vue {
 			(this.selectedNotation.value as Note).setEndSpacing()
 	}
 
-	public selectUnisons() {
+	public selectSlurs() {
 		const notestack: INotation[] = [] // 0begin 1end
 		const defaultHandle = function() {}
 		this.clickHook_selectUnisons = notation => {
 			let note: INotation = null
 			if (notation instanceof Note) {
 				note = notation
-			} else if (notation instanceof TiesBoundary) {
+			} else if (notation instanceof SlursBoundary) {
 				note = notation.getInner()
 			} else {
 				return
@@ -411,7 +408,7 @@ export default class Home extends Vue {
 			// 添加了俩个以上
 
 			try {
-				TiesBoundary.setBeginning(notestack[0])
+				SlursBoundary.setBeginning(notestack[0])
 					.setEnding(notestack[1])
 					.appendToStave(this.stave)
 			} catch (error) {
