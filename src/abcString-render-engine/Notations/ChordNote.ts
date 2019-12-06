@@ -23,6 +23,7 @@ export class ChordNote extends Notation {
     protected rootkey: NoteKey = NoteKey.C1,
     protected duration: NoteDuration = NoteDuration.Quarter,
     protected chordType: ChordType = ChordType.Major,
+    public hasTie: boolean = false,
     protected lastString = '',
     public lyrics = '',
   ) {
@@ -35,7 +36,11 @@ export class ChordNote extends Notation {
   }
 
   public toAbcString() {
-    return this.generateChordString(this.rootkey, this.duration, this.chordType) + this.lastString
+    return (
+      this.generateChordString(this.rootkey, this.duration, this.chordType) +
+      (this.hasTie ? '-' : '') +
+      this.lastString
+    )
   }
 
   public toJSON() {
@@ -64,7 +69,14 @@ export class ChordNote extends Notation {
     this.rootkey = note_pitchDown
     this.updateInStave()
   }
-
+  /**
+   * 设置延音线符号
+   */
+  public setHasTieIs(ishas: boolean) {
+    this.hasTie = ishas
+    this.updateInStave()
+  }
+  
   public setEndSpacing() {
     this.lastString = ' '
     this.updateInStave()

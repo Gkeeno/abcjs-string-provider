@@ -2,7 +2,7 @@ import { INotation } from '../INotation'
 import { Notation } from '../Notation.abstract'
 import { NotationType } from '../../Enums/NotationType'
 import { IBoundary } from './IBoundary'
-import { StaveCommand } from '../../types_defined'
+import { StaveCommand } from '../../common'
 import { Stave } from '../../Stave/Stave'
 
 /**

@@ -27,7 +27,7 @@
           </div>
         </div>
         <button @click="newline">换下一行</button>
-        <button @click="selectSlurs">选择俩个音符合音</button>
+        <button @click="selectSlurs">选择俩个音符为圆滑音</button>
       </div>
       <div class="vex_box">
         <div class="input_box">
@@ -71,6 +71,8 @@
           </div>
         </div>
         <button @click="breaktie">断开符尾</button>
+				<br>
+				<button @click="toggleNoteTie">开启/关闭延音符号</button>
 
         <div class="btn_group">
           <div class="img_box" v-for="(item, index) in barlineTypeArr" :key="index">
@@ -388,6 +390,12 @@ export default class Home extends Vue {
 		this.selectedNotation &&
 			this.selectedNotation.type == SelectNotationType.note &&
 			(this.selectedNotation.value as Note).setEndSpacing()
+	}
+
+	public toggleNoteTie() {
+		this.selectedNotation &&
+			this.selectedNotation.type == SelectNotationType.note &&
+			(this.selectedNotation.value as Note).setHasTieIs(!this.selectedNotation.value.hasTie)
 	}
 
 	public selectSlurs() {

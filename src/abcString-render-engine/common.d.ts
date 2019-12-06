@@ -16,7 +16,7 @@ export interface StaveCommand {
    * 订阅变化并返回 取消订阅的函数
    * @returns 取消订阅函数
    */
-  subscribeAbcStringIndexChange: (stringsIndexChangeHandle) => () => any;
+  subscribeAbcStringIndexChange: (stringsIndexChangeHandle:StringsIndexChangeHandle) => () => any;
 
   unsubscribeAbcStringIndexChange: () => any;
 

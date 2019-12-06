@@ -1,4 +1,4 @@
-import { StaveCommand } from '../types_defined';
+import { StaveCommand } from '../common';
 import { NotationType } from '../Enums/NotationType';
 
 export interface INotation {

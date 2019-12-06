@@ -4,7 +4,7 @@ import {
   StringsIndexChangeHandle,
   StaveCommand,
   UpdateAbcStringHandle
-} from '../types_defined';
+} from '../common';
 import { InfoField } from '../Notations/InfoField';
 import { InfoFiledType } from '../Enums/InfoFieldType';
 import { Note } from '../Notations/Note';

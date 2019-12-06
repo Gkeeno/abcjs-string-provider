@@ -1,5 +1,5 @@
 import { INotation } from './INotation'
-import { StringsIndexChangeHandle, StaveCommand, UpdateAbcStringHandle } from '../types_defined'
+import { StringsIndexChangeHandle, StaveCommand, UpdateAbcStringHandle } from '../common'
 import { NotationType } from '../Enums/NotationType'
 
 /**
