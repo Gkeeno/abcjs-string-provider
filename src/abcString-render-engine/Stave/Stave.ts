@@ -1,22 +1,28 @@
-import { StaveBase } from './StaveBase';
+import { StaveBase } from './StaveBase'
+import { INotation } from '..'
+import { InfoField } from '../Notations/InfoField'
+import { InfoFiledType } from '../Enums/InfoFieldType'
 
 /**
  * @description
  */
 export class Stave extends StaveBase {
-
-  constructor() { super();}
+  constructor() {
+    super()
+  }
 
   public init(dataraw: string = '[]') {
-    var data = JSON.parse(dataraw);
+    var data = JSON.parse(dataraw)
 
     if (this.abcString) {
-      return;
+      return
     }
 
     if (data.length) {
       for (const nState of data) {
-        this.addNotation(this.deserializeNotation(nState));
+        const notation = this.deserializeNotation(nState)
+        this.tryResolveToStaveField(notation)
+        this.addNotation(notation)
       }
     } else {
       const headers = [
@@ -26,17 +32,18 @@ export class Stave extends StaveBase {
         this.tempo,
         this.metre,
         this.unitNoteLength,
-        this.key
-      ];
+        this.key,
+      ]
       for (const notation of this.notations.concat(headers)) {
-        this.addNotation(notation);
+        this.addNotation(notation)
       }
     }
-    return this;
+    return this
   }
   public save() {
-    return JSON.stringify(this.notations);
+    return JSON.stringify(this.notations)
   }
+
 }
 
-(window as any).Stave = Stave;
+;(window as any).Stave = Stave

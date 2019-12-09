@@ -271,14 +271,8 @@ export default class Home extends Vue {
   }
 
   public loadStave() {
-    const stave = new Stave()
-    stave.title = this.$data.$title
-    stave.composer = this.$data.$composer
-    stave.key = this.$data.$key
-    stave.metre = this.$data.$metre
-    stave.tempo = this.$data.$tempo
+		const stave = new Stave()
     this.stave = stave.init(this.staveData)
-    ;(window as any).stave = stave
     this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
     // 手动渲染下界面
     this.renderAbc()
@@ -288,6 +282,7 @@ export default class Home extends Vue {
     ;(this.$refs.key as any).value = stave.key.getContent()
     ;(this.$refs.metre as any).value = stave.metre.getContent()
     ;(this.$refs.tempo as any).value = stave.tempo.getContent()
+    ;(window as any).stave = stave
   }
   public saveStave() {
     this.staveData = this.stave.save()

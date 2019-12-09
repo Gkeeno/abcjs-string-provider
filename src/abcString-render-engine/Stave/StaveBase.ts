@@ -156,6 +156,26 @@ export abstract class StaveBase {
     }
     return org_n
   }
+  
+  protected tryResolveToStaveField(notation: INotation) {
+    if (!(notation instanceof InfoField)) return
+
+    if (notation.fieldType == InfoFiledType.reference_number) {
+      this.id = notation;
+    }else if (notation.fieldType == InfoFiledType.title) {
+      this.title = notation
+    }else if (notation.fieldType == InfoFiledType.composer) {
+      this.composer = notation
+    }else if (notation.fieldType == InfoFiledType.tempo) {
+      this.tempo = notation
+    }else if (notation.fieldType == InfoFiledType.metre) {
+      this.metre = notation
+    }else if (notation.fieldType == InfoFiledType.note_unit_length) {
+      this.unitNoteLength = notation
+    }else if (notation.fieldType == InfoFiledType.key) {
+      this.key = notation
+    }
+  }
   /**
    * 添加string index的变动通知，为了保持note的 索引正确
    * @field `string index` add,del,update 操作都可能会引起索引变化
