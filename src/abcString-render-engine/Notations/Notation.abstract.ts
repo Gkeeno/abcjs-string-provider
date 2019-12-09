@@ -159,7 +159,6 @@ export abstract class Notation implements INotation {
       const backend = abcstr.substring(this._iend + 1)
       // b.处理相关记录的索引
       const org_iend = this._iend
-      this._ibegin = this._ibegin
       this._iend = this._ibegin + notationStr.length - 1 // 删除的索引变化为 org_istar-1, 即iend - len 或 ibegin - 1
 
       return {
