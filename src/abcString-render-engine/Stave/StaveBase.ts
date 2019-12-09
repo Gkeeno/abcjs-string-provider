@@ -8,7 +8,7 @@ import { BarLine } from '../Notations/BarLine'
 import { RestNote } from '../Notations/RestNote'
 import { ChordNote } from '../Notations/ChordNote'
 import { InlineInfoField } from '../Notations/InlineInfoField'
-import { SlursBoundary } from '../Notations/Boundaries/TiesBoundary'
+import { SlursBoundary } from '../Notations/Boundaries/SlursBoundary'
 
 /**
  * @description
@@ -134,7 +134,7 @@ export abstract class StaveBase {
       }
     }
   }
-  
+
   public save() {
     return JSON.stringify(this.notations)
   }
@@ -156,23 +156,23 @@ export abstract class StaveBase {
     }
     return org_n
   }
-  
+
   protected tryResolveToStaveField(notation: INotation) {
     if (!(notation instanceof InfoField)) return
 
     if (notation.fieldType == InfoFiledType.reference_number) {
-      this.id = notation;
-    }else if (notation.fieldType == InfoFiledType.title) {
+      this.id = notation
+    } else if (notation.fieldType == InfoFiledType.title) {
       this.title = notation
-    }else if (notation.fieldType == InfoFiledType.composer) {
+    } else if (notation.fieldType == InfoFiledType.composer) {
       this.composer = notation
-    }else if (notation.fieldType == InfoFiledType.tempo) {
+    } else if (notation.fieldType == InfoFiledType.tempo) {
       this.tempo = notation
-    }else if (notation.fieldType == InfoFiledType.metre) {
+    } else if (notation.fieldType == InfoFiledType.metre) {
       this.metre = notation
-    }else if (notation.fieldType == InfoFiledType.note_unit_length) {
+    } else if (notation.fieldType == InfoFiledType.note_unit_length) {
       this.unitNoteLength = notation
-    }else if (notation.fieldType == InfoFiledType.key) {
+    } else if (notation.fieldType == InfoFiledType.key) {
       this.key = notation
     }
   }

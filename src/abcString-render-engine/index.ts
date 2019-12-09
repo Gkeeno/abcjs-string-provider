@@ -5,7 +5,7 @@ import { NoteKey } from './Enums/NoteKey';
 import { InfoField } from './Notations/InfoField';
 import { RestNote } from './Notations/RestNote';
 import { Stave } from './Stave/Stave';
-import { SlursBoundary } from './Notations/Boundaries/TiesBoundary';
+import { SlursBoundary } from './Notations/Boundaries/SlursBoundary';
 
 import { NoteDurationNameMap } from '../abcString-render-engine/constant';
 import { InfoFiledType } from '../abcString-render-engine/Enums/InfoFieldType';
