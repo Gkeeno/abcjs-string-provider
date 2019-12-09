@@ -40,8 +40,8 @@ export class BarLine extends Notation {
         : this.type === BarlineType.RepeatedSetion_StartAndEnd
         ? '::'
         : '|') +
-      (this.hasNewlineInEnd ? NewLine : '') +
-      (this.repeatsNumber ? this.repeatsNumber : '')
+      (this.repeatsNumber ? this.repeatsNumber : '') +
+      (this.hasNewlineInEnd ? NewLine : '') 
     )
   }
 
