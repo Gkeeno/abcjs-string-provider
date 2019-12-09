@@ -109,6 +109,8 @@
         <button @click="changeChordDuration">更改和弦时值</button>
         <br />
         <br />
+        <input type="text" ref="txt_lyrics" />
+        <button @click="addLyrics">添加歌词</button>
       </div>
     </div>
   </div>
@@ -387,6 +389,7 @@ export default class Home extends Vue {
   public delNote() {
     this.stave.deleteNotation(this.selectedNotation.value)
     this.selectedNotation = null
+    this.stave.generationLyrics()
   }
 
   public breaktie() {
@@ -445,14 +448,14 @@ export default class Home extends Vue {
         BarlineType[barlineTypeName] || BarlineType.SingleBarline,
       )
   }
-	public setBarlineRepeats() {
-		let txt_repeats = this.$refs.txt_barline_repeats as any;
+  public setBarlineRepeats() {
+    let txt_repeats = this.$refs.txt_barline_repeats as any
 
-		this.selectedNotation &&
+    this.selectedNotation &&
       this.selectedNotation.type == SelectNotationType.bar &&
-      (this.selectedNotation.value as BarLine).setRepeatsNumber( Number(txt_repeats.value) )
-	}
-	
+      (this.selectedNotation.value as BarLine).setRepeatsNumber(Number(txt_repeats.value))
+  }
+
   public newline() {
     this.selectedNotation &&
       this.selectedNotation.type == SelectNotationType.bar &&
@@ -469,6 +472,17 @@ export default class Home extends Vue {
     this.selectedNotation &&
       this.selectedNotation.value.ntype == NotationType.ChordNote &&
       (this.selectedNotation.value as ChordNote).setDuration(this.selectedChordDuration)
+  }
+
+  public addLyrics() {
+    if (this.selectedNotation.type !== SelectNotationType.note) {
+      return
+    }
+
+    let txt_lyrics = this.$refs.txt_lyrics as HTMLInputElement
+    this.selectedNotation.value.lyrics = txt_lyrics.value
+    // txt_lyrics.value = '';
+    this.stave.generationLyrics()
   }
 
   public keypressHandle(e: KeyboardEvent) {

@@ -66,7 +66,7 @@ export abstract class StaveBase {
   public insertNotationAfter(before: INotation, notation: INotation) {
     if (before instanceof SlursBoundary) {
       if (!before.isEnding) {
-        before = before.getInner();
+        before = before.getInner()
       }
     }
 
@@ -75,10 +75,10 @@ export abstract class StaveBase {
   public insertNotationBefore(after: INotation, notation: INotation) {
     if (after instanceof SlursBoundary) {
       if (!after.isEnding) {
-        after = after.getInner();
+        after = after.getInner()
       }
     }
-    
+
     notation.insertToStaveBefore(after, this.createOperateCommand())
   }
 
@@ -94,6 +94,47 @@ export abstract class StaveBase {
     notation.removeInStave()
   }
 
+  public generationLyrics() {
+    // 删除原有的歌词信息
+    this.notations.map((v, i) => {
+      if (v instanceof InfoField && v.fieldType == InfoFiledType.words_aftertune) {
+        this.deleteNotation(v)
+      }
+    })
+
+    // 添加进所有的歌词信息
+    let lyrics = [] // 每一行的歌词内容集
+    for (let i = 0; i < this.notations.length; i++) {
+      const n = this.notations[i]
+      const n_next = this.notations[i + 1]
+
+      // a.记录下每个音符的lyric 到 lyrics, 空的用占位符号替代
+      if (n instanceof Note) {
+        lyrics.push(n.lyrics || '*')
+      }
+
+      // b. 到换行处/终点 的时候就 添加进这一行的lyrics
+      const isBarlineEnd = n instanceof BarLine && n.hasNewlineInEnd
+      const isLeftHandEnd = !n_next
+      const isRightHandEnd =
+        n_next instanceof InfoField &&
+        n_next.fieldType == InfoFiledType.voice &&
+        n_next.getContent() === 'PianoLeftHand'
+      if (isBarlineEnd || isLeftHandEnd || isRightHandEnd) {
+        var lyricWords = lyrics.join(' ')
+        var lyricsInfoField = new InfoField(InfoFiledType.words_aftertune, lyricWords)
+        lyrics = [] // 重新记录下一行lyrics
+
+        // 如果结尾是小节线才添加歌词，其他情况暂不加（用作编辑完成，再添加歌词的场景）
+        if (n instanceof BarLine) {
+          n.hasNewlineInEnd || n.setNewlineInEnd() // 手动换行
+          this.insertNotationAfter(n, lyricsInfoField)
+          i++
+        }
+      }
+    }
+  }
+  
   public save() {
     return JSON.stringify(this.notations)
   }
@@ -142,7 +183,7 @@ export abstract class StaveBase {
   }
 
   /**
-   * 创建命令对象，解耦 notation 和 stave 
+   * 创建命令对象，解耦 notation 和 stave
    * @summary 添加的时候需维持 每个notation 对应一个 command，不然可能有一些奇怪的bug;
    */
   protected createOperateCommand(): StaveCommand {

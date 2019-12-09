@@ -24,7 +24,7 @@
           </div>
         </div>
         <button @click="newline">换下一行</button>
-        <button @click="addUnisons">添加合音</button>
+				
       </div>
       <div class="vex_box">
         <div class="input_box">
@@ -367,29 +367,6 @@ export default class DoubleTrack extends Vue {
 		this.selectedNotation &&
 			this.selectedNotation.type == SelectNotationType.note &&
 			(this.selectedNotation.value as Note).setEndSpacing();
-	}
-
-	public addUnisons() {
-		// var boundaryS = new UnisonsBoundary(
-		// 	new Note(NoteKey.C3, NoteDuration.Quarter),
-		// 	false
-		// );
-		// var boundaryE = new UnisonsBoundary(
-		// 	new Note(NoteKey.C3, NoteDuration.Quarter),
-		// 	true
-		// );
-		// boundaryS.link(boundaryE);
-
-		// if (
-		// 	this.selectedNotation &&
-		// 	this.selectedNotation.type == SelectNotationType.note
-		// ) {
-		// 	this.stave.insertNotation(this.selectedNotation.value, boundaryS);
-		// 	this.stave.insertNotation(boundaryS.bindNote, boundaryE);
-		// } else {
-		// 	this.stave.addNotation(boundaryS);
-		// 	this.stave.insertNotation(boundaryS.bindNote, boundaryE);
-		// }
 	}
 
 	public setAccidental(accidentalName: string) {
