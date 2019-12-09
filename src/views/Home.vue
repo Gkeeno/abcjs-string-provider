@@ -16,7 +16,7 @@
           <div class="img_box" v-for="(item, index) in clefArr" :key="index">
             <img :src="item.img" alt @click="addNote(item.data)" />
           </div>
-          <div class="img_box" v-for="(item, index) in restArr" :key="index+'a'">
+          <div class="img_box" v-for="(item, index) in restArr" :key="index + 'a'">
             <img :src="item.img" alt @click="addRestNote(item.data)" />
           </div>
           <div class="img_box">
@@ -71,14 +71,17 @@
           </div>
         </div>
         <button @click="breaktie">断开符尾</button>
-				<br>
-				<button @click="toggleNoteTie">开启/关闭延音符号</button>
+        <br />
+        <button @click="toggleNoteTie">开启/关闭延音符号</button>
 
         <div class="btn_group">
           <div class="img_box" v-for="(item, index) in barlineTypeArr" :key="index">
             <img :src="item.img" alt @click="setBarlineType(item.data)" />
           </div>
         </div>
+
+        <input type="number" ref="txt_barline_repeats" />
+        <button @click="setBarlineRepeats">添加小节重复号</button>
 
         <select ref="sel_chordtype" v-model="selectedChordType">
           <optgroup label="三和弦">
@@ -116,529 +119,536 @@ import { Component, Prop, Vue, Provide } from 'vue-property-decorator'
 import _ from 'lodash'
 import abcjs from 'abcjs/midi'
 import {
-	Note,
-	NoteKey,
-	NoteDuration,
-	NotationType,
-	InfoField,
-	Stave,
-	RestNote,
-	SlursBoundary,
-	InfoFiledType,
-	BarLine,
-	NoteAccidental,
-	BarlineType,
-	ChordNote,
-	ChordType,
-	INotation,
+  Note,
+  NoteKey,
+  NoteDuration,
+  NotationType,
+  InfoField,
+  Stave,
+  RestNote,
+  SlursBoundary,
+  InfoFiledType,
+  BarLine,
+  NoteAccidental,
+  BarlineType,
+  ChordNote,
+  ChordType,
+  INotation,
 } from '../abcString-render-engine'
 
 enum KeyName {
-	Delete,
-	Insert,
-	ArrowUp,
-	ArrowDown,
-	ArrowLeft,
-	ArrowRight,
-	Backspace,
-	Enter,
+  Delete,
+  Insert,
+  ArrowUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  Backspace,
+  Enter,
 }
 enum SelectNotationType {
-	unkown,
-	note = 'note',
-	bar = 'bar',
-	treble = 'treble',
-	rest = 'rest',
+  unkown,
+  note = 'note',
+  bar = 'bar',
+  treble = 'treble',
+  rest = 'rest',
 }
 
 @Component
 export default class Home extends Vue {
-	public get title(): string {
-		return this.$title && this.$title.getContent()
-	}
-	public set title(v: string) {
-		this.$data.$title.setContent(v)
-	}
+  public get title(): string {
+    return this.$title && this.$title.getContent()
+  }
+  public set title(v: string) {
+    this.$data.$title.setContent(v)
+  }
 
-	public get composer(): string {
-		return this.$composer && this.$data.$composer.getContent()
-	}
-	public set composer(v: string) {
-		this.$data.$composer.setContent(v)
-	}
+  public get composer(): string {
+    return this.$composer && this.$data.$composer.getContent()
+  }
+  public set composer(v: string) {
+    this.$data.$composer.setContent(v)
+  }
 
-	public get key(): string {
-		return this.$key && this.$key.getContent()
-	}
-	public set key(v: string) {
-		this.$data.$key.setContent(v)
-	}
+  public get key(): string {
+    return this.$key && this.$key.getContent()
+  }
+  public set key(v: string) {
+    this.$data.$key.setContent(v)
+  }
 
-	public get metre(): string {
-		return this.$metre && this.$metre.getContent()
-	}
-	public set metre(v: string) {
-		this.$data.$metre.setContent(v)
-	}
+  public get metre(): string {
+    return this.$metre && this.$metre.getContent()
+  }
+  public set metre(v: string) {
+    this.$data.$metre.setContent(v)
+  }
 
-	public get tempo(): string {
-		return this.$tempo && this.$tempo.getContent()
-	}
-	public set tempo(v: string) {
-		this.$data.$tempo.setContent(v)
-	}
+  public get tempo(): string {
+    return this.$tempo && this.$tempo.getContent()
+  }
+  public set tempo(v: string) {
+    this.$data.$tempo.setContent(v)
+  }
 
-	public staveData: string = ''
-	public stave: Stave
-	public selectedNotation: { type: SelectNotationType; value } = null
-	public selectedChordType: ChordType = ChordType.Major
-	public selectedChordDuration: NoteDuration = NoteDuration.Quarter
+  public staveData: string = ''
+  public stave: Stave
+  public selectedNotation: { type: SelectNotationType; value } = null
+  public selectedChordType: ChordType = ChordType.Major
+  public selectedChordDuration: NoteDuration = NoteDuration.Quarter
 
-	@Provide() public clefArr = [
-		{ data: 'Whole', img: require('../assets/image/clef1.png') },
-		{ data: 'Half', img: require('../assets/image/clef2.png') },
-		{ data: 'Half_dot1', img: require('../assets/image/Half_dot1.png') },
-		{ data: 'Quarter', img: require('../assets/image/clef3.png') },
-		{ data: 'Quarter_dot1', img: require('../assets/image/clef3_dot.png') },
-		{ data: 'Eighth', img: require('../assets/image/clef4.png') },
-		{ data: 'Sixteenth', img: require('../assets/image/clef5.png') },
-	]
-	@Provide() public restArr = [
-		{ data: 'Whole', img: require('../assets/image/clef6.png') },
-		{ data: 'Half', img: require('../assets/image/clef7.png') },
-		{ data: 'Quarter', img: require('../assets/image/clef8.png') },
-		// { data: 'Eighth', img: require('../assets/image/clef9.png') },
-		{ data: 'Eighth', img: require('../assets/image/clef10.png') },
-		{ data: 'Sixteenth', img: require('../assets/image/clef11.png') },
-	]
-	@Provide() public symbolArr = [
-		{ data: 'Flat', img: require('../assets/image/attribute1.png') },
-		{ data: 'Sharp', img: require('../assets/image/attribute2.png') },
-		{ data: 'Natural', img: require('../assets/image/attribute3.png') },
-		{ data: 'DoubleFlat', img: require('../assets/image/attribute4.png') },
-		{ data: 'DoubleSharp', img: require('../assets/image/attribute5.png') },
-		// { data: 'symbol6', img: require('../assets/image/attribute6.png') }
-	]
-	@Provide() public barlineTypeArr = [
-		{
-			data: 'DoubleBarline',
-			img: require('../assets/image/DoubleBarline.png'),
-		},
-		{
-			data: 'ThinThick_DoubleBarline',
-			img: require('../assets/image/ThinThick_DoubleBarline.png'),
-		},
-		{
-			data: 'ThickThin_DoubleBarline',
-			img: require('../assets/image/ThickThin_DoubleBarline.png'),
-		},
-		{
-			data: 'RepeatedSetion_Start',
-			img: require('../assets/image/RepeatedSetion_Start.png'),
-		},
-		{
-			data: 'RepeatedSetion_End',
-			img: require('../assets/image/RepeatedSetion_End.png'),
-		},
-		{
-			data: 'RepeatedSetion_StartAndEnd',
-			img: require('../assets/image/RepeatedSetion_StartAndEnd.png'),
-		},
-	]
+  @Provide() public clefArr = [
+    { data: 'Whole', img: require('../assets/image/clef1.png') },
+    { data: 'Half', img: require('../assets/image/clef2.png') },
+    { data: 'Half_dot1', img: require('../assets/image/Half_dot1.png') },
+    { data: 'Quarter', img: require('../assets/image/clef3.png') },
+    { data: 'Quarter_dot1', img: require('../assets/image/clef3_dot.png') },
+    { data: 'Eighth', img: require('../assets/image/clef4.png') },
+    { data: 'Sixteenth', img: require('../assets/image/clef5.png') },
+  ]
+  @Provide() public restArr = [
+    { data: 'Whole', img: require('../assets/image/clef6.png') },
+    { data: 'Half', img: require('../assets/image/clef7.png') },
+    { data: 'Quarter', img: require('../assets/image/clef8.png') },
+    // { data: 'Eighth', img: require('../assets/image/clef9.png') },
+    { data: 'Eighth', img: require('../assets/image/clef10.png') },
+    { data: 'Sixteenth', img: require('../assets/image/clef11.png') },
+  ]
+  @Provide() public symbolArr = [
+    { data: 'Flat', img: require('../assets/image/attribute1.png') },
+    { data: 'Sharp', img: require('../assets/image/attribute2.png') },
+    { data: 'Natural', img: require('../assets/image/attribute3.png') },
+    { data: 'DoubleFlat', img: require('../assets/image/attribute4.png') },
+    { data: 'DoubleSharp', img: require('../assets/image/attribute5.png') },
+    // { data: 'symbol6', img: require('../assets/image/attribute6.png') }
+  ]
+  @Provide() public barlineTypeArr = [
+    {
+      data: 'DoubleBarline',
+      img: require('../assets/image/DoubleBarline.png'),
+    },
+    {
+      data: 'ThinThick_DoubleBarline',
+      img: require('../assets/image/ThinThick_DoubleBarline.png'),
+    },
+    {
+      data: 'ThickThin_DoubleBarline',
+      img: require('../assets/image/ThickThin_DoubleBarline.png'),
+    },
+    {
+      data: 'RepeatedSetion_Start',
+      img: require('../assets/image/RepeatedSetion_Start.png'),
+    },
+    {
+      data: 'RepeatedSetion_End',
+      img: require('../assets/image/RepeatedSetion_End.png'),
+    },
+    {
+      data: 'RepeatedSetion_StartAndEnd',
+      img: require('../assets/image/RepeatedSetion_StartAndEnd.png'),
+    },
+  ]
 
-	private $title = new InfoField(InfoFiledType.title, 'untitled1')
+  private $title = new InfoField(InfoFiledType.title, 'untitled1')
 
-	private $composer = new InfoField(InfoFiledType.composer, 'none1')
+  private $composer = new InfoField(InfoFiledType.composer, 'none1')
 
-	private $key = new InfoField(InfoFiledType.key, 'C')
+  private $key = new InfoField(InfoFiledType.key, 'C')
 
-	private $metre = new InfoField(InfoFiledType.metre, '4/4')
+  private $metre = new InfoField(InfoFiledType.metre, '4/4')
 
-	private $tempo = new InfoField(InfoFiledType.tempo, '60')
+  private $tempo = new InfoField(InfoFiledType.tempo, '60')
 
-	private tuneObjectArray
+  private tuneObjectArray
 
-	private clickHook_selectUnisons: (notaion: INotation) => void = function() {}
+  private clickHook_selectUnisons: (notaion: INotation) => void = function() {}
 
-	constructor() {
-		super()
-		window.document.onkeydown = e => this.keypressHandle(e)
-	}
+  constructor() {
+    super()
+    window.document.onkeydown = e => this.keypressHandle(e)
+  }
 
-	public loadStave() {
-		const stave = new Stave()
-		stave.title = this.$data.$title
-		stave.composer = this.$data.$composer
-		stave.key = this.$data.$key
-		stave.metre = this.$data.$metre
-		stave.tempo = this.$data.$tempo
-		this.stave = stave.init(this.staveData)
-		;(window as any).stave = stave
-		this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
-		// 手动渲染下界面
-		this.renderAbc()
-		// 手动绑定上表单的值，因为v-model无法直接从对象中获取
-		;(this.$refs.title as any).value = stave.title.getContent()
-		;(this.$refs.composer as any).value = stave.composer.getContent()
-		;(this.$refs.key as any).value = stave.key.getContent()
-		;(this.$refs.metre as any).value = stave.metre.getContent()
-		;(this.$refs.tempo as any).value = stave.tempo.getContent()
-	}
-	public saveStave() {
-		this.staveData = this.stave.save()
-	}
+  public loadStave() {
+    const stave = new Stave()
+    stave.title = this.$data.$title
+    stave.composer = this.$data.$composer
+    stave.key = this.$data.$key
+    stave.metre = this.$data.$metre
+    stave.tempo = this.$data.$tempo
+    this.stave = stave.init(this.staveData)
+    ;(window as any).stave = stave
+    this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
+    // 手动渲染下界面
+    this.renderAbc()
+    // 手动绑定上表单的值，因为v-model无法直接从对象中获取
+    ;(this.$refs.title as any).value = stave.title.getContent()
+    ;(this.$refs.composer as any).value = stave.composer.getContent()
+    ;(this.$refs.key as any).value = stave.key.getContent()
+    ;(this.$refs.metre as any).value = stave.metre.getContent()
+    ;(this.$refs.tempo as any).value = stave.tempo.getContent()
+  }
+  public saveStave() {
+    this.staveData = this.stave.save()
+  }
 
-	public mounted() {
-		const stave = new Stave()
-		stave.title = this.$data.$title
-		stave.composer = this.$data.$composer
-		stave.key = this.$data.$key
-		stave.metre = this.$data.$metre
-		stave.tempo = this.$data.$tempo
-		this.stave = stave.init()
-		this.stave.addNotation(new Note(NoteKey.C3))
-		;(window as any).stave = stave
-		this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
-		// 手动渲染下界面
-		this.renderAbc()
-		// 手动绑定上表单的值，因为v-model无法直接从对象中获取
-		;(this.$refs.title as any).value = stave.title.getContent()
-		;(this.$refs.composer as any).value = stave.composer.getContent()
-		;(this.$refs.key as any).value = stave.key.getContent()
-		;(this.$refs.metre as any).value = stave.metre.getContent()
-		;(this.$refs.tempo as any).value = stave.tempo.getContent()
-	}
+  public mounted() {
+    const stave = new Stave()
+    stave.title = this.$data.$title
+    stave.composer = this.$data.$composer
+    stave.key = this.$data.$key
+    stave.metre = this.$data.$metre
+    stave.tempo = this.$data.$tempo
+    this.stave = stave.init()
+    this.stave.addNotation(new Note(NoteKey.C3))
+    ;(window as any).stave = stave
+    this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
+    // 手动渲染下界面
+    this.renderAbc()
+    // 手动绑定上表单的值，因为v-model无法直接从对象中获取
+    ;(this.$refs.title as any).value = stave.title.getContent()
+    ;(this.$refs.composer as any).value = stave.composer.getContent()
+    ;(this.$refs.key as any).value = stave.key.getContent()
+    ;(this.$refs.metre as any).value = stave.metre.getContent()
+    ;(this.$refs.tempo as any).value = stave.tempo.getContent()
+  }
 
-	public renderAbc() {
-		const that = this
-		this.tuneObjectArray = abcjs.renderAbc('paper1', this.stave.abcString, {
-			add_classes: true,
-			staffwidth: 500,
-			clickListener(abcElem, tuneNumber, classes) {
-				const notation = that.stave.getNotation(abcElem.startChar, abcElem.endChar - 1)
+  public renderAbc() {
+    const that = this
+    this.tuneObjectArray = abcjs.renderAbc('paper1', this.stave.abcString, {
+      add_classes: true,
+      staffwidth: 500,
+      clickListener(abcElem, tuneNumber, classes) {
+        const notation = that.stave.getNotation(abcElem.startChar, abcElem.endChar - 1)
 
-				!notation
-					? (that.selectedNotation = null)
-					: (that.selectedNotation = {
-							type:
-								(abcElem.rest && SelectNotationType.rest) ||
-								abcElem.el_type ||
-								abcElem.type ||
-								SelectNotationType.unkown,
-							value: notation,
-					  })
+        !notation
+          ? (that.selectedNotation = null)
+          : (that.selectedNotation = {
+              type:
+                (abcElem.rest && SelectNotationType.rest) ||
+                abcElem.el_type ||
+                abcElem.type ||
+                SelectNotationType.unkown,
+              value: notation,
+            })
 
-				that.clickHook_selectUnisons(notation)
+        that.clickHook_selectUnisons(notation)
 
-				console.log(
-					that.stave.abcString.substring(abcElem.startChar, abcElem.endChar),
-					abcElem.startChar,
-					abcElem.endChar,
-					that.selectedNotation && that.selectedNotation.value,
-				)
-			},
-		})
-	}
+        console.log(
+          that.stave.abcString.substring(abcElem.startChar, abcElem.endChar),
+          abcElem.startChar,
+          abcElem.endChar,
+          that.selectedNotation && that.selectedNotation.value,
+        )
+      },
+    })
+  }
 
-	public addNote(duration: NoteDuration) {
-		const durationValue = NoteDuration[duration] || NoteDuration.Quarter
-		const note = new Note(NoteKey.C3, durationValue)
+  public addNote(duration: NoteDuration) {
+    const durationValue = NoteDuration[duration] || NoteDuration.Quarter
+    const note = new Note(NoteKey.C3, durationValue)
 
-		this.selectedNotation
-			? this.stave.insertNotationAfter(this.selectedNotation.value, note)
-			: this.stave.addNotation(note)
-		this.selectedNotation = { type: SelectNotationType.note, value: note }
-	}
+    this.selectedNotation
+      ? this.stave.insertNotationAfter(this.selectedNotation.value, note)
+      : this.stave.addNotation(note)
+    this.selectedNotation = { type: SelectNotationType.note, value: note }
+  }
 
-	public addRestNote(duration: NoteDuration) {
-		const durationValue = NoteDuration[duration] || NoteDuration.Quarter
-		const note = new RestNote(durationValue)
+  public addRestNote(duration: NoteDuration) {
+    const durationValue = NoteDuration[duration] || NoteDuration.Quarter
+    const note = new RestNote(durationValue)
 
-		this.selectedNotation
-			? this.stave.insertNotationAfter(this.selectedNotation.value, note)
-			: this.stave.addNotation(note)
-		this.selectedNotation = { type: SelectNotationType.note, value: note }
-	}
+    this.selectedNotation
+      ? this.stave.insertNotationAfter(this.selectedNotation.value, note)
+      : this.stave.addNotation(note)
+    this.selectedNotation = { type: SelectNotationType.note, value: note }
+  }
 
-	public addChordNote() {
-		const chordnote = new ChordNote(NoteKey.C3, NoteDuration.Quarter, ChordType.Major)
+  public addChordNote() {
+    const chordnote = new ChordNote(NoteKey.C3, NoteDuration.Quarter, ChordType.Major)
 
-		this.selectedNotation
-			? this.stave.insertNotationAfter(this.selectedNotation.value, chordnote)
-			: this.stave.addNotation(chordnote)
-		this.selectedNotation = { type: SelectNotationType.note, value: chordnote }
-	}
+    this.selectedNotation
+      ? this.stave.insertNotationAfter(this.selectedNotation.value, chordnote)
+      : this.stave.addNotation(chordnote)
+    this.selectedNotation = { type: SelectNotationType.note, value: chordnote }
+  }
 
-	public addBarline() {
-		const barline = new BarLine()
+  public addBarline() {
+    const barline = new BarLine()
 
-		this.selectedNotation
-			? this.stave.insertNotationAfter(this.selectedNotation.value, barline)
-			: this.stave.addNotation(barline)
-		this.selectedNotation = {
-			type: SelectNotationType.bar,
-			value: barline,
-		}
-	}
+    this.selectedNotation
+      ? this.stave.insertNotationAfter(this.selectedNotation.value, barline)
+      : this.stave.addNotation(barline)
+    this.selectedNotation = {
+      type: SelectNotationType.bar,
+      value: barline,
+    }
+  }
 
-	public delNote() {
-		this.stave.deleteNotation(this.selectedNotation.value)
-		this.selectedNotation = null
-	}
+  public delNote() {
+    this.stave.deleteNotation(this.selectedNotation.value)
+    this.selectedNotation = null
+  }
 
-	public breaktie() {
+  public breaktie() {
+    this.selectedNotation &&
+      this.selectedNotation.type == SelectNotationType.note &&
+      (this.selectedNotation.value as Note).setEndSpacing()
+  }
+
+  public toggleNoteTie() {
+    this.selectedNotation &&
+      this.selectedNotation.type == SelectNotationType.note &&
+      (this.selectedNotation.value as Note).setHasTieIs(!this.selectedNotation.value.hasTie)
+  }
+
+  public selectSlurs() {
+    const notestack: INotation[] = [] // 0begin 1end
+    const defaultHandle = function() {}
+    this.clickHook_selectUnisons = notation => {
+      let note: INotation = null
+      if (notation instanceof Note) {
+        note = notation
+      } else if (notation instanceof SlursBoundary) {
+        note = notation.getInner()
+      } else {
+        return
+      }
+
+      notestack.push(note)
+      if (notestack.length < 2) return
+      // 添加了俩个以上
+
+      try {
+        SlursBoundary.setBeginning(notestack[0])
+          .setEnding(notestack[1])
+          .appendToStave(this.stave)
+      } catch (error) {
+        alert(error)
+      } finally {
+        this.clickHook_selectUnisons = defaultHandle
+      }
+    }
+  }
+
+  public setAccidental(accidentalName: string) {
+    this.selectedNotation &&
+      this.selectedNotation.type == SelectNotationType.note &&
+      (this.selectedNotation.value as Note).setAccidential(
+        NoteAccidental[accidentalName] || NoteAccidental.None,
+      )
+  }
+
+  public setBarlineType(barlineTypeName: string) {
+    this.selectedNotation &&
+      this.selectedNotation.type == SelectNotationType.bar &&
+      (this.selectedNotation.value as BarLine).setBarlineType(
+        BarlineType[barlineTypeName] || BarlineType.SingleBarline,
+      )
+  }
+	public setBarlineRepeats() {
+		let txt_repeats = this.$refs.txt_barline_repeats as any;
+
 		this.selectedNotation &&
-			this.selectedNotation.type == SelectNotationType.note &&
-			(this.selectedNotation.value as Note).setEndSpacing()
+      this.selectedNotation.type == SelectNotationType.bar &&
+      (this.selectedNotation.value as BarLine).setRepeatsNumber( Number(txt_repeats.value) )
 	}
+	
+  public newline() {
+    this.selectedNotation &&
+      this.selectedNotation.type == SelectNotationType.bar &&
+      (this.selectedNotation.value as BarLine).setNewlineInEnd()
+  }
 
-	public toggleNoteTie() {
-		this.selectedNotation &&
-			this.selectedNotation.type == SelectNotationType.note &&
-			(this.selectedNotation.value as Note).setHasTieIs(!this.selectedNotation.value.hasTie)
-	}
+  public changeChordType() {
+    this.selectedNotation &&
+      this.selectedNotation.value.ntype == NotationType.ChordNote &&
+      (this.selectedNotation.value as ChordNote).setChordType(this.selectedChordType)
+  }
 
-	public selectSlurs() {
-		const notestack: INotation[] = [] // 0begin 1end
-		const defaultHandle = function() {}
-		this.clickHook_selectUnisons = notation => {
-			let note: INotation = null
-			if (notation instanceof Note) {
-				note = notation
-			} else if (notation instanceof SlursBoundary) {
-				note = notation.getInner()
-			} else {
-				return
-			}
+  public changeChordDuration() {
+    this.selectedNotation &&
+      this.selectedNotation.value.ntype == NotationType.ChordNote &&
+      (this.selectedNotation.value as ChordNote).setDuration(this.selectedChordDuration)
+  }
 
-			notestack.push(note)
-			if (notestack.length < 2) return
-			// 添加了俩个以上
+  public keypressHandle(e: KeyboardEvent) {
+    if (!this.selectedNotation) {
+      return
+    }
 
-			try {
-				SlursBoundary.setBeginning(notestack[0])
-					.setEnding(notestack[1])
-					.appendToStave(this.stave)
-			} catch (error) {
-				alert(error)
-			} finally {
-				this.clickHook_selectUnisons = defaultHandle
-			}
-		}
-	}
+    if (e.key === KeyName[KeyName.Delete]) {
+      e.preventDefault()
+      // 删除
+      this.delNote()
+    } else if (this.selectedNotation.type == SelectNotationType.note) {
+      // 音符操作
+      if (e.key === KeyName[KeyName.ArrowUp]) {
+        e.preventDefault()
+        ;(this.selectedNotation.value as Note).pitchUp() // 升高音符在音阶的一个音
+      } else if (e.key === KeyName[KeyName.ArrowDown]) {
+        e.preventDefault()
+        ;(this.selectedNotation.value as Note).pitchDown()
+      }
+    } else if (this.selectedNotation.type == SelectNotationType.bar) {
+      // 小节线操作
+      if (e.key === KeyName[KeyName.Enter]) {
+        ;(this.selectedNotation.value as BarLine).setNewlineInEnd()
+      }
+    }
+  }
 
-	public setAccidental(accidentalName: string) {
-		this.selectedNotation &&
-			this.selectedNotation.type == SelectNotationType.note &&
-			(this.selectedNotation.value as Note).setAccidential(
-				NoteAccidental[accidentalName] || NoteAccidental.None,
-			)
-	}
+  public playMidi() {
+    let elems_firstPlayed = null
+    let resumeBeforeColor = function() {}
+    let setNoteSVGColor = function(el, colorHash) {
+      if (el.getAttribute('fill') && el.getAttribute('fill').includes('#')) {
+        el.setAttribute('fill', colorHash)
+      }
 
-	public setBarlineType(barlineTypeName: string) {
-		this.selectedNotation &&
-			this.selectedNotation.type == SelectNotationType.bar &&
-			(this.selectedNotation.value as BarLine).setBarlineType(
-				BarlineType[barlineTypeName] || BarlineType.SingleBarline,
-			)
-	}
+      if (el.getAttribute('stroke') && el.getAttribute('stroke').includes('#')) {
+        el.setAttribute('stroke', colorHash)
+      }
+    }
 
-	public newline() {
-		this.selectedNotation &&
-			this.selectedNotation.type == SelectNotationType.bar &&
-			(this.selectedNotation.value as BarLine).setNewlineInEnd()
-	}
+    let setColorAndGetResumeBeforeColor = function(event) {
+      let resumeColorHandle = function() {}
 
-	public changeChordType() {
-		this.selectedNotation &&
-			this.selectedNotation.value.ntype == NotationType.ChordNote &&
-			(this.selectedNotation.value as ChordNote).setChordType(this.selectedChordType)
-	}
+      // 播放完成 最后一个 event为 null
+      if (!event || !event.elements) {
+        resumeColorHandle = function() {
+          console.log('play complete.')
+        }
+        return resumeColorHandle
+      }
+      // 且 播放完成 后会选中第一个 note
+      let note_els = event.elements[0] || []
+      if (elems_firstPlayed == note_els) {
+        resumeColorHandle = function() {
+          console.log('play complete.')
+        }
+        return resumeColorHandle
+      }
+      elems_firstPlayed || (elems_firstPlayed = note_els)
 
-	public changeChordDuration() {
-		this.selectedNotation &&
-			this.selectedNotation.value.ntype == NotationType.ChordNote &&
-			(this.selectedNotation.value as ChordNote).setDuration(this.selectedChordDuration)
-	}
+      // 高亮
+      for (const note_el of note_els) {
+        setNoteSVGColor(note_el, '#3D9AFC')
+      }
+      // 高亮恢复
+      resumeColorHandle = function() {
+        for (const note_el of note_els) {
+          setNoteSVGColor(note_el, '#000000')
+        }
+      }
+      return resumeColorHandle
+    }
 
-	public keypressHandle(e: KeyboardEvent) {
-		if (!this.selectedNotation) {
-			return
-		}
+    abcjs.midi.setSoundFont('./')
+    abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
+      animate: {
+        listener(abcjsElement, currentEvent, context) {
+          console.log(abcjsElement, currentEvent, context)
 
-		if (e.key === KeyName[KeyName.Delete]) {
-			e.preventDefault()
-			// 删除
-			this.delNote()
-		} else if (this.selectedNotation.type == SelectNotationType.note) {
-			// 音符操作
-			if (e.key === KeyName[KeyName.ArrowUp]) {
-				e.preventDefault()
-				;(this.selectedNotation.value as Note).pitchUp() // 升高音符在音阶的一个音
-			} else if (e.key === KeyName[KeyName.ArrowDown]) {
-				e.preventDefault()
-				;(this.selectedNotation.value as Note).pitchDown()
-			}
-		} else if (this.selectedNotation.type == SelectNotationType.bar) {
-			// 小节线操作
-			if (e.key === KeyName[KeyName.Enter]) {
-				;(this.selectedNotation.value as BarLine).setNewlineInEnd()
-			}
-		}
-	}
-
-	public playMidi() {
-		let elems_firstPlayed = null
-		let resumeBeforeColor = function() {}
-		let setNoteSVGColor = function(el, colorHash) {
-			if (el.getAttribute('fill') && el.getAttribute('fill').includes('#')) {
-				el.setAttribute('fill', colorHash)
-			}
-
-			if (el.getAttribute('stroke') && el.getAttribute('stroke').includes('#')) {
-				el.setAttribute('stroke', colorHash)
-			}
-		}
-
-		let setColorAndGetResumeBeforeColor = function(event) {
-			let resumeColorHandle = function() {}
-
-			// 播放完成 最后一个 event为 null
-			if (!event || !event.elements) {
-				resumeColorHandle = function() {
-					console.log('play complete.')
-				}
-				return resumeColorHandle
-			}
-			// 且 播放完成 后会选中第一个 note
-			let note_els = event.elements[0] || []
-			if (elems_firstPlayed == note_els) {
-				resumeColorHandle = function() {
-					console.log('play complete.')
-				}
-				return resumeColorHandle
-			}
-			elems_firstPlayed || (elems_firstPlayed = note_els)
-
-			// 高亮
-			for (const note_el of note_els) {
-				setNoteSVGColor(note_el, '#3D9AFC')
-			}
-			// 高亮恢复
-			resumeColorHandle = function() {
-				for (const note_el of note_els) {
-					setNoteSVGColor(note_el, '#000000')
-				}
-			}
-			return resumeColorHandle
-		}
-
-		abcjs.midi.setSoundFont('./')
-		abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
-			animate: {
-				listener(abcjsElement, currentEvent, context) {
-					console.log(abcjsElement, currentEvent, context)
-
-					resumeBeforeColor()
-					resumeBeforeColor = setColorAndGetResumeBeforeColor(currentEvent)
-				},
-				target: this.tuneObjectArray[0],
-				qpm: this.tempo,
-			},
-			// voicesOff: false,
-			inlineControls: { hide: true },
-		})
-		abcjs.midi.startPlaying(document.querySelector('.abcjs-inline-midi'))
-	}
+          resumeBeforeColor()
+          resumeBeforeColor = setColorAndGetResumeBeforeColor(currentEvent)
+        },
+        target: this.tuneObjectArray[0],
+        qpm: this.tempo,
+      },
+      // voicesOff: false,
+      inlineControls: { hide: true },
+    })
+    abcjs.midi.startPlaying(document.querySelector('.abcjs-inline-midi'))
+  }
 }
 </script>
 
 <style lang="less" scoped>
 .home {
-	min-height: 100vh;
-	.btn_groups {
-		display: flex;
-		height: 40px;
-		padding-left: 20px;
-		.btn {
-			border: none;
-			margin-right: 20px;
-			background: transparent;
-			width: 100px;
-		}
-	}
-	&_box {
-		display: flex;
-		flex-direction: row;
-	}
-	.btn_group {
-		display: flex;
-		flex-wrap: wrap;
-		align-content: flex-start;
-		margin-top: 20px;
-	}
-	.headline {
-		background: #eee;
-		color: #000;
-		font-size: 18px;
-	}
-	.clef_box {
-		flex: 0.25;
-		height: 100%;
-		border-right: 1px solid #595959;
-		min-height: 80vh;
-		padding: 0 10px;
-		.img_box {
-			width: 100px;
-			height: 100px;
-			margin: 0 20px 20px 0;
-			img {
-				width: 100px;
-				height: 100px;
-				cursor: pointer;
-			}
-		}
-	}
-	.attribute_box {
-		flex: 0.3;
-		height: 100%;
-		border-left: 1px solid #595959;
-		min-height: 80vh;
-		padding: 0 10px;
-		.img_box {
-			width: 116px;
-			height: 116px;
-			margin: 0 0 20px 20px;
-			img {
-				width: 116px;
-				height: 116px;
-			}
-		}
-	}
-	.vex_box {
-		flex: 0.7;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		min-height: 80vh;
-		.input_box {
-			display: flex;
-		}
-		.input_item {
-			margin-left: 20px;
-			label {
-				margin-right: 10px;
-			}
-		}
-		.input_item:first-child {
-			margin-left: 0;
-		}
-		.svg_box {
-			margin-top: 20px;
-			width: 700px;
-			height: 700px;
-			border: 1px solid #595959;
-		}
-	}
+  min-height: 100vh;
+  .btn_groups {
+    display: flex;
+    height: 40px;
+    padding-left: 20px;
+    .btn {
+      border: none;
+      margin-right: 20px;
+      background: transparent;
+      width: 100px;
+    }
+  }
+  &_box {
+    display: flex;
+    flex-direction: row;
+  }
+  .btn_group {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    margin-top: 20px;
+  }
+  .headline {
+    background: #eee;
+    color: #000;
+    font-size: 18px;
+  }
+  .clef_box {
+    flex: 0.25;
+    height: 100%;
+    border-right: 1px solid #595959;
+    min-height: 80vh;
+    padding: 0 10px;
+    .img_box {
+      width: 100px;
+      height: 100px;
+      margin: 0 20px 20px 0;
+      img {
+        width: 100px;
+        height: 100px;
+        cursor: pointer;
+      }
+    }
+  }
+  .attribute_box {
+    flex: 0.3;
+    height: 100%;
+    border-left: 1px solid #595959;
+    min-height: 80vh;
+    padding: 0 10px;
+    .img_box {
+      width: 116px;
+      height: 116px;
+      margin: 0 0 20px 20px;
+      img {
+        width: 116px;
+        height: 116px;
+      }
+    }
+  }
+  .vex_box {
+    flex: 0.7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 80vh;
+    .input_box {
+      display: flex;
+    }
+    .input_item {
+      margin-left: 20px;
+      label {
+        margin-right: 10px;
+      }
+    }
+    .input_item:first-child {
+      margin-left: 0;
+    }
+    .svg_box {
+      margin-top: 20px;
+      width: 700px;
+      height: 700px;
+      border: 1px solid #595959;
+    }
+  }
 }
 </style>

@@ -1,24 +1,25 @@
-import { NewLine } from '../utils';
-import { Notation } from './Notation.abstract';
-import { NotationType } from '..';
-import { BarlineType } from '../Enums/BarlineType';
-import { SymbolSpacer } from '../constant';
+import { NewLine } from '../utils'
+import { Notation } from './Notation.abstract'
+import { NotationType } from '..'
+import { BarlineType } from '../Enums/BarlineType'
+import { SymbolSpacer } from '../constant'
 
 export class BarLine extends Notation {
-  public ntype = NotationType.BarLine;
+  public ntype = NotationType.BarLine
 
   constructor(
     public type: BarlineType = BarlineType.SingleBarline,
-    public hasNewlineInEnd: boolean = false
+    public hasNewlineInEnd: boolean = false,
+    public repeatsNumber: number = 0,
   ) {
-    super();
+    super()
   }
 
   public toJSON() {
     return {
       ntype: this.ntype,
-      state: [this.type,this.hasNewlineInEnd]
-    };
+      state: [this.type, this.hasNewlineInEnd, this.repeatsNumber],
+    }
   }
 
   public toAbcString() {
@@ -39,13 +40,14 @@ export class BarLine extends Notation {
         : this.type === BarlineType.RepeatedSetion_StartAndEnd
         ? '::'
         : '|') +
-      (this.hasNewlineInEnd ? NewLine : '')
-    );
+      (this.hasNewlineInEnd ? NewLine : '') +
+      (this.repeatsNumber ? this.repeatsNumber : '')
+    )
   }
 
   public query(param): boolean {
     if (!param.ichar_end) {
-      return false;
+      return false
     }
 
     return (
@@ -53,16 +55,21 @@ export class BarLine extends Notation {
       this.ibegin + SymbolSpacer.length === param.ichar_start &&
       // 因为abcjs选中回调中 不包括换行符，所以带换行符的符号要比实际少1，但是内部索引操作还是正常使用
       this.iend + (this.hasNewlineInEnd ? -1 : 0) === param.ichar_end
-    );
+    )
   }
 
   public setNewlineInEnd() {
-    this.hasNewlineInEnd = true;
-    this.updateInStave();
+    this.hasNewlineInEnd = true
+    this.updateInStave()
   }
 
   public setBarlineType(newtype: BarlineType) {
-    this.type = newtype;
-    this.updateInStave();
+    this.type = newtype
+    this.updateInStave()
+  }
+
+  public setRepeatsNumber(serialNumber:number) {
+    this.repeatsNumber = serialNumber
+    this.updateInStave()
   }
 }
