@@ -54,7 +54,7 @@ export abstract class StaveBase {
    * @param ichar_start
    * @param ichar_end abcjs中的通常会大1, 表示[,) 结尾开区间
    */
-  public getNotation(ichar_start: number, ichar_end: number): any {
+  public getNotation(ichar_start: number, ichar_end: number) {
     var queryParam = { ichar_start, ichar_end }
     return this.notations.filter(x => x.query(queryParam)).pop() // 取得最后一个
   }
@@ -157,7 +157,7 @@ export abstract class StaveBase {
     return org_n
   }
 
-  protected tryResolveToStaveField(notation: INotation) {
+  protected trySetStaveFieldFrom(notation: INotation) {
     if (!(notation instanceof InfoField)) return
 
     if (notation.fieldType == InfoFiledType.reference_number) {

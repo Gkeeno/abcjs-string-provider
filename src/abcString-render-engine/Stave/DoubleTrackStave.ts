@@ -49,7 +49,7 @@ export class StaveDoubleTrack extends StaveBase {
     if (data.length) {
       for (const nState of data) {
         const notation = this.deserializeNotation(nState)
-        this.tryResolveToStaveField(notation)
+        this.trySetStaveFieldFrom(notation)
         this.addNotation(notation);
       }
     } else {
