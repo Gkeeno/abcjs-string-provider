@@ -508,7 +508,6 @@ export default class Home extends Vue {
 
   public playMidi() {
     let elems_firstPlayed = null
-    let resumeBeforeColor = function() {}
     let setNoteSVGColor = function(el, colorHash) {
       if (el.getAttribute('fill') && el.getAttribute('fill').includes('#')) {
         el.setAttribute('fill', colorHash)
@@ -552,6 +551,7 @@ export default class Home extends Vue {
       return resumeColorHandle
     }
 
+    let resumeBeforeColor = function() {}
     abcjs.midi.setSoundFont('./')
     abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
       animate: {
