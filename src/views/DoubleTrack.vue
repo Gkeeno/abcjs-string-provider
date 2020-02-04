@@ -445,7 +445,7 @@ export default class DoubleTrack extends Vue {
       return resumeColorHandle
     }
 
-    abcjs.midi.setSoundFont('./')
+    abcjs.midi.setSoundFont('/')
     abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
       animate: {
         listener(abcjsElement, currentEvent, context) {

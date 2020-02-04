@@ -552,7 +552,7 @@ export default class Home extends Vue {
     }
 
     let resumeBeforeColor = function() {}
-    abcjs.midi.setSoundFont('./')
+    abcjs.midi.setSoundFont('/')
     abcjs.renderMidi('ctrl_midi', this.stave.abcString, {
       animate: {
         listener(abcjsElement, currentEvent, context) {
