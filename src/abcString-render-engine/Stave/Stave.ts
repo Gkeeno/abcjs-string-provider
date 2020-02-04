@@ -1,7 +1,4 @@
 import { StaveBase } from './StaveBase'
-import { INotation } from '..'
-import { InfoField } from '../Notations/InfoField'
-import { InfoFiledType } from '../Enums/InfoFieldType'
 
 /**
  * @description

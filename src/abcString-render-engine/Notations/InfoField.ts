@@ -1,7 +1,7 @@
 import { InfoFiledType } from '../Enums/InfoFieldType';
 import { NewLine } from '../utils';
 import { Notation } from './Notation.abstract';
-import { NotationType } from '..';
+import { NotationType } from '../Enums/NotationType';
 
 export class InfoField extends Notation {
   public ntype = NotationType.InfoField;

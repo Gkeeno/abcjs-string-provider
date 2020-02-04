@@ -1,8 +1,9 @@
 import { NoteKey } from '../Enums/NoteKey'
-import { NoteDuration, NotationType } from '..'
 import { SequenceNoteKey } from '../constant'
 import { NoteAccidental } from '../Enums/NoteAccidental'
 import { Notation } from './Notation.abstract'
+import { NotationType } from '../Enums/NotationType'
+import { NoteDuration } from '../Enums/NoteDuration'
 
 export class Note extends Notation {
   public ntype = NotationType.Note

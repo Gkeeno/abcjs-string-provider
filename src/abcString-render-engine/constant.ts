@@ -1,9 +1,5 @@
 import { NoteKey } from './Enums/NoteKey';
 import { NoteDuration } from './Enums/NoteDuration';
-import { BarLine } from './Notations/BarLine';
-import { InfoField } from './Notations/InfoField';
-import { RestNote } from './Notations/RestNote';
-import { Note } from './Notations/Note';
 import { ChordType } from './Enums/ChordType';
 
 /**

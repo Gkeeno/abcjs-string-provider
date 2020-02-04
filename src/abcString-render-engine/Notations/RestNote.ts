@@ -1,5 +1,6 @@
-import { NoteDuration, NotationType } from '..';
 import { Notation } from './Notation.abstract';
+import { NotationType } from '../Enums/NotationType';
+import { NoteDuration } from '../Enums/NoteDuration';
 
 export class RestNote extends Notation {
   public ntype = NotationType.RestNote;

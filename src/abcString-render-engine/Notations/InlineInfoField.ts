@@ -1,7 +1,5 @@
-import { InfoFiledType } from '../Enums/InfoFieldType';
-import { NewLine } from '../utils';
-import { Notation } from './Notation.abstract';
-import { NotationType, InfoField } from '..';
+import { InfoField } from './InfoField';
+import { NotationType } from '../Enums/NotationType';
 
 export class InlineInfoField extends InfoField {
   ntype = NotationType.IninlineInfoField;

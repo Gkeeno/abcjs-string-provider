@@ -1,8 +1,8 @@
 import { NewLine } from '../utils'
 import { Notation } from './Notation.abstract'
-import { NotationType } from '..'
 import { BarlineType } from '../Enums/BarlineType'
 import { SymbolSpacer } from '../constant'
+import { NotationType } from '../Enums/NotationType'
 
 export class BarLine extends Notation {
   public ntype = NotationType.BarLine
