@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "outDir": "./lib",
-    "target": "esnext",
-    "module": "esnext",
+    "outDir": "./publish_abcjs-render-engine",
+    "target": "ES2015",
+    "module": "ESNext",
     "strict": false,
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
+    "declaration": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,

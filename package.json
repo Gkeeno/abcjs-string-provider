@@ -1,24 +1,17 @@
 {
-  "name": "musicnewabc",
-  "version": "0.1.0",
-  "private": true,
+  "name": "abcjs-render-engine",
+  "version": "0.3.2",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "build:publish": "tsc"
   },
-  "dependencies": {
-    "amfe-flexible": "^2.2.1",
-    "core-js": "^2.6.5",
-    "fabric": "^3.4.0",
-    "lodash": "^4.17.15",
-    "postcss-pxtorem": "^4.0.1",
-    "vue": "^2.6.10",
-    "vue-class-component": "^7.0.2",
-    "vue-property-decorator": "^8.1.0",
-    "vue-router": "^3.0.3",
-    "vuex": "^3.1.1"
-  },
+  "bin": "publish_abcjs-render-engine/abcString-render-engine/",
+  "main": "publish_abcjs-render-engine/abcString-render-engine/index.js",
+  "files": [
+    "publish_abcjs-render-engine/abcString-render-engine/"
+  ],
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.12.0",
     "@vue/cli-plugin-typescript": "^3.12.0",
