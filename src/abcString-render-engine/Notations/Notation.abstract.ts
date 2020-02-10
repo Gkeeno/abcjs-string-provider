@@ -54,7 +54,7 @@ export abstract class Notation implements INotation {
     this._command.updateNotations(narr => {
       const iBefore = narr.indexOf(nbefore)
       if (iBefore == -1) {
-        throw '不存在将插入的 notation'
+        throw '将插入的 notation 不存在'
       }
       let forward = narr.slice(0, iBefore + 1)
       let backward = narr.slice(iBefore + 1)
