@@ -2,6 +2,7 @@ import { InfoField } from '../Notations/InfoField';
 import { InfoFiledType } from '../Enums/InfoFieldType';
 import { InlineInfoField } from '../Notations/InlineInfoField';
 import { StaveBase } from './StaveBase';
+import { INotation } from '../Notations/INotation';
 
 /**
  *
@@ -27,6 +28,21 @@ export class StaveDoubleTrack extends StaveBase {
 
   constructor() {
     super();
+  }
+
+  protected trySetStaveFieldFrom(notation:INotation) {
+    super.trySetStaveFieldFrom(notation);
+    if (!(notation instanceof InfoField)) return;
+
+    if (notation.fieldType == InfoFiledType.voice) {
+      if (notation instanceof InlineInfoField) {
+        notation.getContent() == "PianoRightHand" && (this.rightHand = notation);
+        notation.getContent() == "PianoLeftHand" && (this.leftHand = notation);
+      } else {
+        notation.getContent() == "PianoRightHand" && (this.rightHandHeader = notation);
+        notation.getContent() == "PianoLeftHand" && (this.leftHandHeader = notation);
+      }
+    }
   }
 
   public init(dataraw: string = '[]') {
@@ -63,7 +79,10 @@ export class StaveDoubleTrack extends StaveBase {
     }
     return this;
   }
+  
   public save() {
     return JSON.stringify(this.notations);
   }
+
+  
 }
