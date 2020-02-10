@@ -49,8 +49,6 @@ export abstract class Notation implements INotation {
     if (this._command) return
 
     this._command = command
-    this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle)
-    this._command.updateAbcString(this.createUpdateAbcStringHandle(nbefore))
     this._command.updateNotations(narr => {
       const iBefore = narr.indexOf(nbefore)
       if (iBefore == -1) {
@@ -61,6 +59,8 @@ export abstract class Notation implements INotation {
       narr = forward.concat(this).concat(backward)
       return narr
     })
+    this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle)
+    this._command.updateAbcString(this.createUpdateAbcStringHandle(nbefore))
   }
 
   public insertToStaveBefore(nafter: INotation, command: StaveCommand) {
@@ -68,18 +68,18 @@ export abstract class Notation implements INotation {
 
     let nbefore: INotation = null
     this._command = command
-    this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle)
     this._command.updateNotations(narr => {
       const iAfter = narr.indexOf(nafter)
       nbefore = narr[iAfter - 1]
       if (iAfter == -1 || !nbefore) {
-        throw '不存在将插入到前方的 notation'
+        throw 'notation 不存在, 将插入到notation前方的操作失败'
       }
       let forward = narr.slice(0, iAfter)
       let backward = narr.slice(iAfter)
       narr = forward.concat(this).concat(backward)
       return narr
     })
+    this._command.subscribeAbcStringIndexChange(this.stringIndexChangeHandle)
     this._command.updateAbcString(this.createUpdateAbcStringHandle(nbefore))
   }
 
@@ -92,16 +92,16 @@ export abstract class Notation implements INotation {
     if (!this._command) return
 
     this.toAbcString = () => '' // 删除即更新为空字符串
-    this._command.updateAbcString(this.createUpdateAbcStringHandle())
-    this._command.unsubscribeAbcStringIndexChange()
     this._command.updateNotations(narr => {
       const iRemove = narr.indexOf(this)
       if (iRemove == -1) {
-        throw '不存在将插入到前方的 notation'
+        throw 'notation 未添加, 移除无效'
       }
       narr.splice(iRemove, 1)
       return narr
     })
+    this._command.updateAbcString(this.createUpdateAbcStringHandle())
+    this._command.unsubscribeAbcStringIndexChange()
   }
 
   public abstract toAbcString()
