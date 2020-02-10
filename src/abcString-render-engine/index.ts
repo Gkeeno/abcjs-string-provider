@@ -16,6 +16,7 @@ import { BarlineType } from './Enums/BarlineType';
 import { StaveDoubleTrack } from './Stave/DoubleTrackStave';
 import { ChordNote } from './Notations/ChordNote';
 import { ChordType } from './Enums/ChordType';
+import { InlineInfoField } from './Notations/InlineInfoField';
 
 
 export {
@@ -30,6 +31,7 @@ export {
     NotationType,
     NoteDuration,
     InfoField,
+    InlineInfoField,
     InfoFiledType,
     BarlineType,
     BarLine,
