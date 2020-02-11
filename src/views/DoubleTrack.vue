@@ -29,27 +29,27 @@
         <div class="input_box">
           <div class="title input_item">
             <label for="title">谱名</label>
-            <input type="text" id="title" v-model="title" ref="title" />
+            <input type="text" id="title" ref="title" />
           </div>
           <div class="composer input_item">
             <label for="author_name">作者</label>
-            <input type="text" id="author_name" v-model="composer" ref="composer" />
+            <input type="text" id="author_name" ref="composer" />
           </div>
           <div class="speed_input input_item">
             <label for="abc_speed">调号</label>
-            <select id="key" v-model="key" ref="key">
+            <select id="key" ref="key">
               <option>C</option>
             </select>
           </div>
           <div class="metre input_item">
             <label for="metre">拍号</label>
-            <select id="metre" v-model="metre" ref="metre">
+            <select id="metre" ref="metre">
               <option>4/4</option>
             </select>
           </div>
           <div class="speed_input input_item">
             <label for="tempo">速率</label>
-            <input type="text" id="tempo" v-model="tempo" ref="tempo" />
+            <input type="text" id="tempo" ref="tempo" />
           </div>
 
           <div class="curEditTrack_input input_item">
@@ -124,41 +124,6 @@ enum SelectNotationType {
 
 @Component
 export default class DoubleTrack extends Vue {
-  public get title(): string {
-    return this.$title && this.$title.getContent()
-  }
-  public set title(v: string) {
-    this.$data.$title.setContent(v)
-  }
-
-  public get composer(): string {
-    return this.$composer && this.$data.$composer.getContent()
-  }
-  public set composer(v: string) {
-    this.$data.$composer.setContent(v)
-  }
-
-  public get key(): string {
-    return this.$key && this.$key.getContent()
-  }
-  public set key(v: string) {
-    this.$data.$key.setContent(v)
-  }
-
-  public get metre(): string {
-    return this.$metre && this.$metre.getContent()
-  }
-  public set metre(v: string) {
-    this.$data.$metre.setContent(v)
-  }
-
-  public get tempo(): string {
-    return this.$tempo && this.$tempo.getContent()
-  }
-  public set tempo(v: string) {
-    this.$data.$tempo.setContent(v)
-  }
-
   public staveData: string = ''
   public stave: StaveDoubleTrack
   public selectedNotation: { type: SelectNotationType; value } = null
@@ -189,48 +154,46 @@ export default class DoubleTrack extends Vue {
     // { data: 'symbol6', img: require('../assets/image/attribute6.png') }
   ]
 
-  private $title = new InfoField(InfoFiledType.title, 'untitled1')
-
-  private $composer = new InfoField(InfoFiledType.composer, 'none1')
-
-  private $key = new InfoField(InfoFiledType.key, 'C')
-
-  private $metre = new InfoField(InfoFiledType.metre, '4/4')
-
-  private $tempo = new InfoField(InfoFiledType.tempo, '60')
-
   private tuneObjectArray
+
+  private bindInfoFieldChangeHandle(fieldKey: string, staveField: InfoField) {
+    const elem = this.$refs[fieldKey] as HTMLInputElement
+    if (!elem) return
+
+    elem.value = staveField.getContent()
+    elem.addEventListener('input', event => {
+      const val = (event.srcElement as HTMLInputElement).value
+      staveField.setContent(val)
+    })
+  }
 
   constructor() {
     super()
     window.document.onkeydown = e => this.keypressHandle(e)
   }
+
   public loadStave() {
     const stave = new StaveDoubleTrack()
     this.stave = stave.init(this.staveData)
-
     this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
     // 手动渲染下界面
     this.renderAbc()
     // 手动绑定上表单的值，因为v-model无法直接从对象中获取
-    ;(this.$refs.title as any).value = stave.title.getContent()
-    ;(this.$refs.composer as any).value = stave.composer.getContent()
-    ;(this.$refs.key as any).value = stave.key.getContent()
-    ;(this.$refs.metre as any).value = stave.metre.getContent()
-    ;(this.$refs.tempo as any).value = stave.tempo.getContent()
+    this.bindInfoFieldChangeHandle('title', stave.title)
+    this.bindInfoFieldChangeHandle('composer', stave.composer)
+    this.bindInfoFieldChangeHandle('key', stave.key)
+    this.bindInfoFieldChangeHandle('metre', stave.metre)
+    this.bindInfoFieldChangeHandle('tempo', stave.tempo)
     ;(window as any).stave = stave
   }
-  public saveStave() {
-    this.staveData = this.stave.save()
-  }
 
-  public mounted() {
+  public loadEmptyStave() {
     const stave = new StaveDoubleTrack()
-    stave.title = this.$data.$title
-    stave.composer = this.$data.$composer
-    stave.key = this.$data.$key
-    stave.metre = this.$data.$metre
-    stave.tempo = this.$data.$tempo
+    stave.title = new InfoField(InfoFiledType.title, 'myuntitled')
+    stave.composer = new InfoField(InfoFiledType.composer, 'mynone')
+    stave.key = new InfoField(InfoFiledType.key, 'C')
+    stave.metre = new InfoField(InfoFiledType.metre, '4/4')
+    stave.tempo = new InfoField(InfoFiledType.tempo, '60')
     this.stave = stave.init()
     this.stave.insertNotationAfter(this.stave.rightHand, new Note(NoteKey.C4))
 
@@ -238,17 +201,26 @@ export default class DoubleTrack extends Vue {
     // 手动渲染下界面
     this.renderAbc()
     // 手动绑定上表单的值，因为v-model无法直接从对象中获取
-    ;(this.$refs.title as any).value = stave.title.getContent()
-    ;(this.$refs.composer as any).value = stave.composer.getContent()
-    ;(this.$refs.key as any).value = stave.key.getContent()
-    ;(this.$refs.metre as any).value = stave.metre.getContent()
-    ;(this.$refs.tempo as any).value = stave.tempo.getContent()
+    this.bindInfoFieldChangeHandle('title', stave.title)
+    this.bindInfoFieldChangeHandle('composer', stave.composer)
+    this.bindInfoFieldChangeHandle('key', stave.key)
+    this.bindInfoFieldChangeHandle('metre', stave.metre)
+    this.bindInfoFieldChangeHandle('tempo', stave.tempo)
     ;(this.$refs.curEditTrack as HTMLSelectElement).value = this.curEditTrack
-    ;(window as any).stave = stave
     this.selectedNotation = {
       type: SelectNotationType.note,
       value: this.curEditTrack === '右手' ? this.stave.rightHand : this.stave.leftHand,
     }
+
+    ;(window as any).stave = stave
+  }
+
+  public saveStave() {
+    this.staveData = this.stave.save()
+  }
+
+  public mounted() {
+    this.loadEmptyStave()
   }
 
   public renderAbc() {
@@ -455,7 +427,7 @@ export default class DoubleTrack extends Vue {
           resumeBeforeColor = setColorAndGetResumeBeforeColor(currentEvent)
         },
         target: this.tuneObjectArray[0],
-        qpm: this.tempo,
+        qpm: this.stave.tempo.getContent(),
       },
       // voicesOff: false,
       inlineControls: { hide: true },

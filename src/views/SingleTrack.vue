@@ -33,27 +33,27 @@
         <div class="input_box">
           <div class="title input_item">
             <label for="title">谱名</label>
-            <input type="text" id="title" v-model="title" ref="title" />
+            <input type="text" ref="title" />
           </div>
           <div class="composer input_item">
             <label for="author_name">作者</label>
-            <input type="text" id="author_name" v-model="composer" ref="composer" />
+            <input type="text" id="author_name" ref="composer" />
           </div>
           <div class="speed_input input_item">
             <label for="abc_speed">调号</label>
-            <select id="key" v-model="key" ref="key">
+            <select id="key" ref="key">
               <option>C</option>
             </select>
           </div>
           <div class="metre input_item">
             <label for="metre">拍号</label>
-            <select id="metre" v-model="metre" ref="metre">
+            <select id="metre" ref="metre">
               <option>4/4</option>
             </select>
           </div>
           <div class="speed_input input_item">
             <label for="tempo">速率</label>
-            <input type="text" id="tempo" v-model="tempo" ref="tempo" />
+            <input type="text" id="tempo" ref="tempo" />
           </div>
         </div>
         <div class="svg_box" ref="paper">
@@ -158,41 +158,6 @@ enum SelectNotationType {
 
 @Component
 export default class Home extends Vue {
-  public get title(): string {
-    return this.$title && this.$title.getContent()
-  }
-  public set title(v: string) {
-    this.$data.$title.setContent(v)
-  }
-
-  public get composer(): string {
-    return this.$composer && this.$data.$composer.getContent()
-  }
-  public set composer(v: string) {
-    this.$data.$composer.setContent(v)
-  }
-
-  public get key(): string {
-    return this.$key && this.$key.getContent()
-  }
-  public set key(v: string) {
-    this.$data.$key.setContent(v)
-  }
-
-  public get metre(): string {
-    return this.$metre && this.$metre.getContent()
-  }
-  public set metre(v: string) {
-    this.$data.$metre.setContent(v)
-  }
-
-  public get tempo(): string {
-    return this.$tempo && this.$tempo.getContent()
-  }
-  public set tempo(v: string) {
-    this.$data.$tempo.setContent(v)
-  }
-
   public staveData: string = ''
   public stave: Stave
   public selectedNotation: { type: SelectNotationType; value } = null
@@ -251,16 +216,6 @@ export default class Home extends Vue {
     },
   ]
 
-  private $title = new InfoField(InfoFiledType.title, 'untitled1')
-
-  private $composer = new InfoField(InfoFiledType.composer, 'none1')
-
-  private $key = new InfoField(InfoFiledType.key, 'C')
-
-  private $metre = new InfoField(InfoFiledType.metre, '4/4')
-
-  private $tempo = new InfoField(InfoFiledType.tempo, '60')
-
   private tuneObjectArray
 
   private clickHook_selectUnisons: (notaion: INotation) => void = function() {}
@@ -270,43 +225,60 @@ export default class Home extends Vue {
     window.document.onkeydown = e => this.keypressHandle(e)
   }
 
+  private bindInfoFieldChangeHandle(fieldKey: string, staveField: InfoField) {
+    const elem = this.$refs[fieldKey] as HTMLInputElement
+    if (!elem) return
+
+    elem.value = staveField.getContent()
+    elem.addEventListener('input', event => {
+      const val = (event.srcElement as HTMLInputElement).value
+      staveField.setContent(val)
+    })
+  }
+
   public loadStave() {
-		const stave = new Stave()
+    const stave = new Stave()
     this.stave = stave.init(this.staveData)
     this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
     // 手动渲染下界面
     this.renderAbc()
     // 手动绑定上表单的值，因为v-model无法直接从对象中获取
-    ;(this.$refs.title as any).value = stave.title.getContent()
-    ;(this.$refs.composer as any).value = stave.composer.getContent()
-    ;(this.$refs.key as any).value = stave.key.getContent()
-    ;(this.$refs.metre as any).value = stave.metre.getContent()
-    ;(this.$refs.tempo as any).value = stave.tempo.getContent()
+    this.bindInfoFieldChangeHandle('title', stave.title)
+    this.bindInfoFieldChangeHandle('composer', stave.composer)
+    this.bindInfoFieldChangeHandle('key', stave.key)
+    this.bindInfoFieldChangeHandle('metre', stave.metre)
+    this.bindInfoFieldChangeHandle('tempo', stave.tempo)
     ;(window as any).stave = stave
   }
+
+  public loadEmptyStave() {
+    const stave = new Stave()
+    stave.title = new InfoField(InfoFiledType.title, 'myuntitled')
+    stave.composer = new InfoField(InfoFiledType.composer, 'mynone')
+    stave.key = new InfoField(InfoFiledType.key, 'C')
+    stave.metre = new InfoField(InfoFiledType.metre, '4/4')
+    stave.tempo = new InfoField(InfoFiledType.tempo, '60')
+    this.stave = stave.init()
+    this.stave.addNotation(new Note(NoteKey.C3))
+    this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
+    // 手动渲染下界面
+    this.renderAbc()
+    // 手动绑定上表单的值，因为v-model无法直接从对象中获取
+    this.bindInfoFieldChangeHandle('title', stave.title)
+    this.bindInfoFieldChangeHandle('composer', stave.composer)
+    this.bindInfoFieldChangeHandle('key', stave.key)
+    this.bindInfoFieldChangeHandle('metre', stave.metre)
+    this.bindInfoFieldChangeHandle('tempo', stave.tempo)
+
+    ;(window as any).stave = this.stave
+  }
+
   public saveStave() {
     this.staveData = this.stave.save()
   }
 
   public mounted() {
-    const stave = new Stave()
-    stave.title = this.$data.$title
-    stave.composer = this.$data.$composer
-    stave.key = this.$data.$key
-    stave.metre = this.$data.$metre
-    stave.tempo = this.$data.$tempo
-    this.stave = stave.init()
-    this.stave.addNotation(new Note(NoteKey.C3))
-    ;(window as any).stave = stave
-    this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
-    // 手动渲染下界面
-    this.renderAbc()
-    // 手动绑定上表单的值，因为v-model无法直接从对象中获取
-    ;(this.$refs.title as any).value = stave.title.getContent()
-    ;(this.$refs.composer as any).value = stave.composer.getContent()
-    ;(this.$refs.key as any).value = stave.key.getContent()
-    ;(this.$refs.metre as any).value = stave.metre.getContent()
-    ;(this.$refs.tempo as any).value = stave.tempo.getContent()
+    this.loadEmptyStave()
   }
 
   public renderAbc() {
@@ -562,7 +534,7 @@ export default class Home extends Vue {
           resumeBeforeColor = setColorAndGetResumeBeforeColor(currentEvent)
         },
         target: this.tuneObjectArray[0],
-        qpm: this.tempo,
+        qpm: this.stave.tempo.getContent(),
       },
       // voicesOff: false,
       inlineControls: { hide: true },
