@@ -109,7 +109,7 @@ export abstract class StaveBase {
       const n_next = this.notations[i + 1]
 
       // a.记录下每个音符的lyric 到 lyrics, 空的用占位符号替代
-      if (n instanceof Note) {
+      if (n instanceof Note || n instanceof ChordNote) {
         lyrics.push(n.lyrics || '*')
       }
 
