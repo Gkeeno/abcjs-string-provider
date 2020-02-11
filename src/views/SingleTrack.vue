@@ -137,30 +137,25 @@ import {
   ChordType,
   INotation,
 } from '../abcString-render-engine'
+import { StaveUtil } from '@/util'
 
-enum KeyName {
-  Delete,
-  Insert,
-  ArrowUp,
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  Backspace,
-  Enter,
-}
-enum SelectNotationType {
-  unkown,
-  note = 'note',
-  bar = 'bar',
-  treble = 'treble',
-  rest = 'rest',
+enum KeyCode {
+  Delete = 46,
+  // Insert,
+  ArrowUp = 38,
+  ArrowDown = 40,
+  ArrowLeft = 37,
+  ArrowRight = 39,
+  Backspace = 8,
+  Enter = 13,
+  Space = 32
 }
 
 @Component
 export default class Home extends Vue {
   public staveData: string = ''
   public stave: Stave
-  public selectedNotation: { type: SelectNotationType; value } = null
+  public selectedNotation:INotation = null
   public selectedChordType: ChordType = ChordType.Major
   public selectedChordDuration: NoteDuration = NoteDuration.Quarter
 
@@ -288,25 +283,14 @@ export default class Home extends Vue {
       staffwidth: 500,
       clickListener(abcElem, tuneNumber, classes) {
         const notation = that.stave.getNotation(abcElem.startChar, abcElem.endChar - 1)
-
-        !notation
-          ? (that.selectedNotation = null)
-          : (that.selectedNotation = {
-              type:
-                (abcElem.rest && SelectNotationType.rest) ||
-                abcElem.el_type ||
-                abcElem.type ||
-                SelectNotationType.unkown,
-              value: notation,
-            })
-
-        that.clickHook_selectUnisons(notation)
+        that.selectedNotation = notation;
+        that.clickHook_selectUnisons(notation);
 
         console.log(
           that.stave.abcString.substring(abcElem.startChar, abcElem.endChar),
           abcElem.startChar,
           abcElem.endChar,
-          that.selectedNotation && that.selectedNotation.value,
+          notation,
         )
       },
     })
@@ -317,9 +301,9 @@ export default class Home extends Vue {
     const note = new Note(NoteKey.C3, durationValue)
 
     this.selectedNotation
-      ? this.stave.insertNotationAfter(this.selectedNotation.value, note)
+      ? this.stave.insertNotationAfter(this.selectedNotation, note)
       : this.stave.addNotation(note)
-    this.selectedNotation = { type: SelectNotationType.note, value: note }
+    this.selectedNotation = note
   }
 
   public addRestNote(duration: NoteDuration) {
@@ -327,48 +311,47 @@ export default class Home extends Vue {
     const note = new RestNote(durationValue)
 
     this.selectedNotation
-      ? this.stave.insertNotationAfter(this.selectedNotation.value, note)
+      ? this.stave.insertNotationAfter(this.selectedNotation, note)
       : this.stave.addNotation(note)
-    this.selectedNotation = { type: SelectNotationType.note, value: note }
+    this.selectedNotation = note
   }
 
   public addChordNote() {
     const chordnote = new ChordNote(NoteKey.C3, NoteDuration.Quarter, ChordType.Major)
 
     this.selectedNotation
-      ? this.stave.insertNotationAfter(this.selectedNotation.value, chordnote)
+      ? this.stave.insertNotationAfter(this.selectedNotation, chordnote)
       : this.stave.addNotation(chordnote)
-    this.selectedNotation = { type: SelectNotationType.note, value: chordnote }
+    this.selectedNotation = chordnote
   }
 
   public addBarline() {
     const barline = new BarLine()
 
     this.selectedNotation
-      ? this.stave.insertNotationAfter(this.selectedNotation.value, barline)
+      ? this.stave.insertNotationAfter(this.selectedNotation, barline)
       : this.stave.addNotation(barline)
-    this.selectedNotation = {
-      type: SelectNotationType.bar,
-      value: barline,
-    }
+    this.selectedNotation = barline
   }
 
   public delNote() {
-    this.stave.deleteNotation(this.selectedNotation.value)
+    this.stave.deleteNotation(this.selectedNotation)
     this.selectedNotation = null
     this.stave.generationLyrics()
   }
 
   public breaktie() {
     this.selectedNotation &&
-      this.selectedNotation.type == SelectNotationType.note &&
-      (this.selectedNotation.value as Note).setEndSpacing()
+      StaveUtil.isNoteType(this.selectedNotation) &&
+      (this.selectedNotation as Note).setEndSpacing()
   }
 
   public toggleNoteTie() {
-    this.selectedNotation &&
-      this.selectedNotation.type == SelectNotationType.note &&
-      (this.selectedNotation.value as Note).setHasTieIs(!this.selectedNotation.value.hasTie)
+    if(!this.selectedNotation) return;
+    if(!StaveUtil.isNoteType(this.selectedNotation)) return;
+
+    const note = this.selectedNotation as Note|ChordNote;
+    note.setHasTieIs(!note.hasTie);
   }
 
   public selectSlurs() {
@@ -402,16 +385,16 @@ export default class Home extends Vue {
 
   public setAccidental(accidentalName: string) {
     this.selectedNotation &&
-      this.selectedNotation.type == SelectNotationType.note &&
-      (this.selectedNotation.value as Note).setAccidential(
+      this.selectedNotation.ntype ==NotationType.Note &&
+      (this.selectedNotation as Note).setAccidential(
         NoteAccidental[accidentalName] || NoteAccidental.None,
       )
   }
 
   public setBarlineType(barlineTypeName: string) {
     this.selectedNotation &&
-      this.selectedNotation.type == SelectNotationType.bar &&
-      (this.selectedNotation.value as BarLine).setBarlineType(
+      this.selectedNotation.ntype == NotationType.BarLine &&
+      (this.selectedNotation as BarLine).setBarlineType(
         BarlineType[barlineTypeName] || BarlineType.SingleBarline,
       )
   }
@@ -419,61 +402,69 @@ export default class Home extends Vue {
     let txt_repeats = this.$refs.txt_barline_repeats as any
 
     this.selectedNotation &&
-      this.selectedNotation.type == SelectNotationType.bar &&
-      (this.selectedNotation.value as BarLine).setRepeatsNumber(Number(txt_repeats.value))
+      this.selectedNotation.ntype == NotationType.BarLine &&
+      (this.selectedNotation as BarLine).setRepeatsNumber(Number(txt_repeats.value))
   }
 
   public newline() {
     this.selectedNotation &&
-      this.selectedNotation.type == SelectNotationType.bar &&
-      (this.selectedNotation.value as BarLine).setNewlineInEnd()
+      this.selectedNotation.ntype == NotationType.BarLine &&
+      (this.selectedNotation as BarLine).setNewlineInEnd()
   }
 
   public changeChordType() {
     this.selectedNotation &&
-      this.selectedNotation.value.ntype == NotationType.ChordNote &&
-      (this.selectedNotation.value as ChordNote).setChordType(this.selectedChordType)
+      this.selectedNotation.ntype == NotationType.ChordNote &&
+      (this.selectedNotation as ChordNote).setChordType(this.selectedChordType)
   }
 
   public changeChordDuration() {
     this.selectedNotation &&
-      this.selectedNotation.value.ntype == NotationType.ChordNote &&
-      (this.selectedNotation.value as ChordNote).setDuration(this.selectedChordDuration)
+      this.selectedNotation.ntype == NotationType.ChordNote &&
+      (this.selectedNotation as ChordNote).setDuration(this.selectedChordDuration)
   }
 
   public addLyrics() {
-    if (this.selectedNotation.type !== SelectNotationType.note) {
+    if (!StaveUtil.isNoteType(this.selectedNotation)) {
       return
     }
 
     let txt_lyrics = this.$refs.txt_lyrics as HTMLInputElement
-    this.selectedNotation.value.lyrics = txt_lyrics.value
+    (this.selectedNotation as Note).lyrics = txt_lyrics.value
     // txt_lyrics.value = '';
     this.stave.generationLyrics()
   }
 
   public keypressHandle(e: KeyboardEvent) {
-    if (!this.selectedNotation) {
-      return
-    }
+    if (!this.selectedNotation) return;
 
-    if (e.key === KeyName[KeyName.Delete]) {
-      e.preventDefault()
-      // 删除
-      this.delNote()
-    } else if (this.selectedNotation.type == SelectNotationType.note) {
-      // 音符操作
-      if (e.key === KeyName[KeyName.ArrowUp]) {
-        e.preventDefault()
-        ;(this.selectedNotation.value as Note).pitchUp() // 升高音符在音阶的一个音
-      } else if (e.key === KeyName[KeyName.ArrowDown]) {
-        e.preventDefault()
-        ;(this.selectedNotation.value as Note).pitchDown()
+    const notation = this.selectedNotation;
+    // 删除
+    if (e.keyCode === KeyCode.Delete) {
+      e.preventDefault();
+      this.delNote();
+    }
+    // 音符操作
+    else if (StaveUtil.isNoteType(notation)) {
+      // 升高音符在音阶的一个音
+      if (e.keyCode === KeyCode.ArrowUp) {
+        e.preventDefault();
+        (notation as Note).pitchUp();
+        // 降低
+      } else if (e.keyCode === KeyCode.ArrowDown) {
+        e.preventDefault();
+        (notation as Note).pitchDown();
+        // 断开符尾
+      } else if (e.keyCode === KeyCode.Space) {
+        e.preventDefault();
+        (notation as Note).setEndSpacing();
       }
-    } else if (this.selectedNotation.type == SelectNotationType.bar) {
-      // 小节线操作
-      if (e.key === KeyName[KeyName.Enter]) {
-        ;(this.selectedNotation.value as BarLine).setNewlineInEnd()
+    }
+    // 小节线操作
+    else if (notation.ntype == NotationType.BarLine) {
+      if (e.keyCode === KeyCode.Enter) {
+        e.preventDefault();
+        this.newline();
       }
     }
   }
