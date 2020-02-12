@@ -79,6 +79,36 @@
 
         <input type="text" ref="txt_lyrics" />
         <button @click="addLyrics">添加歌词</button>
+        <br />
+        <br />
+
+        <div class="input-group-text">
+          <label for="first"
+            >根音
+            <select name="" id="" v-model="chord_one">
+              <option value="">--</option>
+              <option v-for="(item, i) in noteKey" :value="item" :key="i">{{ item }}</option>
+            </select>
+          </label>
+          <br />
+          <label for="second"
+            >三音
+            <select name="" id="" v-model="chord_two">
+              <option value="">--</option>
+              <option v-for="(item, i) in noteKey" :value="item" :key="i">{{ item }}</option>
+            </select>
+          </label>
+          <br />
+          <label for="third"
+            >五音
+            <select name="" id="" v-model="chord_three">
+              <option value="">--</option>
+              <option v-for="(item, i) in noteKey" :value="item" :key="i">{{ item }}</option>
+            </select>
+          </label>
+          <br />
+          <button class="btn-primary" @click="addChord">添加和弦</button>
+        </div>
       </div>
     </div>
   </div>
@@ -101,8 +131,9 @@ import {
   BarLine,
   NoteAccidental,
   INotation,
+  ChordNote
 } from '../abcString-render-engine'
-import { StaveUtil } from '../util';
+import { StaveUtil } from '../util'
 
 import _ from 'lodash'
 
@@ -115,7 +146,7 @@ enum KeyCode {
   ArrowRight = 39,
   Backspace = 8,
   Enter = 13,
-  Space = 32
+  Space = 32,
 }
 @Component
 export default class DoubleTrack extends Vue {
@@ -123,6 +154,15 @@ export default class DoubleTrack extends Vue {
   public stave: StaveDoubleTrack
   public selectedNotation: INotation = null
   public curEditTrack: '左手' | '右手' = '右手'
+
+  public data() {
+    return {
+      noteKey: Object.keys(NoteKey),
+    }
+  }
+  public chord_one = ''
+  public chord_two = ''
+  public chord_three = ''
 
   @Provide() public clefArr = [
     { data: 'Whole', img: require('../assets/image/clef1.png') },
@@ -148,7 +188,6 @@ export default class DoubleTrack extends Vue {
     { data: 'DoubleSharp', img: require('../assets/image/attribute5.png') },
     // { data: 'symbol6', img: require('../assets/image/attribute6.png') }
   ]
-
   private tuneObjectArray
 
   private bindInfoFieldChangeHandle(fieldKey: string, staveField: InfoField) {
@@ -203,7 +242,6 @@ export default class DoubleTrack extends Vue {
     this.bindInfoFieldChangeHandle('tempo', stave.tempo)
     ;(this.$refs.curEditTrack as HTMLSelectElement).value = this.curEditTrack
     this.selectedNotation = this.curEditTrack === '右手' ? this.stave.rightHand : this.stave.leftHand
-
     ;(window as any).stave = stave
   }
 
@@ -281,9 +319,27 @@ export default class DoubleTrack extends Vue {
     }
 
     let txt_lyrics = this.$refs.txt_lyrics as HTMLInputElement
-    (this.selectedNotation as Note).lyrics = txt_lyrics.value
+    ;(this.selectedNotation as Note).lyrics = txt_lyrics.value
     // txt_lyrics.value = '';
     this.stave.generationLyrics()
+  }
+  public addChord() {
+    if (!(this.chord_one && this.chord_two && this.chord_three)) {
+      alert('请选择所需全部组成音')
+      return
+    }
+
+    const notes = [
+      new Note(NoteKey[this.chord_one]),
+      new Note(NoteKey[this.chord_two]),
+      new Note(NoteKey[this.chord_three]),
+    ]
+    const chordnote = new ChordNote(notes)
+
+    this.selectedNotation
+      ? this.stave.insertNotationAfter(this.selectedNotation, chordnote)
+      : this.stave.addNotation(chordnote)
+    this.selectedNotation = chordnote
   }
 
   public delNote() {
@@ -300,9 +356,7 @@ export default class DoubleTrack extends Vue {
   public setAccidental(accidentalName: string) {
     this.selectedNotation &&
       StaveUtil.isNoteType(this.selectedNotation) &&
-      (this.selectedNotation as Note).setAccidential(
-        NoteAccidental[accidentalName] || NoteAccidental.None,
-      )
+      (this.selectedNotation as Note).setAccidential(NoteAccidental[accidentalName] || NoteAccidental.None)
   }
 
   public newline() {
@@ -312,35 +366,35 @@ export default class DoubleTrack extends Vue {
   }
 
   public keypressHandle(e: KeyboardEvent) {
-    if (!this.selectedNotation) return;
+    if (!this.selectedNotation) return
 
-    const notation = this.selectedNotation;
+    const notation = this.selectedNotation
     // 删除
     if (e.keyCode === KeyCode.Delete) {
-      e.preventDefault();
-      this.delNote();
+      e.preventDefault()
+      this.delNote()
     }
     // 音符操作
     else if (StaveUtil.isNoteType(notation)) {
       // 升高音符在音阶的一个音
       if (e.keyCode === KeyCode.ArrowUp) {
-        e.preventDefault();
-        (notation as Note).pitchUp();
+        e.preventDefault()
+        ;(notation as Note).pitchUp()
         // 降低
       } else if (e.keyCode === KeyCode.ArrowDown) {
-        e.preventDefault();
-        (notation as Note).pitchDown();
+        e.preventDefault()
+        ;(notation as Note).pitchDown()
         // 断开符尾
       } else if (e.keyCode === KeyCode.Space) {
-        e.preventDefault();
-        (notation as Note).setEndBlankSpaceIs(true);
+        e.preventDefault()
+        ;(notation as Note).setEndBlankSpaceIs(true)
       }
     }
     // 小节线操作
     else if (notation.ntype == NotationType.BarLine) {
       if (e.keyCode === KeyCode.Enter) {
-        e.preventDefault();
-        this.newline();
+        e.preventDefault()
+        this.newline()
       }
     }
   }

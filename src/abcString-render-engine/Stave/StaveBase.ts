@@ -9,7 +9,6 @@ import { RestNote } from '../Notations/RestNote'
 import { ChordNote } from '../Notations/ChordNote'
 import { InlineInfoField } from '../Notations/InlineInfoField'
 import { SlursBoundary } from '../Notations/Boundaries/SlursBoundary'
-
 /**
  * @description
  * a. 添加的任何 Notation 及变化可能引起 abcstring 变化
@@ -152,7 +151,9 @@ export abstract class StaveBase {
     } else if (orgState.ntype == NotationType.RestNote) {
       org_n = new RestNote(...orgState.state)
     } else if (orgState.ntype == NotationType.ChordNote) {
-      org_n = new ChordNote(...orgState.state)
+      const [notesState, ...chordState] = orgState.state
+      const notes = notesState.map(noteState => new Note(...noteState.state))
+      org_n = new ChordNote(notes, ...chordState)
     }
     return org_n
   }

@@ -9,7 +9,7 @@ export class Note extends Notation {
   public ntype = NotationType.Note
 
   constructor(
-    protected key: NoteKey = NoteKey.C1,
+    public key: NoteKey = NoteKey.C1,
     protected duration: NoteDuration = NoteDuration.Quarter,
     protected accidental: NoteAccidental = NoteAccidental.None,
     public hasTie: boolean = false,
@@ -20,7 +20,7 @@ export class Note extends Notation {
 
     const i_sequence = SequenceNoteKey.indexOf(key)
     if (isNaN(i_sequence)) {
-      throw 'invalid rootkey.'
+      throw 'invalid key.'
     }
   }
 
@@ -62,6 +62,10 @@ export class Note extends Notation {
     this.updateInStave()
   }
 
+  public setDuration(duration:NoteDuration) {
+    this.duration = duration;
+    this.updateInStave();
+  }
   /**
    * 设置尾部空格(断开符尾)
    */

@@ -83,20 +83,7 @@
         <input type="number" ref="txt_barline_repeats" />
         <button @click="setBarlineRepeats">添加小节重复号</button>
 
-        <select ref="sel_chordtype" v-model="selectedChordType">
-          <optgroup label="三和弦">
-            <option value="0">大三和弦</option>
-            <option value="1">小三和弦</option>
-            <option value="4">挂四和弦</option>
-          </optgroup>
 
-          <optgroup label="双音">
-            <option value="5">三度</option>
-            <option value="6">四度</option>
-            <option value="7">五度</option>
-          </optgroup>
-        </select>
-        <button @click="changeChordType">更改和弦类型</button>
         <br />
         <select ref="sel_chordtype" v-model="selectedChordDuration">
           <option value="16">全音符</option>
@@ -134,7 +121,6 @@ import {
   NoteAccidental,
   BarlineType,
   ChordNote,
-  ChordType,
   INotation,
 } from '../abcString-render-engine'
 import { StaveUtil } from '@/util'
@@ -150,13 +136,14 @@ enum KeyCode {
   Enter = 13,
   Space = 32
 }
-
+/**
+ * 以后主要实现DoubleTrack的功能，所以那边功能较全
+ */
 @Component
 export default class Home extends Vue {
   public staveData: string = ''
   public stave: Stave
   public selectedNotation:INotation = null
-  public selectedChordType: ChordType = ChordType.Major
   public selectedChordDuration: NoteDuration = NoteDuration.Quarter
 
   @Provide() public clefArr = [
@@ -317,7 +304,7 @@ export default class Home extends Vue {
   }
 
   public addChordNote() {
-    const chordnote = new ChordNote(NoteKey.C3, NoteDuration.Quarter, ChordType.Major)
+    const chordnote = new ChordNote()
 
     this.selectedNotation
       ? this.stave.insertNotationAfter(this.selectedNotation, chordnote)
@@ -412,11 +399,6 @@ export default class Home extends Vue {
       (this.selectedNotation as BarLine).setNewlineInEnd()
   }
 
-  public changeChordType() {
-    this.selectedNotation &&
-      this.selectedNotation.ntype == NotationType.ChordNote &&
-      (this.selectedNotation as ChordNote).setChordType(this.selectedChordType)
-  }
 
   public changeChordDuration() {
     this.selectedNotation &&
