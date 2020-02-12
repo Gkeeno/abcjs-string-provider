@@ -294,7 +294,7 @@ export default class DoubleTrack extends Vue {
   public breaktie() {
     this.selectedNotation &&
       StaveUtil.isNoteType(this.selectedNotation) &&
-      (this.selectedNotation as Note).setEndSpacing()
+      (this.selectedNotation as Note).setEndBlankSpaceIs(true)
   }
 
   public setAccidental(accidentalName: string) {
@@ -333,7 +333,7 @@ export default class DoubleTrack extends Vue {
         // 断开符尾
       } else if (e.keyCode === KeyCode.Space) {
         e.preventDefault();
-        (notation as Note).setEndSpacing();
+        (notation as Note).setEndBlankSpaceIs(true);
       }
     }
     // 小节线操作

@@ -13,8 +13,8 @@ import { NoteDuration } from '../Enums/NoteDuration'
  * 音符内去附加;
  * @summary ！！选中的ChordNote的abcstring索引不会关联到位于之前的特殊符号，比如slurs
  * @todo
- * A. 添加`note`后如果设置`lastString`空格，可能导致无法选中，因为不会截取到空格;
- * 但是其后如果`notation`，则会选中空格（先添加小节不影响使用）;
+ * A. 添加`note`后如果设置`hasEndBlankSpace`空格，可能导致无法选中，因为不会截取到空格;
+ * 但是其后`notation`，则会选中空格（先添加小节不影响使用）;
  */
 export class ChordNote extends Notation {
   public ntype = NotationType.ChordNote
@@ -24,7 +24,7 @@ export class ChordNote extends Notation {
     protected duration: NoteDuration = NoteDuration.Quarter,
     protected chordType: ChordType = ChordType.Major,
     public hasTie: boolean = false,
-    protected lastString = '',
+    public hasEndBlankSpace :boolean= false,
     public lyrics = '',
   ) {
     super()
@@ -39,14 +39,14 @@ export class ChordNote extends Notation {
     return (
       this.generateChordString(this.rootkey, this.duration, this.chordType) +
       (this.hasTie ? '-' : '') +
-      this.lastString
+      (this.hasEndBlankSpace ? ' ' : '')
     )
   }
 
   public toJSON() {
     return {
       ntype: this.ntype,
-      state: [this.rootkey, this.duration, this.chordType, this.lastString, this.lyrics],
+      state: [this.rootkey, this.duration, this.chordType, this.hasEndBlankSpace, this.lyrics],
     }
   }
 
@@ -72,13 +72,15 @@ export class ChordNote extends Notation {
   /**
    * 设置延音线符号
    */
-  public setHasTieIs(ishas: boolean) {
-    this.hasTie = ishas
+  public setHasTieIs(is: boolean) {
+    this.hasTie = is
     this.updateInStave()
   }
-  
-  public setEndSpacing() {
-    this.lastString = ' '
+  /**
+   * 设置尾部空格(断开符尾)
+   */
+  public setEndBlankSpaceIs(is:boolean) {
+    this.hasEndBlankSpace = is
     this.updateInStave()
   }
 

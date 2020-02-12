@@ -13,7 +13,7 @@ export class Note extends Notation {
     protected duration: NoteDuration = NoteDuration.Quarter,
     protected accidental: NoteAccidental = NoteAccidental.None,
     public hasTie: boolean = false,
-    protected lastString = '',
+    public hasEndBlankSpace: boolean = false,
     public lyrics = '',
   ) {
     super()
@@ -26,13 +26,19 @@ export class Note extends Notation {
 
   public toAbcString() {
     // Tie须靠近note字符
-    return this.accidental + this.key + this.duration + (this.hasTie ? "-" : "") + this.lastString
+    return (
+      this.accidental +
+      this.key +
+      this.duration +
+      (this.hasTie ? '-' : '') +
+      (this.hasEndBlankSpace ? ' ' : '')
+    )
   }
 
   public toJSON() {
     return {
       ntype: this.ntype,
-      state: [this.key, this.duration, this.accidental,this.hasTie, this.lastString, this.lyrics],
+      state: [this.key, this.duration, this.accidental, this.hasTie, this.hasEndBlankSpace, this.lyrics],
     }
   }
 
@@ -56,16 +62,19 @@ export class Note extends Notation {
     this.updateInStave()
   }
 
-  public setEndSpacing() {
-    this.lastString = ' '
+  /**
+   * 设置尾部空格(断开符尾)
+   */
+  public setEndBlankSpaceIs(is:boolean) {
+    this.hasEndBlankSpace = is
     this.updateInStave()
   }
   /**
-   * 设置延音线符号 
+   * 设置延音线符号
    */
-  public setHasTieIs(ishas: boolean) {
-    this.hasTie = ishas
-    this.updateInStave();
+  public setHasTieIs(is: boolean) {
+    this.hasTie = is
+    this.updateInStave()
   }
 
   /**
