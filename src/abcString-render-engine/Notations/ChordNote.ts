@@ -7,7 +7,7 @@ import { NoteDuration } from '../Enums/NoteDuration'
 import { INotation } from '..'
 
 // Major Chord
-const defualtChordNotes = [
+const defualtChordNotes = () => [
   new Note(NoteKey.C3),
   new Note(NoteKey.E3), // Third note
   new Note(NoteKey.G3), // Fifth note
@@ -25,7 +25,7 @@ export class ChordNote extends Notation {
   public ntype = NotationType.ChordNote
 
   constructor(
-    protected notes: Note[] = defualtChordNotes,
+    protected notes: Note[] = defualtChordNotes(),
     protected duration: NoteDuration = NoteDuration.Quarter,
     public hasTie: boolean = false,
     public hasEndBlankSpace: boolean = false,
@@ -81,7 +81,6 @@ export class ChordNote extends Notation {
     this.duration = duration
     this.updateInStave()
   }
-
 }
 
 function generateChordString(notes: INotation[]) {
@@ -94,30 +93,30 @@ function generateChordString(notes: INotation[]) {
 
 function tryPitchUpChordKey(notes: Note[], interval: number) {
   // 只看最后一个音是否可再升调
-  const lastNote = notes[notes.length - 1];
+  const lastNote = notes[notes.length - 1]
   const key_pitchUp = SequenceNoteKey[SequenceNoteKey.indexOf(lastNote.key) + interval]
   if (!key_pitchUp) {
     console.warn('chord key is already at top.')
-    return false;
+    return false
   }
 
   notes.forEach((note, i) => {
-    note.pitchUp();
+    note.pitchUp()
   })
-  return true;
+  return true
 }
 
 function tryPitchDownChordKey(notes: Note[], interval: number) {
   // 只看第一个音是否可再降调
-  const rootNote = notes[0];
+  const rootNote = notes[0]
   const key_pitchDown = SequenceNoteKey[SequenceNoteKey.indexOf(rootNote.key) - interval]
   if (!key_pitchDown) {
     console.warn('key is already at bottom.')
-    return false;
+    return false
   }
 
   notes.forEach((note, i) => {
-    note.pitchDown();
+    note.pitchDown()
   })
-  return true;
+  return true
 }
