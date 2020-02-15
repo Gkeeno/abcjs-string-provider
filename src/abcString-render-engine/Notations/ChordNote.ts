@@ -25,8 +25,8 @@ export class ChordNote extends Notation {
   public ntype = NotationType.ChordNote
 
   constructor(
-    protected notes: Note[] = defualtChordNotes(),
-    protected duration: NoteDuration = NoteDuration.Quarter,
+    public notes: Note[] = defualtChordNotes(),
+    public duration: NoteDuration = NoteDuration.Quarter,
     public hasTie: boolean = false,
     public hasEndBlankSpace: boolean = false,
     public lyrics = '',
