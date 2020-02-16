@@ -40,6 +40,7 @@ export class ChordNote extends Notation {
       throw 'invalid chord notes less than 2.'
     }
     notes[0].setDuration(duration) // chord note只会以第一个音的时值为准
+    overwriteNotesFunction.bind(this)(notes)
   }
 
   public toAbcString() {
@@ -119,4 +120,23 @@ function tryPitchDownChordKey(notes: Note[], interval: number) {
     note.pitchDown()
   })
   return true
+}
+
+/**
+ * 重写和弦组成音符的方法；
+ * 使可以达到组成音改变和弦同步变化的效果
+ */
+function overwriteNotesFunction(this: ChordNote, notes: Note[]) {
+  const chordNote = this;
+  const overwriteFunctionsName = ['pitchUp', 'pitchDown', 'setDuration', 'setAccidential']
+  const overwriteNote = (note: Note) => {
+    overwriteFunctionsName.forEach(funcName => {
+      const orgFunc = note[funcName].bind(note);
+      note[funcName] = function(){
+        orgFunc(...arguments)
+        chordNote.updateInStave()
+      }
+    })
+  }
+  notes.forEach(note => overwriteNote(note))
 }
