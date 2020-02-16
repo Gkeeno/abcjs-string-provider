@@ -40,7 +40,7 @@ export class ChordNote extends Notation {
     if (notes.length < 2) {
       throw 'invalid chord notes less than 2.'
     }
-    notes[0].setDuration(duration) // chord note只会以第一个音的时值为准
+    notes.map(note => note.setDuration(duration));
     overwriteNotesFunction.bind(this)(notes)
   }
 
@@ -87,6 +87,7 @@ export class ChordNote extends Notation {
 
   public setDuration(duration: NoteDuration) {
     this.duration = duration
+    this.notes.map(note => note.setDuration(duration));
     this.updateInStave()
   }
 }
@@ -135,7 +136,7 @@ function tryPitchDownChordKey(notes: Note[], interval: number) {
  */
 function overwriteNotesFunction(this: ChordNote, notes: Note[]) {
   const chordNote = this;
-  const overwriteFunctionsName = ['pitchUp', 'pitchDown', 'setDuration', 'setAccidential']
+  const overwriteFunctionsName = ['pitchUp', 'pitchDown', 'setAccidential']
   const overwriteNote = (note: Note) => {
     overwriteFunctionsName.forEach(funcName => {
       const orgFunc = note[funcName].bind(note);
