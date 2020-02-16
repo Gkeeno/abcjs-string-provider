@@ -5,6 +5,7 @@ import { Note } from './Note'
 import { NotationType } from '../Enums/NotationType'
 import { NoteDuration } from '../Enums/NoteDuration'
 import { INotation } from '..'
+import { NotationSerializeInfo } from '../common'
 
 // Major Chord
 const defualtChordNotes = () => [
@@ -41,6 +42,12 @@ export class ChordNote extends Notation {
     }
     notes[0].setDuration(duration) // chord note只会以第一个音的时值为准
     overwriteNotesFunction.bind(this)(notes)
+  }
+
+  public static deserialize(seriInfo: NotationSerializeInfo) {
+    const [notesState, ...chordState] = seriInfo.state
+    const notes = notesState.map(noteState => new Note(...noteState.state))
+    return new ChordNote(notes, ...chordState);
   }
 
   public toAbcString() {

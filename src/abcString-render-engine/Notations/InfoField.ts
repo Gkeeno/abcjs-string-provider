@@ -2,6 +2,7 @@ import { InfoFiledType } from '../Enums/InfoFieldType';
 import { NewLine } from '../utils';
 import { Notation } from './Notation.abstract';
 import { NotationType } from '../Enums/NotationType';
+import { NotationSerializeInfo } from '../common';
 
 export class InfoField extends Notation {
   public ntype = NotationType.InfoField;
@@ -9,6 +10,11 @@ export class InfoField extends Notation {
   constructor(public fieldType: InfoFiledType = InfoFiledType.reference_number, protected content: string = '') {
     super();
   }
+  
+  public static deserialize(seriInfo: NotationSerializeInfo) {
+    return new InfoField(...seriInfo.state)
+  }
+  
   public toJSON() {
     return {
       ntype:this.ntype,

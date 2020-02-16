@@ -1,4 +1,5 @@
 import { INotation } from './Notations/INotation';
+import { NotationType } from '.';
 
 export type StringIndexChangeEventArgs = {iend: number, org_iend: number}
 export type StringsIndexChangeHandle = (sender:object,e :StringIndexChangeEventArgs) => void;
@@ -22,3 +23,4 @@ export interface StaveCommand {
 
 }
 
+export type NotationSerializeInfo = { ntype: NotationType, state:any[]}

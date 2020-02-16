@@ -4,6 +4,7 @@ import { NoteAccidental } from '../Enums/NoteAccidental'
 import { Notation } from './Notation.abstract'
 import { NotationType } from '../Enums/NotationType'
 import { NoteDuration } from '../Enums/NoteDuration'
+import { NotationSerializeInfo } from '../common'
 
 export class Note extends Notation {
   public ntype = NotationType.Note
@@ -22,6 +23,10 @@ export class Note extends Notation {
     if (isNaN(i_sequence)) {
       throw 'invalid key.'
     }
+  }
+
+  public static deserialize(seriInfo: NotationSerializeInfo) {
+    return new Note(...seriInfo.state)
   }
 
   public toAbcString() {

@@ -1,6 +1,7 @@
 import { Notation } from './Notation.abstract';
 import { NotationType } from '../Enums/NotationType';
 import { NoteDuration } from '../Enums/NoteDuration';
+import { NotationSerializeInfo } from '../common';
 
 export class RestNote extends Notation {
   public ntype = NotationType.RestNote;
@@ -9,6 +10,10 @@ export class RestNote extends Notation {
     super();
   }
 
+  public static deserialize(seriInfo: NotationSerializeInfo) {
+    return new RestNote(...seriInfo.state)
+  }
+  
   public toJSON() {
     return {
       ntype:this.ntype,

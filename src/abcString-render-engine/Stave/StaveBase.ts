@@ -1,6 +1,11 @@
 import { INotation } from '../Notations/INotation'
 import { NotationType } from '../Enums/NotationType'
-import { StringsIndexChangeHandle, StaveCommand, UpdateAbcStringHandle } from '../common'
+import {
+  StringsIndexChangeHandle,
+  StaveCommand,
+  UpdateAbcStringHandle,
+  NotationSerializeInfo,
+} from '../common'
 import { InfoField } from '../Notations/InfoField'
 import { InfoFiledType } from '../Enums/InfoFieldType'
 import { Note } from '../Notations/Note'
@@ -138,24 +143,20 @@ export abstract class StaveBase {
     return JSON.stringify(this.notations)
   }
 
-  protected deserializeNotation(orgState) {
-    let org_n: INotation
-    if (orgState.ntype == NotationType.Note) {
-      org_n = new Note(...orgState.state)
-    } else if (orgState.ntype == NotationType.InfoField) {
-      org_n = new InfoField(...orgState.state)
-    } else if (orgState.ntype == NotationType.IninlineInfoField) {
-      org_n = new InlineInfoField(...orgState.state)
-    } else if (orgState.ntype == NotationType.BarLine) {
-      org_n = new BarLine(...orgState.state)
-    } else if (orgState.ntype == NotationType.RestNote) {
-      org_n = new RestNote(...orgState.state)
-    } else if (orgState.ntype == NotationType.ChordNote) {
-      const [notesState, ...chordState] = orgState.state
-      const notes = notesState.map(noteState => new Note(...noteState.state))
-      org_n = new ChordNote(notes, ...chordState)
+  protected deserializeNotation(seriInfo: NotationSerializeInfo) {
+    if (seriInfo.ntype == NotationType.Note) {
+      return Note.deserialize(seriInfo)
+    } else if (seriInfo.ntype == NotationType.InfoField) {
+      return InfoField.deserialize(seriInfo)
+    } else if (seriInfo.ntype == NotationType.IninlineInfoField) {
+      return InlineInfoField.deserialize(seriInfo)
+    } else if (seriInfo.ntype == NotationType.BarLine) {
+      return BarLine.deserialize(seriInfo)
+    } else if (seriInfo.ntype == NotationType.RestNote) {
+      return RestNote.deserialize(seriInfo)
+    } else if (seriInfo.ntype == NotationType.ChordNote) {
+      return ChordNote.deserialize(seriInfo)
     }
-    return org_n
   }
 
   protected trySetStaveFieldFrom(notation: INotation) {

@@ -16,8 +16,8 @@ export class Stave extends StaveBase {
     }
 
     if (data.length) {
-      for (const nState of data) {
-        const notation = this.deserializeNotation(nState)
+      for (const serialInfo of data) {
+        const notation = this.deserializeNotation(serialInfo)
         this.trySetStaveFieldFrom(notation)
         this.addNotation(notation)
       }

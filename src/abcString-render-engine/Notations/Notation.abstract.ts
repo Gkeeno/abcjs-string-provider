@@ -1,5 +1,5 @@
 import { INotation } from './INotation'
-import { StringsIndexChangeHandle, StaveCommand, UpdateAbcStringHandle } from '../common'
+import { StringsIndexChangeHandle, StaveCommand, UpdateAbcStringHandle, NotationSerializeInfo } from '../common'
 import { NotationType } from '../Enums/NotationType'
 
 /**
@@ -28,6 +28,9 @@ export abstract class Notation implements INotation {
   protected _command: StaveCommand
 
   constructor() {}
+  
+  public abstract toAbcString(): string;
+  public abstract toJSON(): NotationSerializeInfo;
 
   public query(param: any): boolean {
     return this.ibegin === param.ichar_start && this.iend === param.ichar_end
@@ -103,9 +106,6 @@ export abstract class Notation implements INotation {
     this._command.updateAbcString(this.createUpdateAbcStringHandle())
     this._command.unsubscribeAbcStringIndexChange()
   }
-
-  public abstract toAbcString()
-  public abstract toJSON()
 
   protected stringIndexChangeHandle: StringsIndexChangeHandle = (sender, e) => {
     const isExceedThisEnd = this._ibegin > e.org_iend

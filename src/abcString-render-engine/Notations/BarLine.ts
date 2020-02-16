@@ -3,6 +3,7 @@ import { Notation } from './Notation.abstract'
 import { BarlineType } from '../Enums/BarlineType'
 import { SymbolSpacer } from '../constant'
 import { NotationType } from '../Enums/NotationType'
+import { NotationSerializeInfo } from '../common'
 
 export class BarLine extends Notation {
   public ntype = NotationType.BarLine
@@ -15,6 +16,10 @@ export class BarLine extends Notation {
     super()
   }
 
+  public static deserialize(seriInfo: NotationSerializeInfo) {
+    return new BarLine(...seriInfo.state)
+  }
+  
   public toJSON() {
     return {
       ntype: this.ntype,
