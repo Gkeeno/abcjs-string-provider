@@ -229,7 +229,13 @@ export default class DoubleTrack extends Vue {
     stave.metre = new InfoField(InfoFiledType.metre, '4/4')
     stave.tempo = new InfoField(InfoFiledType.tempo, '60')
     this.stave = stave.init()
-    this.stave.insertNotationAfter(this.stave.rightHand, new Note(NoteKey.C4))
+    // this.stave.insertNotationAfter(this.stave.rightHand, new Note(NoteKey.C4,NoteDuration.Whole))
+    let prevNote:INotation = this.stave.rightHand;
+    for(let key of Object.keys(NoteDuration)){
+      let curNote = new Note(NoteKey.C4,NoteDuration[key]);
+      this.stave.insertNotationAfter(prevNote,curNote)
+      prevNote = curNote;
+    }
 
     this.stave.setStaveChangeHandle(this.renderAbc.bind(this))
     // 手动渲染下界面

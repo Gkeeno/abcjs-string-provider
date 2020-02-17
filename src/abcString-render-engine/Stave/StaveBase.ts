@@ -34,8 +34,12 @@ export abstract class StaveBase {
   public composer = new InfoField(InfoFiledType.composer, 'anonymous')
   public tempo = new InfoField(InfoFiledType.tempo, '60')
   public metre = new InfoField(InfoFiledType.metre, '4/4')
-  public unitNoteLength = new InfoField(InfoFiledType.note_unit_length, '1/16')
   public key = new InfoField(InfoFiledType.key, 'C')
+  /**
+   * @public 不建议修改
+   * @summary 固定值，整个库都是以这个默认来做；如果变动其他关于时值的值都要变化
+   */
+  public unitNoteLength = new InfoField(InfoFiledType.note_unit_length, '1/64') // 单位缩小四倍，时值数值要扩大四倍
 
   protected _abcString: string = ''
 

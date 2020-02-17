@@ -42,5 +42,3 @@ export class Stave extends StaveBase {
   }
 
 }
-
-;(window as any).Stave = Stave
