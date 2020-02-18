@@ -3,6 +3,7 @@ import { InfoFiledType } from '../Enums/InfoFieldType';
 import { InlineInfoField } from '../Notations/InlineInfoField';
 import { StaveBase } from './StaveBase';
 import { INotation } from '../Notations/INotation';
+import { InfoFiledContent } from '../Enums/InfoFiledContent';
 
 /**
  *
@@ -13,18 +14,18 @@ import { INotation } from '../Notations/INotation';
 export class StaveDoubleTrack extends StaveBase {
   public spacingStaves = new InfoField(
     InfoFiledType.spacing_staves,
-    '{(PianoRightHand) (PianoLeftHand)}'
+    InfoFiledContent.spacing_staves_PianoRightAndLeft
   );
   public rightHandHeader = new InfoField(
     InfoFiledType.voice,
-    'PianoRightHand clef=treble'
+    InfoFiledContent.voice_righthand_header
   );
   public leftHandHeader = new InfoField(
     InfoFiledType.voice,
-    'PianoLeftHand clef=bass'
+    InfoFiledContent.voice_lefthand_header
   );
-  public rightHand = new InlineInfoField(InfoFiledType.voice, 'PianoRightHand');
-  public leftHand = new InlineInfoField(InfoFiledType.voice, 'PianoLeftHand');
+  public rightHand = new InlineInfoField(InfoFiledType.voice, InfoFiledContent.voice_righthand);
+  public leftHand = new InlineInfoField(InfoFiledType.voice, InfoFiledContent.voice_lefthand);
 
   constructor() {
     super();
@@ -36,11 +37,11 @@ export class StaveDoubleTrack extends StaveBase {
 
     if (notation.fieldType == InfoFiledType.voice) {
       if (notation instanceof InlineInfoField) {
-        notation.getContent() == "PianoRightHand" && (this.rightHand = notation);
-        notation.getContent() == "PianoLeftHand" && (this.leftHand = notation);
+        notation.getContent() == InfoFiledContent.voice_righthand && (this.rightHand = notation);
+        notation.getContent() == InfoFiledContent.voice_lefthand && (this.leftHand = notation);
       } else {
-        notation.getContent() == "PianoRightHand" && (this.rightHandHeader = notation);
-        notation.getContent() == "PianoLeftHand" && (this.leftHandHeader = notation);
+        notation.getContent() == InfoFiledContent.voice_righthand && (this.rightHandHeader = notation);
+        notation.getContent() == InfoFiledContent.voice_lefthand && (this.leftHandHeader = notation);
       }
     }
   }

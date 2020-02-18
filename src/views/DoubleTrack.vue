@@ -80,7 +80,8 @@
         <input type="text" ref="txt_lyrics" />
         <button @click="addLyrics">添加歌词</button>
         <br />
-        <br />
+        <button @click="addClef_h">添加高音谱号</button>
+
 
         <div class="input-group-text">
           <label for="first"
@@ -131,7 +132,8 @@ import {
   BarLine,
   NoteAccidental,
   INotation,
-  ChordNote
+  ChordNote,
+  InlineInfoField
 } from '../abcString-render-engine'
 import { StaveUtil } from '../util'
 
@@ -229,7 +231,8 @@ export default class DoubleTrack extends Vue {
     stave.metre = new InfoField(InfoFiledType.metre, '4/4')
     stave.tempo = new InfoField(InfoFiledType.tempo, '60')
     this.stave = stave.init()
-    // this.stave.insertNotationAfter(this.stave.rightHand, new Note(NoteKey.C4,NoteDuration.Whole))
+    // const firstNote =  new Note(NoteKey.C4,NoteDuration.Whole)
+    // this.stave.insertNotationAfter(this.stave.rightHand, firstNote)
     let prevNote:INotation = this.stave.rightHand;
     for(let key of Object.keys(NoteDuration)){
       let curNote = new Note(NoteKey.C4,NoteDuration[key]);
@@ -363,6 +366,13 @@ export default class DoubleTrack extends Vue {
     this.selectedNotation &&
       StaveUtil.isNoteType(this.selectedNotation) &&
       (this.selectedNotation as Note).setAccidential(NoteAccidental[accidentalName] || NoteAccidental.None)
+  }
+  public addClef_h(){
+    const inlineinfofield = new InlineInfoField(InfoFiledType.key,"clef=treble");
+    this.selectedNotation
+      ? this.stave.insertNotationAfter(this.selectedNotation, inlineinfofield)
+      : this.stave.addNotation(inlineinfofield)
+    this.selectedNotation = inlineinfofield
   }
 
   public newline() {
